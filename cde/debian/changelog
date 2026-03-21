@@ -1,5 +1,9 @@
-cde-desktop (2.3.0-1) UNRELEASED; urgency=medium
+cde-desktop (2.5.3-0ubuntu1~noble1) noble; urgency=medium
 
+  [ TheSelousScout ]
   * Initial release (Closes: #689098)
 
- -- TheSelousScout <nicetrynsa@protonmail.ch>  Tue, 10 Apr 2018 22:23:02 -0700
+  [ Reaper ]
+  * Package CDE 2.5.3 for Ubuntu 24.04 Noble in ppa:johngrimmreaper/24.04
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Sat, 21 Mar 2026 21:59:09 +0000
