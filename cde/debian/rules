@@ -1,19 +1,22 @@
 #!/usr/bin/make -f
-#export DH_VERBOSE = 1
+export DH_VERBOSE = 1
 
 %:
 	dh $@
 
-#make clean cleans everything except the doc directory for some reason
-override_dh_auto_clean:
-	$(MAKE) clean
-	$(MAKE) clean.doc
+override_dh_auto_configure:
+	./autogen.sh
+	dh_auto_configure -- --prefix=/usr
 
-#make World needs to be called, not just make
 override_dh_auto_build:
-	$(MAKE) World
+	dh_auto_build
 
-#make install is broken, so we use the install script instead
-override_dh_auto_install:
-	sudo ./admin/IntegTools/dbTools/installCDE -s . -destDir \
-	./debian/cde-desktop
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	set -e; \
+	LDLP="$$(find $(CURDIR) -type d -name .libs -print | paste -sd: -)"; \
+	echo "LD_LIBRARY_PATH=$$LDLP"; \
+	LD_LIBRARY_PATH="$$LDLP$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" dh_auto_test
+else
+	@echo "Skipping tests because DEB_BUILD_OPTIONS contains nocheck"
+endif
