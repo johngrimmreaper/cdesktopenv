@@ -143,7 +143,6 @@ Files: config/makedepend/ifparser.c
        programs/dtlogin/error.c
        programs/dtlogin/file.c
        programs/dtlogin/policy.c
-       programs/dtlogin/protocol
        programs/dtlogin/protodpy.c
        programs/dtlogin/reset.c
        programs/dtlogin/resource.c
