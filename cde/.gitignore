@@ -2098,10 +2098,13 @@ programs/util/dttypes/dttypes
 util/scripts/mergelib
 util/scripts/xmkmf
 
-# debian packaging
-debian/cde-desktop
-debian/patches
-debian/.debhelper
+# debian packaging build outputs
+debian/cde-desktop/
+debian/.debhelper/
+debian/files
+debian/*.debhelper
+debian/*.substvars
+debian/debhelper-build-stamp
 
 # MSGCAT changes
 programs/dtdspmsg/MsgCat.c
