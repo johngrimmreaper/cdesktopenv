@@ -1,0 +1,43 @@
+Index: cde/programs/dtksh/Makefile.am
+===================================================================
+--- cde.orig/programs/dtksh/Makefile.am
++++ cde/programs/dtksh/Makefile.am
+@@ -13,6 +13,7 @@ KSH93SRC = ./ksh93
+ KSH93LIBSHELL = $(KSH93SRC)/lib/libshell.a
+ 
+ bin_PROGRAMS = dtksh
++check_PROGRAMS = dtksh-test-harness
+ 
+ BUILT_SOURCES = init.c
+ 
+@@ -58,6 +59,11 @@ dtksh_SOURCES = init.c \
+                 extra.c \
+                 msgs.c
+ 
++dtksh_test_harness_CPPFLAGS = $(dtksh_CPPFLAGS)
++dtksh_test_harness_SOURCES = $(dtksh_SOURCES)
++dtksh_test_harness_LDADD = $(dtksh_LDADD)
++dtksh_test_harness_LDFLAGS = -no-install $(dtksh_LDFLAGS)
++
+ ksh93/bin/ksh:
+ 	ksh93/bin/package flat make CCFLAGS='$(KSH93_SHOPTS)'
+ 
+@@ -69,8 +75,16 @@ libshell.a: $(KSH93SLIBSHELL) dtksh-init
+ 	$(AR) d libshell.a init.o; \
+ 	$(AR) cq libshell.a dtksh-init.o
+ 
+-check-local:
+-	./dtksh -c true && ksh93/bin/shtests --posix --utf8 SHELL=.libs/dtksh
++check-local: dtksh-test-harness
++	rm -rf $(abs_builddir)/test-home
++	mkdir -p $(abs_builddir)/test-home
++	: > $(abs_builddir)/test-home/.sh_history
++	HOME='$(abs_builddir)/test-home' \
++	HISTFILE='$(abs_builddir)/test-home/.sh_history' \
++	'$(abs_builddir)/dtksh-test-harness$(EXEEXT)' -c true && \
++	HOME='$(abs_builddir)/test-home' \
++	HISTFILE='$(abs_builddir)/test-home/.sh_history' \
++	'$(abs_builddir)/ksh93/bin/shtests' --posix --utf8 SHELL='$(abs_builddir)/dtksh-test-harness$(EXEEXT)'
+ 
+ clean-local:
+ 	ksh93/bin/package clean
