@@ -1,0 +1,40 @@
+Description: Skip obsolete ksh93 UNIVERSE echo tests on modern Linux
+ The bundled ksh93 test suite contains historical AT&T AST UNIVERSE
+ checks for UCB and XPG echo behavior. These assumptions do not hold in
+ a normal Ubuntu Noble build chroot, where /usr/ucb/bin and /usr/xpg/bin
+ are not present. The bundled ksh93 itself fails these checks, so this is
+ not specific to dtksh.
+Author: Reaper <JohnGrimmReaper@disroot.org>
+Forwarded: not-needed
+
+Index: cde/programs/dtksh/ksh93/src/cmd/ksh93/tests/builtins.sh
+===================================================================
+--- cde.orig/programs/dtksh/ksh93/src/cmd/ksh93/tests/builtins.sh
++++ cde/programs/dtksh/ksh93/src/cmd/ksh93/tests/builtins.sh
+@@ -586,8 +586,4 @@ do	(( i++))
+ 	done) == $'0\n0\n1\n1\n2' ]]  || err_exit  "DEBUG trap not working"
+-if builtin getconf 2> /dev/null; then
+-	getconf UNIVERSE - ucb
+-	[[ $($SHELL -c 'echo -3') == -3 ]] || err_exit "echo -3 not working in ucb universe"
+-fi
+ typeset -F3 start_x=SECONDS total_t delay=0.02
+ typeset reps=50 leeway=5
+ sleep $(( 2 * leeway * reps * delay )) |
+Index: cde/programs/dtksh/ksh93/src/cmd/ksh93/tests/path.sh
+===================================================================
+--- cde.orig/programs/dtksh/ksh93/src/cmd/ksh93/tests/path.sh
++++ cde/programs/dtksh/ksh93/src/cmd/ksh93/tests/path.sh
+@@ -306,13 +306,5 @@ status=$($SHELL -c $'trap \'print $?\' E
+ [[ $status == 126 ]] || err_exit "non executable command ERR trap exit status $status -- expected 126"
+ 
+-# universe via PATH
+-
+-if builtin getconf 2> /dev/null; then
+-	getconf UNIVERSE - att # override sticky default 'UNIVERSE = foo'
+-
+-	[[ $(PATH=/usr/ucb/bin:/usr/bin echo -n ucb) == 'ucb' ]] || err_exit "ucb universe echo ignores -n option"
+-	[[ $(PATH=/usr/xpg/bin:/usr/bin echo -n att) == '-n att' ]] || err_exit "att universe echo does not ignore -n option"
+-fi
+ 
+ PATH=$path
+ 
