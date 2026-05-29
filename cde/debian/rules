@@ -40,3 +40,8 @@ override_dh_auto_install:
 			rmdir --ignore-fail-on-non-empty "$$d/usr/share/man/man1m"; \
 		fi; \
 	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			find "$$d" -name '*.la' -type f -exec sed -i "s|^dependency_libs=.*|dependency_libs=''|" {} +; \
+		fi; \
+	done
