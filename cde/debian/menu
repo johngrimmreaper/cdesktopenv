@@ -3,4 +3,4 @@
   hints="Standard, Unix, Desktop" \
   section="Window Managers" \
   title="Common Desktop Environment" \
-  command="/usr/dt/bin/dtlogin"
+  command="/usr/bin/dtlogin"
