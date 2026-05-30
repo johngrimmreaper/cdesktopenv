@@ -26,6 +26,7 @@ override_dh_auto_install:
 	for d in debian/tmp debian/cde-desktop; do \
 		if [ -d "$$d" ]; then \
 			find "$$d" -type f -exec sed -i '1s|^#![[:space:]]*/usr/bin/ksh[[:space:]]*$$|#!/bin/ksh|' {} +; \
+			find "$$d" -type f -exec sed -i '1s|^#![[:space:]]*/usr/dt/bin/dtksh[[:space:]]*$$|#!/usr/bin/dtksh|' {} +; \
 		fi; \
 	done
 	for d in debian/tmp debian/cde-desktop; do \
