@@ -1,0 +1,13 @@
+Index: cde/programs/dtksh/Makefile.am
+===================================================================
+--- cde.orig/programs/dtksh/Makefile.am
++++ cde/programs/dtksh/Makefile.am
+@@ -65,7 +65,7 @@ dtksh_test_harness_LDADD = $(dtksh_LDADD
+ dtksh_test_harness_LDFLAGS = -no-install $(dtksh_LDFLAGS)
+ 
+ ksh93/bin/ksh:
+-	ksh93/bin/package flat make CCFLAGS='$(KSH93_SHOPTS)'
++	ksh93/bin/package flat make CCFLAGS='$(KSH93_SHOPTS) -ffile-prefix-map=$(abs_top_srcdir)=. -fmacro-prefix-map=$(abs_top_srcdir)=.'
+ 
+ init.c: ksh93/bin/ksh
+ 	$(CP) ksh93/src/cmd/ksh93/sh/init.c ./
