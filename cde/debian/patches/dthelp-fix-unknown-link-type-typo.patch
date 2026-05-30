@@ -1,0 +1,13 @@
+Index: cde/lib/DtHelp/FormatTerm.c
+===================================================================
+--- cde.orig/lib/DtHelp/FormatTerm.c
++++ cde/lib/DtHelp/FormatTerm.c
+@@ -804,7 +804,7 @@ AddHyperToList(
+ 		        sprintf(title, "Text File \"%s\"", id);
+ 			break;
+ 	        default:
+-			title = strdup ("Unkown link type");
++			title = strdup ("Unknown link type");
+ 			break;
+ 
+ 	      }
