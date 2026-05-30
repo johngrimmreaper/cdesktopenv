@@ -43,6 +43,12 @@ override_dh_auto_install:
 		fi; \
 	done
 	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d/usr/share/man/man1" ]; then \
+			ln -sf dthelpgen.1.gz "$$d/usr/share/man/man1/dthelpgen.dtsh.1.gz"; \
+			ln -sf dthelpprint.1.gz "$$d/usr/share/man/man1/dthelpprint.sh.1.gz"; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
 		if [ -d "$$d" ]; then \
 			find "$$d" -name '*.la' -type f -exec sed -i "s|^dependency_libs=.*|dependency_libs=''|" {} +; \
 		fi; \
