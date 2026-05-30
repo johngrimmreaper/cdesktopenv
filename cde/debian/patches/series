@@ -1,3 +1,4 @@
+fix-bad-whatis-manpages.patch
 dtksh-use-no-install-test-harness-for-check.patch
 ksh93-skip-obsolete-universe-echo-tests.patch
 dtterm-install-terminfo-into-destdir.patch
