@@ -9,3 +9,6 @@ cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.31.5C.22} [usr/bin/d
 cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.32.5C.22} [usr/bin/dtdocbook2man:116]
 cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.33.5C.22} [usr/bin/dtdocbook2man:112]
 cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.34.5C.22} [usr/bin/dtdocbook2man:108]
+
+# CDE appmanager action stubs must be executable so File Manager recognizes them as actions.
+cde-desktop: executable-not-elf-or-script [usr/dt/appconfig/appmanager/*]
