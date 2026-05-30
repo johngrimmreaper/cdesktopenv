@@ -45,3 +45,10 @@ override_dh_auto_install:
 			find "$$d" -name '*.la' -type f -exec sed -i "s|^dependency_libs=.*|dependency_libs=''|" {} +; \
 		fi; \
 	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			rm -f "$$d/usr/dt/COPYING"; \
+			sed -i 's|please see the file COPYING for more details|please see /usr/share/doc/cde-desktop/copyright for more details|' "$$d/usr/dt/copyright" 2>/dev/null || true; \
+			sed -i 's|See the COPYING file for details|See /usr/share/doc/cde-desktop/copyright for details|' "$$d/usr/dt/README.md" 2>/dev/null || true; \
+		fi; \
+	done
