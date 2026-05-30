@@ -1,2 +1,5 @@
 # CDE's dthelpprint binary expects this private helper script by its historic name.
 cde-desktop: script-with-language-extension [usr/bin/dthelpprint.sh]
+
+# dtspcd documents an HP-UX-specific /usr/adm/inetd.sec path from historical CDE behavior.
+cde-desktop: FSSTND-dir-in-manual-page /usr/adm/ [usr/share/man/man8/dtspcd.8.gz:173]
