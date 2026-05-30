@@ -1,0 +1,2 @@
+# CDE's dthelpprint binary expects this private helper script by its historic name.
+cde-desktop: script-with-language-extension [usr/bin/dthelpprint.sh]
