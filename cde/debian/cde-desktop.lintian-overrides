@@ -3,3 +3,9 @@ cde-desktop: script-with-language-extension [usr/bin/dthelpprint.sh]
 
 # dtspcd documents an HP-UX-specific /usr/adm/inetd.sec path from historical CDE behavior.
 cde-desktop: FSSTND-dir-in-manual-page /usr/adm/ [usr/share/man/man8/dtspcd.8.gz:173]
+
+# dtdocbook2man embeds roff macro text; these are not shell echo escape sequences.
+cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.31.5C.22} [usr/bin/dtdocbook2man:120]
+cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.32.5C.22} [usr/bin/dtdocbook2man:116]
+cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.33.5C.22} [usr/bin/dtdocbook2man:112]
+cde-desktop: bash-term-in-posix-shell {hex:2E.9.64.73.20.66.34.5C.22} [usr/bin/dtdocbook2man:108]
