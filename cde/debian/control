@@ -46,6 +46,7 @@ Depends: ${shlibs:Depends},
          ksh,
          m4,
          ncompress,
+         ncurses-term,
          rpcbind,
          bison,
          xbitmaps

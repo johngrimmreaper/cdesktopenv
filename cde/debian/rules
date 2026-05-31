@@ -73,3 +73,10 @@ override_dh_auto_install:
 			chmod 0644 "$$d/usr/lib/$(DEB_HOST_MULTIARCH)/dtksh/DtFuncs.dtsh" 2>/dev/null || true; \
 		fi; \
 	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			rm -f "$$d/usr/share/terminfo/d/dtterm"; \
+			rmdir --ignore-fail-on-non-empty "$$d/usr/share/terminfo/d" 2>/dev/null || true; \
+			rmdir --ignore-fail-on-non-empty "$$d/usr/share/terminfo" 2>/dev/null || true; \
+		fi; \
+	done
