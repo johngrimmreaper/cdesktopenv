@@ -1,6 +1,8 @@
 cde-desktop (2.5.3-0ubuntu2~noble1) noble; urgency=medium
 
   * Create /var/dt appmanager runtime directory with sticky permissions.
+  * Run test suite without parallelism to avoid ksh93 command -x
+    arg_max stress failures under sbuild.
 
  -- Reaper <JohnGrimmReaper@disroot.org>  Mon, 01 Jun 2026 00:51:54 +0000
 

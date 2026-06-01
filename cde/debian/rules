@@ -17,7 +17,7 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	set -e; \
 	LDLP="$$(find $(CURDIR) -type d -name .libs -print | paste -sd: -)"; \
 	echo "LD_LIBRARY_PATH=$$LDLP"; \
-	LD_LIBRARY_PATH="$$LDLP$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" dh_auto_test
+	LD_LIBRARY_PATH="$$LDLP$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" dh_auto_test --no-parallel
 else
 	@echo "Skipping tests because DEB_BUILD_OPTIONS contains nocheck"
 endif
