@@ -1,3 +1,9 @@
+cde-desktop (2.5.3-0ubuntu2~noble1) noble; urgency=medium
+
+  * Create /var/dt appmanager runtime directory with sticky permissions.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Mon, 01 Jun 2026 00:51:54 +0000
+
 cde-desktop (2.5.3-0ubuntu1~noble1) noble; urgency=medium
 
   [ TheSelousScout ]

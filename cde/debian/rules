@@ -80,3 +80,6 @@ override_dh_auto_install:
 			rmdir --ignore-fail-on-non-empty "$$d/usr/share/terminfo" 2>/dev/null || true; \
 		fi; \
 	done
+
+execute_after_dh_fixperms:
+	chmod 1777 debian/cde-desktop/var/dt/appconfig/appmanager
