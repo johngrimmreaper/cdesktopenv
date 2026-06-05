@@ -1,0 +1,45 @@
+Description: Make ksh93 time radix test observe fractional elapsed time
+ The original test used TIMEFORMAT='%1U' with 'time sleep 0'. On some
+ architectures, user CPU time can round to plain "0", leaving no radix
+ character to compare. Use real elapsed time from the test suite's
+ fractional sleep helper with a duration above one second, so the radix
+ character is observable even with coarse elapsed-time resolution.
+Author: Reaper <JohnGrimmReaper@disroot.org>
+Forwarded: not-needed
+Last-Update: 2026-06-05
+
+Index: cde/programs/dtksh/ksh93/src/cmd/ksh93/tests/basic.sh
+===================================================================
+--- cde.orig/programs/dtksh/ksh93/src/cmd/ksh93/tests/basic.sh
++++ cde/programs/dtksh/ksh93/src/cmd/ksh93/tests/basic.sh
+@@ -584,22 +584,24 @@ actual=$(
+ [[ $actual == "$expect" ]] || err_exit "'%' is not treated literally when placed after a format specifier" \
+ 	"(expected $(printf %q "$expect"), got $(printf %q "$actual"))"
+ 
+-# The locale's radix point shouldn't be ignored
++# The locale's radix point shouldn't be ignored.
++# Use elapsed time from the fractional sleep helper. A duration above
++# one second avoids zero output on platforms with coarse timers.
+ us=$(
+ 	LC_ALL='C.UTF-8' # radix point '.'
+-	TIMEFORMAT='%1U' # catch -1.99 bug as well by getting user time
++	TIMEFORMAT='%3R'
+ 	redirect 2>&1
+ 	set +x
+-	time sleep 0
++	time "$binsleep" 1.25
+ )
+ eu=$(
+ 	LC_ALL='C_EU.UTF-8' # radix point ','
+-	TIMEFORMAT='%1U'
++	TIMEFORMAT='%3R'
+ 	redirect 2>&1
+ 	set +x
+-	time sleep 0
++	time "$binsleep" 1.25
+ )
+-[[ ${us:1:1} == ${eu:1:1} ]] && err_exit "The time keyword ignores the locale's radix point (both are ${eu:1:1})"
++[[ ${us:1:1} == ${eu:1:1} ]] && err_exit "The time keyword ignores the locale's radix point (us=$(printf %q "$us"), eu=$(printf %q "$eu"))"
+ 
+ # The time keyword should obey the errexit option
+ # https://www.illumos.org/issues/7694

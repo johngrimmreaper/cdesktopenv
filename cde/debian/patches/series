@@ -6,3 +6,4 @@ dtterm-install-terminfo-into-destdir.patch
 dthelp-fix-unknown-link-type-typo.patch
 dthelp-use-printf-for-posix-shell-output.patch
 dtdocbook2man-fix-roff-comment-prefix.patch
+ksh93-make-time-radix-test-deterministic.patch

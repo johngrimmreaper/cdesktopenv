@@ -1,3 +1,10 @@
+cde-desktop (2.5.3-0ubuntu4~noble1) noble; urgency=medium
+
+  * Make embedded ksh93 time radix regression test deterministic by using
+    fractional elapsed time instead of zero user CPU time.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Fri, 05 Jun 2026 02:51:49 +0000
+
 cde-desktop (2.5.3-0ubuntu3~noble1) noble; urgency=medium
 
   * No-change rebuild for newly enabled PPA architectures.
