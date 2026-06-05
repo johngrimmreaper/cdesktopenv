@@ -1,3 +1,9 @@
+cde-desktop (2.5.3-0ubuntu5~noble1) noble; urgency=medium
+
+  * Add explicit autoconf and libtool build dependencies.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Fri, 05 Jun 2026 16:21:01 +0000
+
 cde-desktop (2.5.3-0ubuntu4~noble1) noble; urgency=medium
 
   * Fix the embedded ksh93 time radix regression test on armhf by using

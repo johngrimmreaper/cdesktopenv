@@ -3,7 +3,9 @@ Section: x11
 Priority: optional
 Maintainer: TheSelousScout <nicetrynsa@protonmail.ch>
 Build-Depends: debhelper (>= 10),
+               autoconf,
                automake,
+               libtool,
                libxt-dev,
                libxmu-dev,
                libxinerama-dev,
