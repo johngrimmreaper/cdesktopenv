@@ -1,3 +1,9 @@
+cde-desktop (2.5.3-0ubuntu3~noble1) noble; urgency=medium
+
+  * No-change rebuild for newly enabled PPA architectures.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Fri, 05 Jun 2026 01:12:28 +0000
+
 cde-desktop (2.5.3-0ubuntu2~noble1) noble; urgency=medium
 
   * Create /var/dt appmanager runtime directory with sticky permissions.
