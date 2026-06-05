@@ -1,0 +1,10 @@
+
+# Debian source-package artifacts generated next to cde/
+/*.build
+/*.buildinfo
+/*.changes
+/*.dsc
+/*.debian.tar.*
+/*.orig.tar.*
+/*.upload
+/*.ppa.upload
