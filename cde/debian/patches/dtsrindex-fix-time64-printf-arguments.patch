@@ -1,0 +1,51 @@
+Description: Fix dtsrindex time64 printf argument mismatches
+ On 32-bit architectures with 64-bit time_t, elapsed-time values are
+ long long while the existing translated format strings use %ld and %lu.
+ Passing the 64-bit values directly to those variadic conversions shifts
+ subsequent arguments and can make a later %s conversion receive an invalid
+ pointer, causing a crash in strlen(). Cast the values to the exact types
+ required by the existing format strings without changing message catalogs.
+Author: Reaper <JohnGrimmReaper@disroot.org>
+Forwarded: no
+Last-Update: 2026-06-06
+
+Index: cde/programs/dtsr/dtsrindex.c
+===================================================================
+--- cde.orig/programs/dtsr/dtsrindex.c
++++ cde/programs/dtsr/dtsrindex.c
+@@ -302,7 +302,9 @@ static void     print_exit_code (int exi
+ 	totalstart = time (NULL) - totalstart;
+     printf (CATGETS(dtsearch_catd, MS_cborodin, 206,
+ 	"%s: Exit Code = %d, Total elapsed time %ldm %lds.\n"),
+-	aa_argv0, exit_code, totalstart / 60L, totalstart % 60L);
++	aa_argv0, exit_code,
++        (long)(totalstart / 60L),
++        (long)(totalstart % 60L));
+     return;
+ }	/* print_exit_code() */
+ 
+@@ -1761,8 +1763,10 @@ INVALID_FZK_FORMAT:
+     printf (CATGETS(dtsearch_catd, MS_cborodin, 1225,
+ 	"%s: Pass 1 completed in %lum %lus, read %lu records.\n"
+ 	"  %s, parsed %lu words.\n"),
+-	aa_argv0, elapsed / 60L, elapsed % 60L, record_count,
+-	buf, num_of_diff_words);
++	aa_argv0,
++        (unsigned long)(elapsed / 60L),
++        (unsigned long)(elapsed % 60L),
++        record_count, buf, (unsigned long)num_of_diff_words);
+     if (record_count > batch_size) {
+ 	printf (CATGETS(dtsearch_catd, MS_cborodin, 33,
+ 	    "\n%s Number of incoming records exceeded %d.\n"
+@@ -1801,7 +1805,10 @@ INVALID_FZK_FORMAT:
+     elapsed = time (NULL) - timestart;
+     printf (CATGETS(dtsearch_catd, MS_cborodin, 1246,
+ 	"%s: Pass 2 completed in %lum %lus, updated %lu words.\n"),
+-	aa_argv0, elapsed / 60L, elapsed % 60L, count_word_ii);
++	aa_argv0,
++        (unsigned long)(elapsed / 60L),
++        (unsigned long)(elapsed % 60L),
++        (unsigned long)count_word_ii);
+     if (normal_retncode == 1)
+ 	printf (CATGETS(dtsearch_catd, MS_cborodin, 2,
+ 	    "%s: Warnings were detected.\n"), aa_argv0);

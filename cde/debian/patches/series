@@ -7,3 +7,4 @@ dthelp-fix-unknown-link-type-typo.patch
 dthelp-use-printf-for-posix-shell-output.patch
 dtdocbook2man-fix-roff-comment-prefix.patch
 ksh93-make-time-radix-test-deterministic.patch
+dtsrindex-fix-time64-printf-arguments.patch

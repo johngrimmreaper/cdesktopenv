@@ -1,3 +1,10 @@
+cde-desktop (2.5.3-0ubuntu6~noble1) noble; urgency=medium
+
+  * Fix the dtsrindex armhf crash caused by passing 64-bit time values
+    to 32-bit printf conversions.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Sat, 06 Jun 2026 12:57:55 +0000
+
 cde-desktop (2.5.3-0ubuntu5~noble1) noble; urgency=medium
 
   * Add explicit autoconf and libtool build dependencies.
