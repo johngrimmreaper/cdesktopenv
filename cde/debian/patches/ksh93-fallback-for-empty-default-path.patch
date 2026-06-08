@@ -1,0 +1,30 @@
+Description: Fix ksh93 command -p when astconf PATH is empty
+ On armhf builds, embedded libast may generate an empty default PATH value
+ for astconf("PATH") even though libc confstr(_CS_PATH) returns
+ /bin:/usr/bin. ksh93 command -p then searches an empty default path and
+ cannot find standard utilities such as ls, cp, mkdir, chmod, and date.
+ Fall back to the POSIX default utility path when astconf("PATH") returns
+ NULL or an empty string.
+Author: Reaper <JohnGrimmReaper@disroot.org>
+Forwarded: no
+Last-Update: 2026-06-08
+
+Index: cde/programs/dtksh/ksh93/src/cmd/ksh93/sh/path.c
+===================================================================
+--- cde.orig/programs/dtksh/ksh93/src/cmd/ksh93/sh/path.c
++++ cde/programs/dtksh/ksh93/src/cmd/ksh93/sh/path.c
+@@ -51,9 +51,11 @@ static const char *std_path(void)
+ 	static const char *defpath;		/* default path that finds standard utilities */
+ 	if(!defpath)
+ 	{
+-		if(!(defpath = astconf("PATH",NIL(char*),NIL(char*))))
+-			abort();
+-		defpath = sh_strdup(defpath);   /* the value returned by astconf() is short-lived */
++		const char *path = astconf("PATH",NIL(char*),NIL(char*));
++
++		if(!path || !*path)
++			path = "/bin:/usr/bin";
++		defpath = sh_strdup(path);	/* the value returned by astconf() is short-lived */
+ 	}
+ 	return(defpath);
+ }
