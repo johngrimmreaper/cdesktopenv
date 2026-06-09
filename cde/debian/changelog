@@ -1,3 +1,16 @@
+cde-desktop (2.5.3-0ubuntu9~noble1) noble; urgency=medium
+
+  * Run the CDE test suite serially while investigating bundled ksh93
+    command -x ARG_MAX crashes.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Tue, 09 Jun 2026 00:42:07 +0000
+
+cde-desktop (2.5.3-0ubuntu8~noble1) noble; urgency=medium
+
+  * Rebuild from packaging/ubuntu-noble-24.04-stable, based on the last Launchpad-known-good armhf packaging state.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Mon, 08 Jun 2026 19:46:19 +0000
+
 cde-desktop (2.5.3-0ubuntu2~noble1) noble; urgency=medium
 
   * Create /var/dt appmanager runtime directory with sticky permissions.
