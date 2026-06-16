@@ -1,4 +1,13 @@
 #!/usr/bin/make -f
+
+# Ubuntu 26.04/GCC 15 defaults C to GNU23. CDE still has legacy
+# non-prototype declarations in mini_isam, so build C as GNU17 for now.
+export DEB_CFLAGS_MAINT_APPEND = -std=gnu17
+
+# dtksh builds the bundled ksh93 through mamake and does not inherit the
+# normal Debian CFLAGS reliably, so pass GNU17 through the make variable
+# consumed by programs/dtksh/Makefile.am.
+KSH93_SHOPTS_GNU17 := -std=gnu17 -DSHOPT_DYNAMIC=1 -DSHOPT_NAMESPACE=1 -DSHOPT_MULTIBYTE=1 -DSHOPT_STATS=1 -DSHOPT_BGX=1 -DSHOPT_AUDIT=1 -DSHOPT_KIA=1 -DSHOPT_HISTEXPAND=1 -DSHOPT_EDPREDICT=1 -DSHOPT_ESH=1 -DSHOPT_VSH=1 -DSHOPT_FIXEDARRAY=1 -DSHOPT_SUID_EXEC=1 -DSHOPT_BRACEPAT=1 -DSHOPT_ECHOPRINT=1
 export DH_VERBOSE = 1
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
@@ -10,7 +19,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- --prefix=/usr
 
 override_dh_auto_build:
-	dh_auto_build
+	dh_auto_build -- KSH93_SHOPTS='$(KSH93_SHOPTS_GNU17)'
 
 override_dh_auto_test:
 	@echo "Skipping upstream test suite for initial Ubuntu Noble packaging"
