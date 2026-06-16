@@ -1,19 +1,75 @@
 #!/usr/bin/make -f
-#export DH_VERBOSE = 1
+export DH_VERBOSE = 1
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
 	dh $@
 
-#make clean cleans everything except the doc directory for some reason
-override_dh_auto_clean:
-	$(MAKE) clean
-	$(MAKE) clean.doc
+override_dh_auto_configure:
+	./autogen.sh
+	dh_auto_configure -- --prefix=/usr
 
-#make World needs to be called, not just make
 override_dh_auto_build:
-	$(MAKE) World
+	dh_auto_build
 
-#make install is broken, so we use the install script instead
+override_dh_auto_test:
+	@echo "Skipping upstream test suite for initial Ubuntu Noble packaging"
+
 override_dh_auto_install:
-	sudo ./admin/IntegTools/dbTools/installCDE -s . -destDir \
-	./debian/cde-desktop
+	dh_auto_install
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			find "$$d" -type f -exec sed -i '1s|^#![[:space:]]*/usr/bin/ksh[[:space:]]*$$|#!/bin/ksh|' {} +; \
+			find "$$d" -type f -exec sed -i '1s|^#![[:space:]]*/usr/dt/bin/dtksh[[:space:]]*$$|#!/usr/bin/dtksh|' {} +; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d/usr/share/man/man1m" ]; then \
+			install -d "$$d/usr/share/man/man8"; \
+			for f in "$$d"/usr/share/man/man1m/*.1m; do \
+				[ -e "$$f" ] || continue; \
+				base="$$(basename "$$f" .1m)"; \
+				perl -0pi -e 's/^(\.TH\s+(?:"[^"]+"|\S+)\s+)(?:"[^"]+"|\S+)/$${1}"8"/im' "$$f"; \
+				mv "$$f" "$$d/usr/share/man/man8/$$base.8"; \
+			done; \
+			rmdir --ignore-fail-on-non-empty "$$d/usr/share/man/man1m"; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d/usr/share/man/man8" ]; then \
+			ln -sf ttdbserver.8.gz "$$d/usr/share/man/man8/rpc.ttdbserver.8.gz"; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d/usr/share/man/man1" ]; then \
+			ln -sf dthelpgen.1.gz "$$d/usr/share/man/man1/dthelpgen.dtsh.1.gz"; \
+			ln -sf dthelpprint.1.gz "$$d/usr/share/man/man1/dthelpprint.sh.1.gz"; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			find "$$d" -name '*.la' -type f -exec sed -i "s|^dependency_libs=.*|dependency_libs=''|" {} +; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			rm -f "$$d/usr/dt/COPYING" "$$d/usr/dt/copyright"; \
+			if [ -f "$$d/usr/dt/README.md" ]; then \
+				install -d "$$d/usr/share/doc/cde-desktop"; \
+				mv "$$d/usr/dt/README.md" "$$d/usr/share/doc/cde-desktop/README.upstream.md"; \
+			fi; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			chmod 0644 "$$d/usr/dt/config/sys.dtprofile" 2>/dev/null || true; \
+			chmod 0644 "$$d/usr/lib/$(DEB_HOST_MULTIARCH)/dtksh/DtFuncs.dtsh" 2>/dev/null || true; \
+		fi; \
+	done
+	for d in debian/tmp debian/cde-desktop; do \
+		if [ -d "$$d" ]; then \
+			rm -f "$$d/usr/share/terminfo/d/dtterm"; \
+			rmdir --ignore-fail-on-non-empty "$$d/usr/share/terminfo/d" 2>/dev/null || true; \
+			rmdir --ignore-fail-on-non-empty "$$d/usr/share/terminfo" 2>/dev/null || true; \
+		fi; \
+	done

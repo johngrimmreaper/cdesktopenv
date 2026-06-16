@@ -16,6 +16,9 @@ Build-Depends: debhelper (>= 10),
                libtirpc-dev,
                libutempter-dev,
                libpam-dev,
+               liblmdb-dev,
+               opensp,
+               flex,
                x11-xserver-utils,
                libjpeg62-dev,
                libssl-dev,
@@ -36,29 +39,17 @@ Homepage: https://sourceforge.net/projects/cdesktopenv/
 
 Package: cde-desktop
 Architecture: any
-Depends: libxt6,
-         libxmu6,
-         libxinerama1,
-         libxpm4,
-         libmrm4,
-         libxaw7,
-         libx11-6,
-         libxss1,
-         libtirpc1,
-         libutempter,
-         libpam,
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
          x11-xserver-utils,
-         libjpeg62,
-         libuil4,
          tcl,
          ksh,
          m4,
          ncompress,
+         ncurses-term,
          rpcbind,
          bison,
-         xbitmaps,
-         ${shlibs:Depends},
-         ${misc:Depends}
+         xbitmaps
 Recommends: xfonts-100dpi,
             xfonts-100dpi-transcoded
 Description: CDE - Common Desktop Environment
