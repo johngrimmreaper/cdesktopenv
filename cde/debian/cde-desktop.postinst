@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+install -d -o root -g root -m 0755 /var/dt
+install -d -o root -g root -m 0755 /var/dt/appconfig
+install -d -o root -g root -m 1777 /var/dt/appconfig/appmanager
+
+#DEBHELPER#
+
+exit 0
