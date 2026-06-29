@@ -1,2 +1,0 @@
-#! /bin/ksh
-read -r && print -r -- "$REPLY"
