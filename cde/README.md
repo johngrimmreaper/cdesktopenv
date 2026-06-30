@@ -98,3 +98,19 @@ for information on how to contribute.
 
 
 
+
+## Git submodules
+
+The CDE source tree contains a Git submodule for the upstream KornShell/ksh93 source used by `dtksh`.
+
+For a fresh checkout, clone with submodules enabled:
+
+    git clone --recurse-submodules https://git.code.sf.net/p/cdesktopenv/code cdesktopenv
+
+For an existing checkout, initialize and fetch submodules with:
+
+    git submodule update --init --recursive
+
+More details about the ksh93 submodule workflow are documented in:
+
+    programs/README.dtksh-ksh93-submodule.md
