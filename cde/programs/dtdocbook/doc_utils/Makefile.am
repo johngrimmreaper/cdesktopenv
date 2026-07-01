@@ -30,6 +30,17 @@ AM_CPPFLAGS = \
 validator_SOURCES = validator.C
 validator_LDFLAGS = $(LIBMMDB) $(LMDBLIB)
 
+# These helper programs are built in ../infolib and symlinked here.
+# Without empty source lists, Automake assumes default sources such as
+# MixedGen.c, NCFGen.c, etc., and then make dist tries to distribute
+# non-existent local source files.
+MixedGen_SOURCES =
+NCFGen_SOURCES =
+NodeParser_SOURCES =
+StyleUpdate_SOURCES =
+dbdrv_SOURCES =
+valBase_SOURCES =
+
 CLEANFILES = $(noinst_SCRIPTS) $(validator_SOURCES) dtdocbook2infolib.c
 
 dtdocbook2infolib.c: ../dtdocbook2infolib.c
