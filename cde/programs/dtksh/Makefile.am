@@ -109,3 +109,21 @@ DtFuncs.dtsh:
 	$(CP) DtFuncs.sh DtFuncs.dtsh
 
 EXTRA_DIST = $(KSH93_PATCHES)
+
+# Include the ksh93 submodule contents in Automake release tarballs.
+# The generated tarball must be self-contained and must not include Git metadata.
+dist-hook:
+	@set -e; \
+	if test ! -f "$(srcdir)/ksh93/bin/package"; then \
+		echo "ERROR: ksh93 submodule is not initialized." >&2; \
+		echo "Run: git submodule update --init --recursive" >&2; \
+		exit 1; \
+	fi; \
+	rm -rf "$(distdir)/ksh93"; \
+	if command -v git >/dev/null 2>&1 && git -C "$(srcdir)/ksh93" rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
+		mkdir -p "$(distdir)/ksh93"; \
+		git -C "$(srcdir)/ksh93" archive --format=tar HEAD | tar -xf - -C "$(distdir)/ksh93"; \
+	else \
+		cp -R "$(srcdir)/ksh93" "$(distdir)/ksh93"; \
+		rm -rf "$(distdir)/ksh93/.git"; \
+	fi

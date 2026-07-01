@@ -1,5 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
+EXTRA_DIST = README.dtksh-ksh93-submodule.md
+
 SUBDIRS = backdrops icons dsdm dtmail dtpad dtfile dtwm dtlogin		\
         dtsession dthello dtstyle dtexec dtdbcache dticon dtterm	\
         dtcalc dtaction dtspcd dtscreen dtksh dtcm dtsearchpath		\
