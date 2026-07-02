@@ -84,7 +84,7 @@ ksh93/bin/ksh: $(KSH93_PATCH_STAMP)
 init.c: ksh93/bin/ksh
 	$(CP) ksh93/src/cmd/ksh93/sh/init.c ./
 
-libshell.a: $(KSH93SLIBSHELL) dtksh-init.o
+libshell.a: $(KSH93LIBSHELL) dtksh-init.o
 	$(CP) $(KSH93LIBSHELL) libshell.a; \
 	$(AR) d libshell.a init.o; \
 	$(AR) cq libshell.a dtksh-init.o
