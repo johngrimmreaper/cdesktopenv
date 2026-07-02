@@ -58,7 +58,27 @@ dtksh_SOURCES = init.c \
                 extra.c \
                 msgs.c
 
-ksh93/bin/ksh:
+KSH93_PATCHES = \
+	ksh93-patches/0001-backport-upstream-asocasptr-fix.patch
+
+KSH93_PATCH_STAMP = .cde-ksh93-patches-applied
+
+$(KSH93_PATCH_STAMP): $(addprefix $(srcdir)/,$(KSH93_PATCHES))
+	@set -e; \
+	for patch_file in $(addprefix $(srcdir)/,$(KSH93_PATCHES)); do \
+		echo "Applying $$patch_file"; \
+		if patch -d ksh93 -p1 --forward --dry-run < "$$patch_file" >/dev/null 2>&1; then \
+			patch -d ksh93 -p1 < "$$patch_file"; \
+		elif patch -d ksh93 -p1 --reverse --dry-run < "$$patch_file" >/dev/null 2>&1; then \
+			echo "$$patch_file already applied"; \
+		else \
+			echo "$$patch_file does not apply cleanly" >&2; \
+			exit 1; \
+		fi; \
+	done
+	@touch $@
+
+ksh93/bin/ksh: $(KSH93_PATCH_STAMP)
 	ksh93/bin/package flat make CCFLAGS='$(KSH93_SHOPTS)'
 
 init.c: ksh93/bin/ksh
@@ -73,7 +93,19 @@ check-local:
 	./dtksh -c true && ksh93/bin/shtests --posix --utf8 SHELL=.libs/dtksh
 
 clean-local:
-	ksh93/bin/package clean
+	-ksh93/bin/package clean
+	@set -e; \
+	if test -f $(KSH93_PATCH_STAMP); then \
+		for patch_file in $(addprefix $(srcdir)/,$(KSH93_PATCHES)); do \
+			echo "Reversing $$patch_file"; \
+			if patch -d ksh93 -p1 --reverse --dry-run < "$$patch_file" >/dev/null 2>&1; then \
+				patch -d ksh93 -p1 --reverse < "$$patch_file"; \
+			fi; \
+		done; \
+		rm -f $(KSH93_PATCH_STAMP); \
+	fi
 
 DtFuncs.dtsh:
 	$(CP) DtFuncs.sh DtFuncs.dtsh
+
+EXTRA_DIST = $(KSH93_PATCHES)
