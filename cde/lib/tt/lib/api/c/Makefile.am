@@ -4,9 +4,22 @@ MAINTAINERCLEANFILES = Makefile.in
 
 noinst_LTLIBRARIES = libapi.la
 
-libapi_la_CXXFLAGS = -I../../../lib
+libapi_la_CXXFLAGS = -I$(top_srcdir)/lib/tt/lib
 
-libapi_la_SOURCES = api_api.C           api_auth.C \
+libapi_la_SOURCES = \
+        api_api.h \
+        api_auth.h \
+        api_error.h \
+        api_filemap.h \
+        api_handle.h \
+        api_mp.h \
+        api_objid_spec.h \
+        api_spec_map_ref.h \
+        api_storage.h \
+        api_typecb.h \
+        api_typecb_utils.h \
+        api_xdr.h \
+        api_api.C           api_auth.C \
         api_default.C       api_error.C \
         api_file.C          api_filemap.C       api_handle.C \
         api_message.C       api_mp.C            api_mp_io.C \

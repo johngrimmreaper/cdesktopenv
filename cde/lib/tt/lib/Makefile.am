@@ -2,9 +2,15 @@ MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = api db mp util tttk
 
+EXTRA_DIST = \
+        dm/dm_enums.h \
+        dm/dm_recfmts.h
+
 lib_LTLIBRARIES = libtt.la
 
-libtt_la_SOURCES =
+libtt_la_SOURCES = \
+        tt_const.h \
+        tt_options.h
 
 # fake things so libtool creates this as a C++ library
 nodist_EXTRA_libtt_la_SOURCES = dummy.cxx

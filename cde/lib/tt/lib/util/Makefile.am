@@ -5,9 +5,62 @@ TT_VERSION_DEFINE = -DTT_VERSION_STRING=\"$(TT_VERSION)\"
 
 noinst_LTLIBRARIES = libutil.la
 
-libutil_la_CXXFLAGS = $(TT_VERSION_DEFINE) -I../../lib 
+libutil_la_CXXFLAGS = $(TT_VERSION_DEFINE) -I$(top_srcdir)/lib/tt/lib
 
-libutil_la_SOURCES = copyright.C	    tt_map_entry_utils.C \
+libutil_la_SOURCES = \
+        copyright.h \
+        frozen.tt_trace.tab.h \
+        tt_Xlib.h \
+        tt_assert.h \
+        tt_audit.h \
+        tt_base64.h \
+        tt_entry_pt.h \
+        tt_entry_pt_names.h \
+        tt_enumname.h \
+        tt_file_system.h \
+        tt_file_system_entry.h \
+        tt_file_system_entry_utils.h \
+        tt_generic.h \
+        tt_gettext.h \
+        tt_gettext_c.h \
+        tt_global_env.h \
+        tt_host.h \
+        tt_host_equiv.h \
+        tt_host_utils.h \
+        tt_int_rec.h \
+        tt_iostream.h \
+        tt_ldpath.h \
+        tt_list.h \
+        tt_log.h \
+        tt_map_entry.h \
+        tt_map_entry_utils.h \
+        tt_new.h \
+        tt_new_ptr.h \
+        tt_nl_types.h \
+        tt_object.h \
+        tt_object_list.h \
+        tt_object_table.h \
+        tt_path.h \
+        tt_port.h \
+        tt_ptr.h \
+        tt_rpc_auth.h \
+        tt_rpc_clnt.h \
+        tt_rpc_epilogue.h \
+        tt_rpc_prologue.h \
+        tt_rpc_svc.h \
+        tt_rpc_xdr.h \
+        tt_string.h \
+        tt_string_map.h \
+        tt_string_map_utils.h \
+        tt_table.h \
+        tt_threadspecific.h \
+        tt_trace.h \
+        tt_trace_parse.h \
+        tt_trace_parser.h \
+        tt_trace_stream.h \
+        tt_xdr_utils.h \
+        tt_xdr_version.h \
+        copyright.C	    tt_map_entry_utils.C \
 	tt_Xlib.C			    tt_new.C \
 	tt_audit.C			    tt_new_ptr.C \
 	tt_base64.C			    tt_object.C \

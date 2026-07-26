@@ -7,7 +7,8 @@ noinst_LIBRARIES= libisam.a
 
 libisam_a_CFLAGS = $(TT_VERSION_DEFINE)
 
-libisam_a_SOURCES = isaddindex.c isamaddindex.c isopen.c isamopen.c \
+libisam_a_SOURCES = isam_impl.h isam.h isam_prototypes.h \
+             isaddindex.c isamaddindex.c isopen.c isamopen.c \
              isdelcurr.c isdelrec.c isamdelrec.c isbuild.c \
              isvars.c isrewrec.c iserase.c iscntl.c isstart.c \
              isaddprimary.c isrewcurr.c isclose.c isread.c \
