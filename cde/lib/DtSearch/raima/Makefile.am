@@ -4,7 +4,7 @@ noinst_LTLIBRARIES = libraima.la
 
 libraima_la_CFLAGS = -DCDE_INSTALLATION_TOP=\"$(CDE_INSTALLATION_TOP)\" \
 -DCDE_DATA_TOP=\"$(CDE_DATA_TOP)\" \
-		     $(DT_INCDIR) -I$(top_srcdir)/include \
+		     $(DT_INCDIR) -I$(top_srcdir)/include -I$(top_srcdir)/include/Dt \
 		     -DCDE_CONFIGURATION_TOP=\"$(CDE_CONFIGURATION_TOP)\" \
 		     -DNO_TRANS -DUNIX -D_POSIX_SOURCE -DMULTIBYTE
 
@@ -35,3 +35,11 @@ libraima_la_SOURCES = alloc.c     cmtype.c   connect.c \
 		      recwrite.c  renfile.c  rwcurr.c    setdb.c \
 		      setmm.c     setmo.c     setmr.c    setom.c     setoo.c \
 		      setor.c     setrm.c     setro.c    startup.c
+
+# Private Raima header required by compiled sources
+noinst_HEADERS = dbswab.h
+
+# Tracked Raima sources retained in release archives but not built
+EXTRA_DIST = \
+  dblog.c \
+  dbtaf.c
