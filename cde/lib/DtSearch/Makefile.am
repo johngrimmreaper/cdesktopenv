@@ -8,8 +8,8 @@ BUILT_SOURCES = boolyac.h boolyac.c
 CLEANFILES = boolyac.h boolyac.c
 AM_YFLAGS = -d
 
-libDtSearch_la_CFLAGS = -DI18N_MSG -DMULTIBYTE -I./raima \
-			$(DT_INCDIR)
+libDtSearch_la_CFLAGS = -DI18N_MSG -DMULTIBYTE -I$(top_srcdir)/lib/DtSearch/raima \
+			$(DT_INCDIR) -I$(top_srcdir)/include -I$(top_srcdir)/include/Dt
 
 
 # in order to try to keep lib versions the same across platforms, (2.1.0)
@@ -35,3 +35,14 @@ libDtSearch_la_SOURCES = apndext.c	ausdopen.c	ausexit.c \
 			 ocf.c		opendblk.c	ophuf.c \
 			 readchar.c	strupr.c	userint.c \
 			 vedelete.c	vestatis.c	vstfunct.c
+
+# Retained DtSearch sources, message input, and sample data
+# distributed without changing the library build
+EXTRA_DIST = \
+  dtsearch.msg \
+  mrclean.c \
+  oekwic.c \
+  tiny.c \
+  tiny.han \
+  tiny.ocf \
+  tiny.txt
