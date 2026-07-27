@@ -5,7 +5,8 @@ MAINTAINERCLEANFILES = Makefile.in
 lib_LTLIBRARIES = libDtWidget.la
 
 AM_CPPFLAGS = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) $(DT_INCDIR) \
--DCDE_DATA_TOP=$(CDE_DATA_TOP)
+              -I$(top_srcdir)/include -I$(top_srcdir)/include/Dt \
+              -DCDE_DATA_TOP=$(CDE_DATA_TOP)
 
 libDtWidget_la_CFLAGS = -DI18N_MSG -DMULTIBYTE
 
@@ -29,6 +30,17 @@ libDtWidget_la_SOURCES = ComboBox.c      Control.c       DialogBox.c \
 			 SearchDlg.c     SpinBox.c       TitleBox.c \
 			 View.c
 
+# Private headers required by the DtWidget implementation
+noinst_HEADERS = \
+  DtSvcInternal.h \
+  DtWidgetI.h
+
+# Message input, generated-resource template, and retained metadata
+EXTRA_DIST = \
+  DtWidget.msg \
+  UNIXbindings.cpp \
+  mapfile.reorder
+
 # cpp this...
 BUILT_SOURCES = UNIXbindings
 CLEANFILES = UNIXbindings
@@ -36,6 +48,6 @@ CLEANFILES = UNIXbindings
 $(top_builddir)/util/tradcpp/tradcpp:
 	$(MAKE) -C $(top_builddir)/util/tradcpp tradcpp
 
-UNIXbindings: UNIXbindings.cpp $(top_builddir)/util/tradcpp/tradcpp
+UNIXbindings: $(srcdir)/UNIXbindings.cpp $(top_builddir)/util/tradcpp/tradcpp
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS) $< > $@
