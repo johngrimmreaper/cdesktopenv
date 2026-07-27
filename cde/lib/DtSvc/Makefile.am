@@ -11,8 +11,8 @@ endif
 
 
 # USe CPPFLAGS so it will apply to both C and C++ components
-libDtSvc_la_CPPFLAGS = -I./include -DMULTIBYTE -DNLS16 -I../include \
-	@DT_INCDIR@ -DCDE_INSTALLATION_TOP=\"$(CDE_INSTALLATION_TOP)\" \
+libDtSvc_la_CPPFLAGS = -I$(top_srcdir)/lib/DtSvc/include -DMULTIBYTE -DNLS16 -I$(top_srcdir)/include \
+	@DT_INCDIR@ -I$(top_srcdir)/include/Dt -DCDE_INSTALLATION_TOP=\"$(CDE_INSTALLATION_TOP)\" \
 	-DCDE_DATA_TOP=\"$(CDE_DATA_TOP)\" \
        -DCDE_CONFIGURATION_TOP=\"$(CDE_CONFIGURATION_TOP)\" \
        -DCDE_LOGFILES_TOP=\"$(CDE_LOGFILES_TOP)\"
@@ -50,7 +50,15 @@ libDtSvc_la_CPPFLAGS += -DOSMAJORVERSION=5 -DOSMINORVERSION=10
 endif
 
 
-libDtSvc_la_SOURCES = 	DtCodelibs/buf.C \
+libDtSvc_la_SOURCES = \
+  include/DtSvcLock.h \
+  include/codelibs/dynarray.h \
+  include/codelibs/exception.h \
+  include/codelibs/mbstring.h \
+  include/codelibs/nl_hack.h \
+  include/codelibs/privbuf.h \
+  include/codelibs/stringx.h \
+  DtCodelibs/buf.C \
 	DtCodelibs/buf.h \
 	DtCodelibs/filegen.C \
 	DtCodelibs/mbschr.C \
@@ -179,3 +187,8 @@ if HAS_PAM_LIBRARY
 libDtSvc_la_SOURCES += DtUtil2/SvcPam.c
 libDtSvc_la_LIBADD = $(PAMLIB)
 endif
+
+EXTRA_DIST = \
+  dtsvc.msg \
+  mapfile.reorder \
+  DtUtil2/Dt.ad
