@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 bin_PROGRAMS = ttauth
 
-ttauth_CFLAGS = -I../../slib -I../../lib
+ttauth_CFLAGS = -I$(top_srcdir)/lib/tt/slib -I$(top_srcdir)/lib/tt/lib
 
 ttauth_LDADD = @LIBTT@ $(X_LIBS)
 
@@ -18,4 +18,6 @@ if BSD
 ttauth_LDADD += $(XTOOLLIB)
 endif
 
-ttauth_SOURCES = ttauth.c process.c
+ttauth_SOURCES = \
+        ttauth.h \
+        ttauth.c process.c

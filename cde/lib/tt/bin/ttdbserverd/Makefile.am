@@ -5,7 +5,7 @@ TT_VERSION_DEFINE = -DTT_VERSION_STRING=\"$(TT_VERSION)\"
 
 bin_PROGRAMS = rpc.ttdbserver
 
-rpc_ttdbserver_CXXFLAGS = -I../../slib -I../../lib -I../../mini_isam \
+rpc_ttdbserver_CXXFLAGS = -I$(top_srcdir)/lib/tt/slib -I$(top_srcdir)/lib/tt/lib -I$(top_srcdir)/lib/tt/mini_isam \
 			$(TIRPC_DEFINES) $(TT_VERSION_DEFINE)
 
 rpc_ttdbserver_LDADD = $(LIBTT) ${TIRPCLIB} $(X_LIBS) ../../slib/libstt.a \
@@ -23,7 +23,26 @@ if BSD
 rpc_ttdbserver_LDADD += $(XTOOLLIB)
 endif
 
-rpc_ttdbserver_SOURCES = db_server_functions.C \
+rpc_ttdbserver_SOURCES = \
+        db_server_globals.h \
+        dm_access_cache.h \
+        tt_db_message_info.h \
+        tt_db_message_info_utils.h \
+        tt_db_msg_q_lock.h \
+        tt_db_msg_q_lock_entry.h \
+        tt_db_msg_q_lock_entry_utils.h \
+        tt_db_partition_global_map_ref.h \
+        tt_db_partition_redirection_map.h \
+        tt_db_server_db.h \
+        tt_db_server_db_utils.h \
+        tt_isam.h \
+        tt_isam_file.h \
+        tt_isam_file_utils.h \
+        tt_isam_key_descriptor.h \
+        tt_isam_key_descriptor_utils.h \
+        tt_isam_record.h \
+        tt_isam_record_utils.h \
+        db_server_functions.C \
 			 db_server_svc.C \
 			 dm_access_cache.C \
 			 dm_server.C \
@@ -40,3 +59,7 @@ rpc_ttdbserver_SOURCES = db_server_functions.C \
 			 tt_isam_key_descriptor_utils.C \
 			 tt_isam_record.C \
 			 tt_isam_record_utils.C
+
+EXTRA_DIST = \
+        Mapfile \
+        admindefines

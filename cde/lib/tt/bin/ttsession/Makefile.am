@@ -5,7 +5,7 @@ TT_VERSION_DEFINE = -DTT_VERSION_STRING=\"$(TT_VERSION)\"
 
 bin_PROGRAMS = ttsession
 
-ttsession_CXXFLAGS = -I../../slib -I../../lib $(TT_VERSION_DEFINE)
+ttsession_CXXFLAGS = -I$(top_srcdir)/lib/tt/slib -I$(top_srcdir)/lib/tt/lib $(TT_VERSION_DEFINE)
 
 ttsession_LDADD = $(LIBTT) $(X_LIBS) ../../slib/libstt.a
 
@@ -22,3 +22,7 @@ ttsession_LDADD += $(XTOOLLIB)
 endif
 
 ttsession_SOURCES = mp_server.C
+
+EXTRA_DIST = \
+        Mapfile \
+        admindefines
