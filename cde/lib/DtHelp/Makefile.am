@@ -8,11 +8,83 @@ dist_cfg_DATA = CDE.lcx
 
 lib_LTLIBRARIES = libDtHelp.la
 
-libDtHelp_la_CFLAGS = -I./il -I./jpeg -I../DtSvc/DtUtil2 -DDTLIB \
+libDtHelp_la_CFLAGS = -I./il -I$(srcdir)/il \
+		      -I./jpeg -I$(srcdir)/jpeg \
+		      -I../DtSvc/DtUtil2 \
+		      -I$(top_srcdir)/lib/DtSvc/DtUtil2 \
+		      -I$(top_srcdir)/include \
+		      -I$(top_srcdir)/include/Dt \
+		      -I$(top_srcdir)/include/DtI \
+		      -DDTLIB \
 		      -DCDE_INSTALLATION_TOP='"$(CDE_INSTALLATION_TOP)"' \
 		      -DCDE_DATA_TOP='"$(CDE_DATA_TOP)"' \
 		      -DCDE_CONFIGURATION_TOP='"$(CDE_CONFIGURATION_TOP)"' \
 		      @DT_INCDIR@ @DTI_INCDIR@
+
+# Private headers used by libDtHelp
+noinst_HEADERS = \
+  AccessCCDFI.h \
+  AccessCCDFP.h \
+  AccessSDLI.h \
+  AccessSDLP.h \
+  AsciiSpcI.h \
+  CCDFUtilI.h \
+  CanvasError.h \
+  CanvasOsI.h \
+  CleanUpI.h \
+  CvStringI.h \
+  CvtToArrayP.h \
+  DestroyI.h \
+  FileListUtilsI.h \
+  FormatCCDFI.h \
+  FormatI.h \
+  FormatManI.h \
+  FormatSDLI.h \
+  FormatUtilI.h \
+  GenUtilsP.h \
+  GlobSearchI.h \
+  GlobSearchP.h \
+  GraphicsI.h \
+  HelpAccessI.h \
+  HelpDialogI.h \
+  HelpDialogImageI.h \
+  HelpErrorP.h \
+  HelpI.h \
+  HelpQuickDI.h \
+  HelpUtilI.h \
+  HelpXlate.h \
+  HistoryI.h \
+  HyperTextI.h \
+  LayoutUtilI.h \
+  LinkMgrI.h \
+  Lock.h \
+  MessagesP.h \
+  ObsoleteP.h \
+  PathAreaI.h \
+  PrintI.h \
+  ResizeI.h \
+  SDLI.h \
+  SelectionI.h \
+  StringFuncsI.h \
+  UtilSDLI.h \
+  VirtFuncsI.h \
+  VolSelectI.h \
+  XInterfaceI.h \
+  jpeg/cdjpeg.h
+
+# Platform data, message sources, and retained support files
+EXTRA_DIST = \
+  AIX.lcx \
+  DtHelp.msg \
+  FreeBSD.lcx \
+  Linux.lcx \
+  NetBSD.lcx \
+  OpenBSD.lcx \
+  SunOS.lcx \
+  comment.txt \
+  fmt_tbl.msg \
+  jpeg/README \
+  mapfile.reorder
 
 libDtHelp_la_LIBADD = $(JPEGLIB) il/libil.la $(LTLIBICONV)
 
