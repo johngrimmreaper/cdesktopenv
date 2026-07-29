@@ -8,4 +8,4 @@ install-data-hook:
 	$(RM) $(DESTDIR)$(CDE_DATA_TOP)/share/backdrops/desc.en_US.UTF-8
 	cd $(DESTDIR)$(CDE_DATA_TOP)/share/backdrops/ && $(LN_S) desc.C desc.en_US.UTF-8
 
-
+EXTRA_DIST = Backdrops.tmsg

@@ -17,3 +17,9 @@ dtcreate_SOURCES = main.c AddFiletype.c Confirmed.c			\
         CreateActionAppShell.h OpenFile.h ca_aux.h dtcreate.h		\
         parser.h cmncbs.h ErrorDialog.h UxXt.h cmnrtns.h		\
         FileCharacteristics.h cmnutils.h fileio.h
+
+EXTRA_DIST = \
+    Dtcreate \
+    dtcreate.msg
+
+AM_CPPFLAGS += -I$(top_srcdir)/include

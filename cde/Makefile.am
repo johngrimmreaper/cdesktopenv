@@ -20,3 +20,6 @@ if BUILD_DOCS
 SUBDIRS += doc
 endif
 
+EXTRA_DIST = \
+    CONTRIBUTORS \
+    HISTORY

@@ -19,3 +19,14 @@ CLEANFILES = $(BUILT_SOURCES)
 
 Agents.msg:
 	cat $(Agents_MSGS) > $@
+
+EXTRA_DIST = \
+    BookmarkEdit.res \
+    GraphicAgent.res \
+    MapAgent.res \
+    MarkList.res \
+    NodeHistoryAgent.res \
+    NodeWindowAgent.res \
+    Preferences.res \
+    PrintPanelAgent.res \
+    SearchResultsAgent.res

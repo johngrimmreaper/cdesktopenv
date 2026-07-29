@@ -175,3 +175,27 @@ ttsnoop.C ttsnoop.h dtb_utils.c dtb_utils.h: ttsnoop.bip ttsnoop.C.src
 Ttsnoop: Ttsnoop.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
+
+EXTRA_DIST = \
+    apiTracer.bil \
+    apiTracer_stubs.C.src \
+    argChooser.bil \
+    argChooser_stubs.C.src \
+    callbackChooser.bil \
+    callbackChooser_stubs.C.src \
+    fileChooser.bil \
+    fileChooser_stubs.C.src \
+    messageProps.bil \
+    messageProps_stubs.C.src \
+    patternProps.bil \
+    patternProps_stubs.C.src \
+    sessionChooser.bil \
+    sessionChooser_stubs.C.src \
+    stringChooser.bil \
+    stringChooser_stubs.C.src \
+    ttChooser.bil \
+    ttChooser_stubs.C.src \
+    ttsnoop.C.src \
+    ttsnoop.bil \
+    ttsnoop.bip \
+    ttsnoop_stubs.C.src

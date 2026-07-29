@@ -19,3 +19,7 @@ CLEANFILES = $(BUILT_SOURCES)
 
 Query.msg:
 	cat $(Query_MSGS) > $@
+
+EXTRA_DIST = \
+    QueryEditor.res \
+    QueryTermView.res

@@ -36,3 +36,7 @@ LOCAL_CPP_DEFINES = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) \
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
 
+EXTRA_DIST = \
+    0020.dtims.src \
+    Dtimsstart \
+    dtimsstart.msg

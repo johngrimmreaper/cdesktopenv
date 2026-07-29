@@ -33,3 +33,4 @@ dtspcdenv: dtspcdenv.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
 
+EXTRA_DIST = dtspcdenv.src

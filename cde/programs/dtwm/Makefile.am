@@ -53,3 +53,7 @@ sys.dtwmrc: sys.dtwmrc.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(SCRIPTFLAGS) $< > $@
 
+EXTRA_DIST = \
+    Dtwm.defs.src \
+    dtwm.msg \
+    sys.dtwmrc.src

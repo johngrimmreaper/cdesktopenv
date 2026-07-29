@@ -15,3 +15,5 @@ instant_LDADD += @TCL_LIB_SPEC@
 
 instant_SOURCES = main.c util.c info.c translate.c traninit.c tranvar.c \
 		  tables.c browse.c
+
+noinst_HEADERS = general.h

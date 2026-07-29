@@ -14,3 +14,4 @@ else
 libDtMrm_la_LDFLAGS = -version-info 3:0:1
 endif
 
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/include/DtI -I$(top_srcdir)/lib/DtHelp

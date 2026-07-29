@@ -39,3 +39,11 @@ libCommon_a_SOURCES = APOPServer.C \
 		      Threads.C \
 		      md5.C \
 		      str_utils.C
+
+EXTRA_DIST = libDtMail.msg
+
+noinst_HEADERS = \
+    DynamicLib.hh \
+    NotDynamic.hh \
+    Process.hh \
+    md5.h

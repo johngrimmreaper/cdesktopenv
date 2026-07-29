@@ -18,3 +18,4 @@ if SOLARIS
 dtdspmsg_LDADD += -lgen
 endif
 
+AM_CPPFLAGS = -I$(top_srcdir)/include

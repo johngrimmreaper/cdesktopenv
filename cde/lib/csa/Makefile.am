@@ -71,3 +71,11 @@ agent.h:
 	rpcgen -h agent.x | $(SED) -f namechange1.sed | $(SED) -f namechange2.sed >> agent.h
 	cat agent.wrapend >> agent.h
 
+EXTRA_DIST = \
+    namechange1.sed \
+    namechange2.sed \
+    reparser.y
+
+noinst_HEADERS = \
+    rtable3.h \
+    rtable4.h

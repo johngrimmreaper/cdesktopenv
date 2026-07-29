@@ -11,3 +11,7 @@ SUBDIRS = backdrops icons dsdm dtmail dtpad dtfile dtwm dtlogin		\
 install-data-hook:
 	-if [ $(CDE_INSTALLATION_TOP)/bin != $(bindir) ];then \
 		cd $(DESTDIR)$(CDE_INSTALLATION_TOP) && $(LN_S) $(bindir) bin ; fi
+
+EXTRA_DIST = \
+    dtudcfonted/dtudcfonted.msg \
+    dtudcfonted/resource/Dtudcfonted

@@ -2331,3 +2331,4 @@ man3/DtSearchFreeMessages.3: man3/DtSearchHasMessages.3
 man3/DtSearchGetMessages.3: man3/DtSearchHasMessages.3
 	echo .so $< >$@
 
+EXTRA_DIST = cdedecl.sgm

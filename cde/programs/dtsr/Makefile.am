@@ -32,3 +32,7 @@ dtsrdelete_SOURCES = tomita.c MsgCat.c
 huffcode_SOURCES = huffcode.c MsgCat.c
 
 dtsrkdump_SOURCES = dtsrkdump.c MsgCat.c
+
+AM_CPPFLAGS = \
+    -I$(top_srcdir)/include \
+    -I$(top_srcdir)/include/Dt

@@ -58,3 +58,8 @@ if !HAS_UTEMPTER_LIBRARY
 	-chmod 4755 $(DESTDIR)$(bindir)/dtterm
 endif
 	@TIC@ dtterm.ti
+
+EXTRA_DIST = \
+    Dtterm.ad.src \
+    dtterm.msg \
+    terminfoChecklist

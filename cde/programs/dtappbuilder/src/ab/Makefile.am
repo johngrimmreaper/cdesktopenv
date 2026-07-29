@@ -445,3 +445,42 @@ textf_ui.c textf_ui.h textf_stubs.c: $(PROJFILE).bip textf.bil $(DTCODEGEN_PRERE
 textp_ui.c textp_ui.h textp_stubs.c: $(PROJFILE).bip textp.bil $(DTCODEGEN_PREREQS)
 	$(DTCODEGEN) -changed -merge -p $(PROJFILE).bip textp.bil
 endif
+
+EXTRA_DIST = \
+    Dtbuilder.ad \
+    about_box.bil \
+    appfw.bil \
+    attch_ed.bil \
+    brws.bil \
+    button.bil \
+    cgen_env.bil \
+    choice.bil \
+    color_chooser.bil \
+    combobox.bil \
+    conn.bil \
+    cpanel.bil \
+    custdlg.bil \
+    dnd_ed.bil \
+    drawp.bil \
+    dtbuilder.bip \
+    dtbuilder.c.src \
+    dtbuilder.msg.src \
+    fchooser.bil \
+    group.bil \
+    help_ed.bil \
+    label.bil \
+    list.bil \
+    mainwin.bil \
+    menu.bil \
+    menubar.bil \
+    message_ed.bil \
+    palette.bil \
+    panedwin_ed.bil \
+    proj.bil \
+    revolv.bil \
+    scale.bil \
+    sep.bil \
+    spinbox.bil \
+    termp.bil \
+    textf.bil \
+    textp.bil

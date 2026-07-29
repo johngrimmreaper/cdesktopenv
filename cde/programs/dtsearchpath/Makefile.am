@@ -21,3 +21,6 @@ LOCAL_CPP_DEFINES = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP)	\
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
 
+EXTRA_DIST = \
+    0010.dtpaths.src \
+    0030.dttmpdir.src

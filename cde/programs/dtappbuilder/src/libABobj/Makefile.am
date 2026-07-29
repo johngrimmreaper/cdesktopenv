@@ -42,3 +42,7 @@ libABobj_a_SOURCES = obj.c \
 #test_notify_LDADD = ../libAButil/libAButil.a libABobj.a $(EXTRALIBS)
 
 #test_notify_SOURCES = test_notify.c
+
+noinst_HEADERS = \
+    objP.h \
+    travP.h

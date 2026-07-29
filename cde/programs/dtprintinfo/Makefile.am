@@ -78,3 +78,4 @@ dtprintinfo_cat.h: dtprintinfo.msg.src
 	$(RM) dtprintinfo_cat.h
 	$(AWK) -f msg.awk dtprintinfo.msg.src > dtprintinfo_cat.h
 
+EXTRA_DIST = dtprintinfo.msg.src

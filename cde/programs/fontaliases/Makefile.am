@@ -34,3 +34,5 @@ fonts.dir: dtinfo.pcf.gz
 install-data-hook:
 	$(MKDIR_P) $(DESTDIR)$(fontaliasesconfdir)
 	$(CP) $(DESTDIR)$(fontaliasesdatadir)/$(FONTS_ALIAS) $(DESTDIR)$(fontaliasesconfdir)/fonts.alias
+
+EXTRA_DIST = dtinfo.bdf

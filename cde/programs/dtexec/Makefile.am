@@ -8,3 +8,5 @@ dtexec_CFLAGS = -DMSGLOG_CLIENT_ONLY	\
 dtexec_LDADD = $(DTCLIENTLIBS) $(XTOOLLIB)
 
 dtexec_SOURCES = Main.c
+
+noinst_HEADERS = osdep.h

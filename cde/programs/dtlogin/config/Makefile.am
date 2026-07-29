@@ -180,3 +180,23 @@ home.session: home.session.src
 dtlogin: dtlogin.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS) $< > $@
+
+EXTRA_DIST = \
+    0060.dtsysenv.src \
+    Dtlogin.src \
+    Xaccess.src \
+    Xconfig.src \
+    Xfailsafe.src \
+    Xreset.src \
+    Xresources.src \
+    Xservers.src \
+    Xsession.src \
+    Xsetup.src \
+    Xstartup.src \
+    current.session.src \
+    display.current.session.src \
+    display.home.session.src \
+    dtlogin.src \
+    dtlslocale.src \
+    dtprofile.src \
+    home.session.src

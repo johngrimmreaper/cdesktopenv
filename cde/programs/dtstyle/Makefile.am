@@ -44,4 +44,8 @@ Palettes: Palettes.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
 
-
+EXTRA_DIST = \
+    Backdrops.src \
+    Dtstyle.src \
+    Palettes.src \
+    dtstyle.msg

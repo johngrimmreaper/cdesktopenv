@@ -35,3 +35,11 @@ AM_CPPFLAGS = -DCANON1 -I../parser -I../eltdef -I../../include/parser -I../../in
 noinst_LIBRARIES = libhelptag.a
 libhelptag_a_SOURCES = custom.c default.c help.c option.c \
 		      special.c out.c xref.c global.c
+
+EXTRA_DIST = \
+    delim.bld \
+    delim.elt \
+    delim.par \
+    help.if \
+    hptag.dtd \
+    htag.tss

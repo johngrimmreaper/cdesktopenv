@@ -20,3 +20,5 @@ install-data-hook:
 	cd $(DESTDIR)$(bindir) && $(LN_S) dtopen dtopen_image
 	cd $(DESTDIR)$(bindir) && $(LN_S) dtopen dtopen_ps
 	cd $(DESTDIR)$(bindir) && $(LN_S) dtopen dtopen_pdf
+
+EXTRA_DIST = dtopen.src

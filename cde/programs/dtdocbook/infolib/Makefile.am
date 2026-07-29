@@ -157,3 +157,39 @@ RemoteId.C: RemoteId.ll
 
 gr_type.C: gr_type.ll
 	$(LEX) $(AM_LFLAGS) -P graphics_task -o $@ $<
+
+EXTRA_DIST = \
+    $(infolib_SCRIPTS) \
+    ContentType.ll \
+    OL_DataExpr.yy \
+    RemoteId.ll \
+    ReplaceIdIdref.ll \
+    gr_type.ll
+
+noinst_HEADERS = \
+    AttributeData.h \
+    AttributeRec.h \
+    BTCollectable.h \
+    BookCaseDB.h \
+    ConcatTask.h \
+    Content.h \
+    DataBase.h \
+    Dispatch.h \
+    EntityList.h \
+    Expression.h \
+    FirstOf.h \
+    FlexBuffer.h \
+    GenericId.h \
+    GraphicsTask.h \
+    LcfTask.h \
+    NodeData.h \
+    NodeTask.h \
+    OLAF.h \
+    OL_Data.h \
+    SGMLDefn.h \
+    SGMLName.h \
+    StringList.h \
+    StyleTask.h \
+    TOCTask.h \
+    Task.h \
+    Token.h

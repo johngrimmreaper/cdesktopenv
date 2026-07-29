@@ -48,3 +48,4 @@ CDONE:  $(SDLUTILSRC)/context $(HTAG2SRC)/delim.par context.dat
 	$(SDLUTILSRC)/context
 	touch CDONE
 
+EXTRA_DIST = context.dat

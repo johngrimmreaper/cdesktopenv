@@ -33,3 +33,10 @@ libABil_a_SOURCES = bil_parse.y abuil_load.c	  	  abuil_print.c \
 #        ../libAButil/libAButil.a
 
 #bil_test_SOURCES = bil_test.c
+
+EXTRA_DIST = libABil.msg
+
+noinst_HEADERS = \
+    abuil_loadP.h \
+    bilP.h \
+    loadP.h

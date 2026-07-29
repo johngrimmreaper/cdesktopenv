@@ -43,3 +43,16 @@ dtcm_editor_SOURCES = datefield.c     deskset.c       dssw.c \
 
 install-exec-hook:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(localstatedir)/spool/calendar
+
+EXTRA_DIST = \
+    Dtcm.ad \
+    dtcm.msg
+
+noinst_HEADERS = \
+    calendar.h \
+    md5.h
+
+AM_CPPFLAGS = \
+    -I$(top_srcdir)/include \
+    -I$(top_srcdir)/include/Dt \
+    -I$(top_srcdir)/include/csa

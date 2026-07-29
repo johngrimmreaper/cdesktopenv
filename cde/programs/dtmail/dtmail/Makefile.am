@@ -48,3 +48,28 @@ dtmail_SOURCES = AliasListUiItem.C               AlternatesListUiItem.C \
 # some systems
 install-exec-hook:
 	-(chgrp mail $(DESTDIR)$(bindir)/dtmail && chmod 2755 $(DESTDIR)$(bindir)/dtmail)
+
+EXTRA_DIST = \
+    DtMail.msg \
+    Dtmail \
+    dtmailopts.msg
+
+noinst_HEADERS = \
+    Dialog.h \
+    Dmx.h \
+    DtMailEditor.hh \
+    DtMailWDM.hh \
+    Fonts.h \
+    Icon.h \
+    MsgHndArray.hh \
+    PasswordDialogManager.h \
+    RoamApp.h \
+    RoamInterruptibleCmd.hh \
+    SendMsgDialog.h \
+    SortCmd.hh \
+    Undelete.hh \
+    XmStrCollector.h \
+    XtArgCollector.h \
+    dtb_utils.h
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

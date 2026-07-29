@@ -22,3 +22,10 @@ AM_CPPFLAGS = -DPASS2 -I../parser -I../util -I../eltdef \
 # needed by parser/
 noinst_LIBRARIES = libhelptag.a
 libhelptag_a_SOURCES = custom.c sdl.c option.c out.c global.c
+
+EXTRA_DIST = \
+    delim.bld \
+    delim.elt \
+    delim.par \
+    sdl.dtd \
+    sdl.if

@@ -34,3 +34,4 @@ parser.c parser.h: parser.y
 	$(SED) -e "s/yy/yyy/g" -e "/# line/d" y.tab.c > parser.c
 	$(SED) -e 's/yy/yyy/g' y.tab.h >  parser.h
 
+EXTRA_DIST = parser.y

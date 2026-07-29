@@ -26,3 +26,8 @@ dtlpsetup: dtlpsetup.src
 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
 	chmod 755 $@
 
+EXTRA_DIST = \
+    dtlp.msg \
+    dtlp.src \
+    dtlpsetup.src \
+    dtprintegrate.src

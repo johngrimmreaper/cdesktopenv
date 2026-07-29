@@ -32,3 +32,7 @@ mkdbd.c: $(dtsearch)/tiny.c
 
 dtsearch.dbd: mkdbd
 	./$< > $@
+
+EXTRA_DIST = $(dtsr_DATA)
+
+AM_CPPFLAGS = -I$(top_srcdir)/include/Dt

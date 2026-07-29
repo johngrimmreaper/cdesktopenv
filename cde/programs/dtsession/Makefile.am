@@ -136,3 +136,10 @@ if !HAS_PAM_LIBRARY
 	-chmod 4755 $(DESTDIR)$(bindir)/dtsession
 endif
 
+EXTRA_DIST = \
+    Dtsession.src \
+    dtloadresources.src \
+    dtsession.msg.src \
+    sys.font.src \
+    sys.resources.src \
+    sys.session.src

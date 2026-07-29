@@ -32,3 +32,5 @@ sgml_DATA = docbook.dcl \
 	    isopub.gml \
 	    isotech.gml \
 	    styprolog.sgml
+
+EXTRA_DIST = $(sgml_DATA)

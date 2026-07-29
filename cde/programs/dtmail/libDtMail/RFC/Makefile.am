@@ -16,3 +16,7 @@ libRFC_a_SOURCES = AliasExpand.C           MIMEBodyPart.C \
 		    RFCMailValues.C         RFCMessage.C \
 		    RFCTransport.C          SunV3.C \
 		    V3BodyPart.C
+
+noinst_HEADERS = AliasExpand.hh
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

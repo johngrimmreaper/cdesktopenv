@@ -15,3 +15,24 @@ include $(top_srcdir)/doc/common/help/sdl-data.am
 install-data-hook:
 	$(RM) -rf $(DESTDIR)$(CDE_DATA_TOP)/appconfig/help/C
 	cd $(DESTDIR)$(CDE_DATA_TOP)/appconfig/help/ && $(LN_S) en_US.UTF-8 C
+
+EXTRA_DIST = \
+    $(FILEMGR_SRCS) \
+    $(HELP4HELP_SRCS) \
+    $(INTROMGR_SRCS) \
+    $(CALENDAR_SRCS) \
+    $(FPANEL_SRCS) \
+    $(ICONED_SRCS) \
+    $(MAILER_SRCS) \
+    $(STYLEMGR_SRCS) \
+    $(APPBUILDER_SRCS) \
+    $(APPMANAGER_SRCS) \
+    $(CALCULATOR_SRCS) \
+    $(CREATACT_SRCS) \
+    $(LOGINMGR_SRCS) \
+    $(PRINTMGR_SRCS) \
+    $(TERMINAL_SRCS) \
+    $(TEXTEDIT_SRCS) \
+    $(LIBDTPRINT_SRCS) \
+    $(PRNSETUP_SRCS) \
+    $(INFOMGR_SRCS)

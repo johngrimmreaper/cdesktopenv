@@ -87,3 +87,10 @@ dtchooser_LDADD += -lgen -lresolv -lbsm -lcmd
 dtlogin_SOURCES += solaris.c
 endif
 
+EXTRA_DIST = dtlogin.msg
+
+noinst_HEADERS = \
+    dm.h \
+    vg.h
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

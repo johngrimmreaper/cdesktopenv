@@ -48,3 +48,4 @@ CDONE:  $(HELPUTILSRC)/context $(HELPTAGSRC)/delim.par context.dat
 	$(HELPUTILSRC)/context
 	touch CDONE
 
+EXTRA_DIST = context.dat

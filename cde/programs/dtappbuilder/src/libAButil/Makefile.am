@@ -32,3 +32,7 @@ libAButil_a_SOURCES = abio.c          \
 #istr_test_CFLAGS = $(EXTRA_DEFINES) -I$(ABINCLUDES)
 
 #istr_test_SOURCES = istr_test.c
+
+EXTRA_DIST = libAButil.msg
+
+noinst_HEADERS = utilP.h

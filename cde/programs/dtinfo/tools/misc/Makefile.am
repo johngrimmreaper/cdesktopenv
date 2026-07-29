@@ -18,3 +18,5 @@ treeres: treeres.src
 	$(RM) $@
 	$(SED) $(LOCAL_SED_DEFINES) $< > $@
 	chmod +x $@
+
+EXTRA_DIST = treeres.src

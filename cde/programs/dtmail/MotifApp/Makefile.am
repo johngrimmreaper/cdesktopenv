@@ -21,3 +21,4 @@ libMotifApp_a_SOURCES = Application.C           AskFirstCmd.C \
 			UndoCmd.C               WarnNoUndoCmd.C \
 			WorkingDialogManager.C
 
+EXTRA_DIST = MotifApp.msg

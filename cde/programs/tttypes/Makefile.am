@@ -37,3 +37,5 @@ TT_CPP_FLAGS = -I$(top_srcdir)/include
 .ptype.done:
 	$(RM) $@
 	TTPATH=. $(TT_TYPE_COMP) $(TT_CPP_FLAGS) -sd user -m $< && touch $@ ; $(RM) .tt_lock
+
+EXTRA_DIST = dtinfo_start.opnums

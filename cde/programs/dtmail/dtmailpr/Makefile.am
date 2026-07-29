@@ -8,3 +8,5 @@ dtmailpr_CXXFLAGS = -I../include -I../../dtcompat -I../../../. \
 dtmailpr_LDADD = ../libDtMail/libDtMail.a $(DTCLIENTLIBS) $(XTOOLLIB) $(LTLIBICONV)
 
 dtmailpr_SOURCES = main.C message.C mailbox.C utils.C
+
+noinst_HEADERS = dmx.hh

@@ -16,3 +16,11 @@ dtpad_SOURCES = dtpad.c         editCB.c        fileCB.c \
 		optionsCB.c     printJob.c      printOutput.c \
 		printSetup.c    session.c       ttMsgSupport.c \
 		ttSaveSupport.c
+
+EXTRA_DIST = \
+    Dtpad \
+    dtpad.msg
+
+noinst_HEADERS = dtpad.h
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

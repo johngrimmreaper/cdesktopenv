@@ -12,3 +12,5 @@ AM_LDFLAGS = $(DTCLIENTLIBS) $(XTOOLLIB)
 dtdocbook2infolib_CPPFLAGS = \
 			     -DDTDCBK_DATAROOTDIR=\"$(dtdocbookdatadir)\" \
 			     -DINFOLIB_LIBEXECDIR=\"$(dtdocbooklibexecdir)/infolib\"
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

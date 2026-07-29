@@ -83,3 +83,5 @@ dtdocbook2sdl: ../dtdocbook2sdl
 install:
 
 distclean:
+
+AM_CPPFLAGS += -I$(top_srcdir)/include

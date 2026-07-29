@@ -4,3 +4,5 @@ include ../../dtdocbook.am
 
 localefilesdir = $(dtdocbookdatadir)/locales/el_GR.UTF-8
 localefiles_DATA = strings
+
+EXTRA_DIST = strings

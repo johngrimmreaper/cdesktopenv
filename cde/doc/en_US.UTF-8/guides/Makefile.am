@@ -79,3 +79,33 @@ $(dist_cdedti_DATA) $(dist_cdedtidoc_DATA) $(generated_cdedtidocsearch_outputs):
 install-data-hook:
 	$(RM) -rf $(DESTDIR)$(CDE_DATA_TOP)/infolib/C
 	cd $(DESTDIR)$(CDE_DATA_TOP)/infolib && $(LN_S) en_US.UTF-8 C
+
+EXTRA_DIST = \
+    $(MAN_SRCS) \
+    $(USERSGUIDE_GRS1) \
+    $(USERSGUIDE_GRS2) \
+    $(USERSGUIDE_GRS3) \
+    $(HELPGUIDE_GRS) \
+    $(BUILDERGUIDE_GRS) \
+    $(SYSADMINGUIDE_GRS) \
+    $(INFOUGUIDE_GRS) \
+    $(HELPGUIDE_SRCS) \
+    $(USERSGUIDE_SRCS) \
+    $(PROGGUIDE_SRCS) \
+    $(SYSADMINGUIDE_SRCS) \
+    $(INFOAPGUIDE_SRCS) \
+    $(BUILDERGUIDE_SRCS) \
+    $(PROGOVIEW_SRCS) \
+    $(INFOUGUIDE_SRCS) \
+    $(TTGUIDE_SRCS) \
+    $(DTKSHGUIDE_SRCS) \
+    $(INFOAPGUIDE_GRS) \
+    $(DTKSHGUIDE_GRS) \
+    $(I18NGUIDE_GRS) \
+    $(I18NGUIDE_SRCS) \
+    $(PROGGUIDE_GRS) \
+    $(PROGOVIEW_GRS) \
+    $(GLOSSARY_SRCS) \
+    docbookGuide/book.sgm \
+    man/m3_Dt/CrePrntD.sgm \
+    man/man6/ttsnoop.sgm

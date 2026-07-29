@@ -54,3 +54,4 @@ CDONE:  $(HELPUTILSRC)/context $(HELPTAGSRC)/delim.elt context.dat
 	$(HELPUTILSRC)/context
 	touch CDONE
 
+EXTRA_DIST = context.dat

@@ -77,3 +77,9 @@ dtinfo_LDADD = $(OLIASNORMALLIBS) $(LIBSEARCH) $(MMDB_LIBS) $(WWL_LIBS) \
 	$(DTCLIENTLIBS) $(XTOOLLIB) $(LMDBLIB)
 
 dtinfo_SOURCES = main.C Support/InputNotifier.C
+
+EXTRA_DIST = \
+    Dtinfo.res \
+    Macros.res \
+    Messages.res \
+    Strings.res

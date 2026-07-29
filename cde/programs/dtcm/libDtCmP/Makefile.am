@@ -15,3 +15,7 @@ libDtCmP_a_SOURCES = cm_tty.c cmfns.c dtfns.c props.c resource.c	\
 # for what seems like a more recent version...
 BUILT_SOURCES = getdate.c
 CLEANFILES = $(BUILT_SOURCES)
+
+EXTRA_DIST = libdtcm.msg
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

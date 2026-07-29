@@ -59,3 +59,9 @@ dtfile_error: dtfile_error.cpp
 dterror.ds: dterror.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(SCRIPTFLAGS) $<  > $@
+
+EXTRA_DIST = \
+    Dtfile \
+    dtfile.config.cpp \
+    dtfile.msg \
+    dtfile_error.cpp

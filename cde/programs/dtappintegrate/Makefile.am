@@ -14,3 +14,4 @@ dtappintegrate: dtappintegrate.src
 	$(GENCPP) -P -DXCOMM=# -DSTAR='*' $(LOCAL_CPP_DEFINES) $< > $@
 	chmod 755 $@
 
+EXTRA_DIST = dtappintegrate.src

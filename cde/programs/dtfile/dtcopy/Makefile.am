@@ -8,3 +8,5 @@ dtfile_copy_LDADD = $(DTCLIENTLIBS) $(XTOOLLIB) $(TIRPCLIB)
 
 dtfile_copy_SOURCES = main_dtcopy.c   copydialog.c    overwrtdialog.c dosync.c \
 		      fsrtns.c  utils.c  errordialog.c   sharedFuncs.c
+
+EXTRA_DIST = dtcopy.msg

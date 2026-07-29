@@ -40,3 +40,11 @@ AM_CPPFLAGS = -DPASS1 -I../parser -I../eltdef -I../../include/parser -I../../inc
 noinst_LIBRARIES = libhelptag.a
 libhelptag_a_SOURCES = custom.c default.c help.c option.c \
 		      special.c out.c xref.c global.c ../parser/delim.h
+
+EXTRA_DIST = \
+    delim.bld \
+    delim.elt \
+    delim.par \
+    help.if \
+    hptag.dtd \
+    htag.tss

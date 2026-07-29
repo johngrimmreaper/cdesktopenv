@@ -21,3 +21,7 @@ CLEANFILES = $(CPP_TARGETS)
 Dthello: Dthello.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=#  $< > $@
+
+EXTRA_DIST = \
+    Dthello.src \
+    dthello.msg

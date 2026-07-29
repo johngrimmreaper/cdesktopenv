@@ -15,3 +15,7 @@ dtpdm_SOURCES = JobBox.c Main.c MainWindow.c PdmMsgs.c PdmOid.c		\
 		PdmXp.c PrinterBox.c JobBox.h PdmMsgs.h PdmOid.h	\
 		PdmXp.h MainWindow.h PdmOidDefs.h PdmOidStrs.h		\
 		PrinterBox.h
+
+EXTRA_DIST = dtpdm.msg
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

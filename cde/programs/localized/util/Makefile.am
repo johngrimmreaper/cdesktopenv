@@ -11,3 +11,5 @@ AM_CFLAGS = -DNO_XLIB
 merge_SOURCES = merge.c MsgCat.c
 
 mkcatdefs_SOURCES = mkcatdefs.c MsgCat.c
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

@@ -77,3 +77,5 @@ clean-local:
 
 DtFuncs.dtsh:
 	$(CP) DtFuncs.sh DtFuncs.dtsh
+
+EXTRA_DIST = dtksh.msg

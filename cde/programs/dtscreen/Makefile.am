@@ -20,3 +20,6 @@ Dtscreen: Dtscreen.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=#  $< > $@
 
+EXTRA_DIST = \
+    Dtscreen.src \
+    dtscreen.msg

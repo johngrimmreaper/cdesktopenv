@@ -15,3 +15,5 @@ c_DATA = $(FILES)
 
 jadir =  $(CDE_DATA_TOP)/appconfig/icons/ja
 ja_DATA = $(FILES)
+
+EXTRA_DIST = $(FILES)

@@ -16,3 +16,13 @@ endif
 
 dthelpprint_SOURCES = Main.c Initialize.c PrintUtil.c PrintTopics.c \
 		      PrintManStrFile.c
+
+EXTRA_DIST = \
+    dthelpprint.msg \
+    dthelpprint.sh
+
+noinst_HEADERS = HelpPrintI.h
+
+AM_CPPFLAGS = \
+    -I$(top_srcdir)/include \
+    -I$(top_srcdir)/lib/DtHelp

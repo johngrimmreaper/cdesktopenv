@@ -10,3 +10,5 @@ tpt_DATA = docbook-to-man.ts \
 	   docbook.tss \
 	   roff.cmap \
 	   roff.sdata
+
+EXTRA_DIST = $(tpt_DATA)

@@ -62,3 +62,13 @@ dtcodegen_SOURCES = abmf.c                  args.c \
 
 dtcodegen.cat:: $(SOURCES.msg)
 	$(GENCAT) dtcodegen.cat $(SOURCES.msg)
+
+EXTRA_DIST = dtcodegen.msg
+
+noinst_HEADERS = \
+    cdefsP.h \
+    lib_func_stringsP.h \
+    motifdefsP.h \
+    parse_cP.h
+
+AM_CPPFLAGS = -I$(top_srcdir)/include

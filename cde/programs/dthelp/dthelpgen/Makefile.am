@@ -12,3 +12,9 @@ dthelpgen_CPPFLAGS = -DCDE_INSTALLATION_TOP=\"$(CDE_INSTALLATION_TOP)\" \
 dthelpgen_LDADD = $(DTCLIENTLIBS) $(XTOOLLIB)
 
 dthelpgen_SOURCES = helpgen.c
+
+EXTRA_DIST = \
+    dthelpgen.dtsh \
+    dthelpgen.msg
+
+AM_CPPFLAGS = -I$(top_srcdir)/include
