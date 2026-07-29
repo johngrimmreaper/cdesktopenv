@@ -2,7 +2,52 @@ MAINTAINERCLEANFILES = Makefile.in
 
 noinst_LTLIBRARIES = libTermPrim.la
 
-AM_CPPFLAGS = $(DT_INCDIR)
+# Private headers used by libTermPrim
+noinst_HEADERS = \
+  TermHeader.h \
+  TermPrimAction.h \
+  TermPrimBuffer.h \
+  TermPrimBufferP.h \
+  TermPrimCursor.h \
+  TermPrimData.h \
+  TermPrimDebug.h \
+  TermPrimFunction.h \
+  TermPrimGetPty.h \
+  TermPrimI.h \
+  TermPrimLineDraw.h \
+  TermPrimLineDrawP.h \
+  TermPrimLineFont.h \
+  TermPrimLineFontP.h \
+  TermPrimMessageCatI.h \
+  TermPrimOSDepI.h \
+  TermPrimParseTable.h \
+  TermPrimParser.h \
+  TermPrimParserP.h \
+  TermPrimPendingText.h \
+  TermPrimPendingTextP.h \
+  TermPrimRender.h \
+  TermPrimRenderFont.h \
+  TermPrimRenderFontSet.h \
+  TermPrimRenderLineDraw.h \
+  TermPrimRenderP.h \
+  TermPrimRepType.h \
+  TermPrimScroll.h \
+  TermPrimSelect.h \
+  TermPrimSelectP.h \
+  TermPrimSetPty.h \
+  TermPrimSetUtmp.h \
+  TermPrimSubproc.h \
+  TermPrimUtil.h \
+  TermPrimWMProtocols.h
+
+# Retained platform-specific PTY implementations
+EXTRA_DIST = \
+  TermPrimGetPty-bsd.c \
+  TermPrimGetPty-clone.c
+
+AM_CPPFLAGS = $(DT_INCDIR) \
+              -I$(top_srcdir)/include \
+              -I$(top_srcdir)/include/Dt
 
 libTermPrim_la_SOURCES = TermPrim.c \
         TermPrimAction.c \

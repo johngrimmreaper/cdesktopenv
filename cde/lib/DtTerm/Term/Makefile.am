@@ -4,14 +4,36 @@ CLEANFILES = TermLineData.c
 
 noinst_LTLIBRARIES = libTerm.la
 
-libTerm_la_CFLAGS = -I../TermPrim @DT_INCDIR@
+# Private headers used by libTerm
+noinst_HEADERS = \
+  TermAction.h \
+  TermBuffer.h \
+  TermBufferP.h \
+  TermColor.h \
+  TermData.h \
+  TermEnhance.h \
+  TermFunction.h \
+  TermFunctionKey.h \
+  TermFunctionKeyP.h \
+  TermLineData.h \
+  TermParseTable.h \
+  TermParseTableP.h \
+  TermSendEsc.h
+
+# Input used to generate TermLineData.c
+EXTRA_DIST = TermLineData.data
+
+libTerm_la_CFLAGS = -I../TermPrim \
+                    -I$(srcdir)/../TermPrim \
+                    @DT_INCDIR@ \
+                    -I$(top_srcdir)/include/Dt
 
 $(top_builddir)/lib/DtTerm/util/lineToData:
 	$(MAKE) -C $(top_builddir)/lib/DtTerm/util lineToData
 
-TermLineData.c: TermLineData.data $(top_builddir)/lib/DtTerm/util/lineToData
+TermLineData.c: $(srcdir)/TermLineData.data $(top_builddir)/lib/DtTerm/util/lineToData
 	$(RM) $@
-	$(top_builddir)/lib/DtTerm/util/lineToData -p _DtTerm -f TermLineData.data > $@
+	$(top_builddir)/lib/DtTerm/util/lineToData -p _DtTerm -f $(srcdir)/TermLineData.data > $@
 
 includes:: TermLineData.c
 
