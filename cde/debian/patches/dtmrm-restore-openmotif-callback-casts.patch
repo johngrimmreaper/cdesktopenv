@@ -1,0 +1,69 @@
+Description: restore callback casts accepted by OpenMotif
+ OpenMotif 2.3.8 declares the MrmRegisterClass creator argument as
+ Widget (*)(). The MrmWidgetCreateProc type introduced upstream is
+ unavailable in the Motif headers used by Debian and Ubuntu builds,
+ causing DtMrm compilation to fail.
+ .
+ Reverse the callback-type change from upstream commit
+ e9d349cf90fba57a00826b5644aaa9d7f8ac85f5 while the API choice is
+ discussed with upstream.
+Author: Reaper <JohnGrimmReaper@disroot.org>
+Origin: revert, upstream commit:e9d349cf90fba57a00826b5644aaa9d7f8ac85f5
+Forwarded: not-needed
+Last-Update: 2026-08-03
+
+diff --git a/lib/DtMrm/DtMrm.c b/lib/DtMrm/DtMrm.c
+index ba913eda0..d6fc649f8 100644
+--- a/lib/DtMrm/DtMrm.c
++++ b/lib/DtMrm/DtMrm.c
+@@ -181,43 +181,43 @@ void DtMrmInitialize (void)
+      */
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreateEditor", (MrmWidgetCreateProc) DtCreateEditor,
++		"DtCreateEditor", (Widget (*)()) DtCreateEditor,
+         	(WidgetClass) &dtEditorClassRec
+ 		);
+ 
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreateHelpDialog", (MrmWidgetCreateProc) DtCreateHelpDialog,
++		"DtCreateHelpDialog", (Widget (*)()) DtCreateHelpDialog,
+         	(WidgetClass) &dtHelpDialogWidgetClassRec
+ 		);
+ 
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreateHelpQuickDialog", (MrmWidgetCreateProc) DtCreateHelpQuickDialog,
++		"DtCreateHelpQuickDialog", (Widget (*)()) DtCreateHelpQuickDialog,
+         	(WidgetClass) &dtHelpQuickDialogWidgetClassRec
+ 		);
+ 
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreateMenuButton", (MrmWidgetCreateProc) DtCreateMenuButton,
++		"DtCreateMenuButton", (Widget (*)()) DtCreateMenuButton,
+         	(WidgetClass) &dtMenuButtonClassRec
+ 		);
+ 
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreatePrintSetupBox", (MrmWidgetCreateProc) DtCreatePrintSetupBox,
++		"DtCreatePrintSetupBox", (Widget (*)()) DtCreatePrintSetupBox,
+         	(WidgetClass) &dtPrintSetupBoxClassRec
+ 		);
+ 
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreatePrintSetupDialog", (MrmWidgetCreateProc) DtCreatePrintSetupDialog,
++		"DtCreatePrintSetupDialog", (Widget (*)()) DtCreatePrintSetupDialog,
+         	(WidgetClass) &dtPrintSetupBoxClassRec
+ 		);
+ 
+     MrmRegisterClass(
+ 		0, NULL,
+-		"DtCreateTerm", (MrmWidgetCreateProc) DtCreateTerm,
++		"DtCreateTerm", (Widget (*)()) DtCreateTerm,
+         	(WidgetClass) &dtTermClassRec
+ 		);
+ 

@@ -1,1 +1,2 @@
 dtdocbook2man-fix-roff-comment-prefix.patch
+dtmrm-restore-openmotif-callback-casts.patch
