@@ -79,8 +79,8 @@ rOWsystem=$OPENWINHOME/lib/Xdefaults
 rOWdefaults=$HOME/.OWdefaults
 #endif
 
-rFactory=CDE_INSTALLATION_TOP/config/$LANG/sys.resources
-rFactoryC=CDE_INSTALLATION_TOP/config/C/sys.resources
+rFactory=CDE_DATA_TOP/config/$LANG/sys.resources
+rFactoryC=CDE_DATA_TOP/config/C/sys.resources
 
 rCustom=CDE_CONFIGURATION_TOP/config/$LANG/sys.resources
 

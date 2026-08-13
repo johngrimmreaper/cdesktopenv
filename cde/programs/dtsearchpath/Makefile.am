@@ -5,7 +5,7 @@ SUBDIRS = libCliSrv dtsp dtappg
 BUILT_SOURCES = 0010.dtpaths 0030.dttmpdir
 CLEANFILES = $(BUILT_SOURCES)
 
-cfgdir = $(CDE_INSTALLATION_TOP)/config/Xsession.d
+cfgdir = $(CDE_DATA_TOP)/config/Xsession.d
 dist_cfg_SCRIPTS = 0010.dtpaths 0030.dttmpdir
 
 LOCAL_CPP_DEFINES = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP)	\

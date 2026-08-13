@@ -2,7 +2,7 @@ XCOMM!KORNSHELL
 XCOMM ####################################################################
 XCOMM ##  File:              0050.dtxmodmap
 XCOMM ##
-XCOMM ##  Default Location:  CDE_INSTALLATION_TOP/config/Xsession.d/
+XCOMM ##  Default Location:  CDE_DATA_TOP/config/Xsession.d/
 XCOMM ##
 XCOMM ##  Purpose:           Perform keyboard mapping
 XCOMM ##                     
@@ -17,7 +17,7 @@ XCOMM ##  Product:           @(#)Common Desktop Environment 1.0
 XCOMM ##
 XCOMM ##  Note:              
 XCOMM ##
-XCOMM ##    The CDE_INSTALLATION_TOP/config/Xsession.d/0050.dtxmodmap file is a
+XCOMM ##    The CDE_DATA_TOP/config/Xsession.d/0050.dtxmodmap file is a
 XCOMM ##    factory-default file and will be unconditionally overwritten upon
 XCOMM ##    subsequent installation. To customize keyboard mapping
 XCOMM ##    behavior, copy this file to the configuration directory,

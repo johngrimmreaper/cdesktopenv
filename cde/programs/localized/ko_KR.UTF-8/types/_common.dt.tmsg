@@ -68,11 +68,11 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 10 # 경고: 이 파일은 Common Desktop Environment (CDE)의 다음 설치에서\n\
 #       겹쳐 쓰일 수 있습니다. 따라서 어떠한 시스템 전체의 변경에 대해\n\
-#       이 파일이 아니라 /etc/dt/types에 있는 같은 데이타베이스 파일이\n\
+#       이 파일이 아니라 __CDE_CONFIGURATION_TOP__/appconfig/types에 있는 같은 데이타베이스 파일이\n\
 #       수정되어야합니다.
 $ 
 $ Message 11 and 12:
@@ -301,7 +301,7 @@ $
 2025 Edit Dtwmrc (DtwmrcEdit) 활동은 사용자의 시스템 편집기에 \\\n\
 $HOME/.dt/dtwmrc 사본을 열어줍니다. (사용되는 편집기는 \\\n\
 EDITOR 환경 변수에 지정된 것입니다.) $HOME/.dt/dtwmrc \\\n\
-파일이 없으면, /usr/dt/config/<language>/sys.dtwmrc 파일을 \\\n\
+파일이 없으면, __CDE_DATA_TOP__/config/<language>/sys.dtwmrc 파일을 \\\n\
 복사하여 만듭니다. 파일을 저장하고 편집기를 끝낸 다음 \\\n\
 작업장 메뉴에서 작업장 관리자 다시시작을 선택하여 \\\n\
 작업장 관리자를 다시 시작해야 합니다.
@@ -2546,11 +2546,11 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file 
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME 
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
-13001 # 이 데이타 유형 정의는 사용자의 /var/dt/appconfig/appmanager/$LOGNAME \n\
+13001 # 이 데이타 유형 정의는 사용자의 __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME \n\
 # 부속 폴더에 있는 오브젝트에 적용됩니다. 
 $ 
 $ ----------------------------------------------------------------------------

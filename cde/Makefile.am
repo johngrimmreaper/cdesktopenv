@@ -1,4 +1,4 @@
-docsdir = $(CDE_INSTALLATION_TOP)
+docsdir = $(docdir)
 docs_DATA = CONTRIBUTORS COPYING copyright HISTORY README.md
 
 MAINTAINERCLEANFILES = Makefile.in \

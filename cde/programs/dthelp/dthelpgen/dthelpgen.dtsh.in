@@ -1,8 +1,8 @@
-#! /usr/dt/bin/dtksh
+#!@bindir@/dtksh
 #####################################################################
 ###  File:              dthelpgen.dtsh
 ###
-###  Default Location:  /usr/dt/bin/dthelpgen.dtsh
+###  Default Location:  @bindir@/dthelpgen.dtsh
 ###
 ###  Purpose:           Display a 'working' dialog for dthelpgen.
 ###
@@ -104,9 +104,9 @@ OkButton()
 
 Initialize
 
-if [[ -r /usr/dt/lib/dtksh/DtFuncs.dtsh ]]
+if [[ -r @libdir@/dtksh/DtFuncs.dtsh ]]
 then
-	. /usr/dt/lib/dtksh/DtFuncs.dtsh
+	. @libdir@/dtksh/DtFuncs.dtsh
 else
     echo Sorry--cannot find initialization file.
     Exit $NO_INIT_FILE_ERR

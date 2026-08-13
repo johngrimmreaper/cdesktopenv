@@ -2,7 +2,7 @@
 !#	configuration file for dtimsstart
 !#
 !#	expansion of '%':
-!#		%C=/usr/dt/config, %I=/usr/dt/config/ims, %U=$HOME/.dt,
+!#		%C=@CDE_DATA_TOP@/config, %I=@CDE_DATA_TOP@/config/ims, %U=$HOME/.dt,
 !#		%H=$HOME, %L=$LANG, %D=$DISPLAY,
 !#		%h=<host_name>, %u=<user_name>, %d=<displaydir>,
 !#		%n=<ims_name>, %N=<full ims_name>, %c=<class_name>
@@ -10,14 +10,14 @@
 
 !! dtims config directory
 
-ImsConfigDir:		/usr/dt/config/ims
-ImsAppDefDir:		/usr/dt/app-defaults
-ImsLogDir:		/var/dt
+ImsConfigDir:		@CDE_DATA_TOP@/config/ims
+ImsAppDefDir:		@CDE_DATA_TOP@/app-defaults
+ImsLogDir:		@CDE_LOGFILES_TOP@
 ImsLogFile:		imslog
 ImsDirName:		ims
 
 !# CDE configuration
-DtConfigDir:		/usr/dt/config
+DtConfigDir:		@CDE_DATA_TOP@/config
 DtUserDir:		%H/.dt
 !! resource file search path
 DtResourcePath:		%U/%d/current/dt.resources:%U/%d/home/dt.resources:%U/sessions/current/dt.resources:%U/sessions/home/dt.resources:%C/%L/sys.resources:%C/C/sys.resources

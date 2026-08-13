@@ -21,7 +21,3 @@ endif
 if JAPANESE
 SUBDIRS += ja_JP.UTF-8
 endif
-
-install-data-hook:
-	$(RM) $(DESTDIR)$(CDE_INSTALLATION_TOP)/man
-	cd $(DESTDIR)$(CDE_INSTALLATION_TOP)/ && $(LN_S) $(mandir) man

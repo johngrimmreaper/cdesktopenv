@@ -720,6 +720,7 @@ lib/DtSearch/raima/Makefile
 lib/DtWidget/Makefile
 
 lib/DtHelp/Makefile
+lib/DtHelp/CDE.lcx
 lib/DtHelp/il/Makefile
 
 lib/DtPrint/Makefile
@@ -768,7 +769,9 @@ programs/dsdm/Makefile
 programs/dthelp/Makefile
 programs/dthelp/dthelpview/Makefile
 programs/dthelp/dthelpgen/Makefile
+programs/dthelp/dthelpgen/dthelpgen.dtsh
 programs/dthelp/dthelpprint/Makefile
+programs/dthelp/dthelpprint/dthelpprint.sh
 programs/dthelp/parser/Makefile
 programs/dthelp/parser/pass1/Makefile
 programs/dthelp/parser/pass1/util/Makefile
@@ -871,6 +874,8 @@ programs/dtdspmsg/Makefile
 programs/ttsnoop/Makefile
 
 programs/dtimsstart/Makefile
+programs/dtimsstart/conf/start.conf
+programs/dtudcfonted/resource/Dtudcfonted
 
 programs/dtpdm/Makefile
 

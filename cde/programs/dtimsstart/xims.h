@@ -223,7 +223,7 @@ typedef struct {
 } OutEnv;
 
 typedef struct {
-    char	*confDir;	/* override /usr/dt/config */
+    char	*confDir;	/* override CDE_DATA_TOP/config */
     char	*userDir;	/* override .dt */
     char	*resPath;	/* path of session resource (colon separated) */
 } DtEnv;
@@ -336,9 +336,9 @@ typedef struct {
 } CmdOpt;
 
 typedef struct {
-    char	*imsConfDir;	/* [%I] /usr/dt/config/ims/ */
-    char	*imsAppDir;	/* [%R] /usr/dt/app-defaults/ */
-    char	*imsLogDir;	/* [%G] /var/dt/ */
+    char	*imsConfDir;	/* [%I] CDE_DATA_TOP/config/ims/ */
+    char	*imsAppDir;	/* [%R] CDE_DATA_TOP/app-defaults/ */
+    char	*imsLogDir;	/* [%G] CDE_LOGFILES_TOP/ */
     char	*imsLogFile;	/* [%g] imslog */
     char	*imsDir;	/* [%b] ims */
     char	*userImsDir;	/* [%S] $HOME/.dt/ims/ */

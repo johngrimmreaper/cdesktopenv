@@ -81,13 +81,13 @@ $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the 
 $ \ at the end of each 
 $         line. 
-$   Don't translate /etc/dt/types. 
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $  
 
 10 "# AVISO:  Se puede sobreescribir este archivo en instalaciones subsiguientes\n\
 #     del Common Desktop Environment (CDE). Por tanto, cualquier cambio\n\
 #     general del sistema se debe realizar en un archivo de base de datos\n\
-#     equivalente de /etc/dt/types y no en este archivo."
+#     equivalente de __CDE_CONFIGURATION_TOP__/appconfig/types y no en este archivo."
 $  
 $ Message 11 and 12: 
 $         These Messages are headers in every *.dt file used to break up 
@@ -361,7 +361,7 @@ $
                         (el editor especificado por la variable de entorno \\\n\
                         EDITOR). Si no existe $HOME/.dt/dtwmrc, la acción \\\n\
                         crea el archivo copiando \\\n\
-                        /usr/dt/config/<idioma>/sys.dtwmrc. Cuando se \\\n\
+                        __CDE_DATA_TOP__/config/<idioma>/sys.dtwmrc. Cuando se \\\n\
                         guarda el archivo y se sale del editor, se debe \\\n\
                         reiniciar el Gestor de espacios de trabajo eligiendo \\\n\
                         Reiniciar el Gestor de espacio de trabajo en el menú \\\n\
@@ -3070,13 +3070,13 @@ $
 $ ---------------------------------------------------------------------------- 
 $ Messages 13001: 
 $         This Message is a header used to explain what objects this file  
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME  
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates 
 $         that it is a comment. 
 $  
 
 13001 "# Estas definiciones de tipos de datos se aplican a los objetos que se\n\
-# encuentran en la subcarpeta /var/dt/appconfig/appmanager/$LOGNAME del usuario."
+# encuentran en la subcarpeta __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME del usuario."
 $  
 $ ---------------------------------------------------------------------------- 
 $ Messages 13002 - 13008 are descriptions for the different application groups 

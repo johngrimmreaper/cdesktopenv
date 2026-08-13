@@ -1,4 +1,4 @@
-xsessiondir = $(CDE_INSTALLATION_TOP)/config/Xsession.d
+xsessiondir = $(CDE_DATA_TOP)/config/Xsession.d
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -21,11 +21,13 @@ dtimsstart_SOURCES = action.c env.c file.c main.c remote.c select.c	\
 BUILT_SOURCES = 0020.dtims
 CLEANFILE = $(BUILT_SOURCES)
 
-cfgdir = $(CDE_INSTALLATION_TOP)/config/Xsession.d
+cfgdir = $(CDE_DATA_TOP)/config/Xsession.d
 dist_cfg_DATA = 0020.dtims
 
-imsdir = $(CDE_INSTALLATION_TOP)/config/ims
-dist_ims_DATA = conf/start.conf
+imsdir = $(CDE_DATA_TOP)/config/ims
+nodist_ims_DATA = conf/start.conf
+EXTRA_DIST = conf/start.conf.in
+DISTCLEANFILES = conf/start.conf
 
 LOCAL_CPP_DEFINES = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) \
 -DCDE_DATA_TOP=$(CDE_DATA_TOP) \

@@ -67,7 +67,7 @@
  *     Set by the dtlogin program.
  *
  *  TARGET_APPMAN_DIR
- *     Default:	/var/dt/appconfig/appmanager/$DTUSERSESSION
+ *     Default:	CDE_LOGFILES_TOP/appconfig/appmanager/$DTUSERSESSION
  *     Set within this utility.
  *
  ****************************************************************************/
@@ -115,10 +115,10 @@ AppManagerDirectory::AppManagerDirectory
 	userhostdir = "generic-display-0";
 
     // else if dir is non-NULL and there is a / in DTUSERSESSION, 
-    // dtappgather creates /var/dt/appconfig/appmanager/DTUSERSESSION.
+    // dtappgather creates CDE_LOGFILES_TOP/appconfig/appmanager/DTUSERSESSION.
     // This is a possible security hole, so
     // prevent creation of directories of the form
-    // /var/dt/appconfig/appmanager/directory1/directory2 
+    // CDE_LOGFILES_TOP/appconfig/appmanager/directory1/directory2
     //
 
     else if ((char *)strstr(userhostdir.data(),"/"))
@@ -147,43 +147,36 @@ AppManagerDirectory::AppManagerDirectory
     }
     else {
 
-	// Make /var/dt/appconfig/appmanager directories if not present
+	// Make CDE_LOGFILES_TOP/appconfig/appmanager directories if not present
 	// 
-	// Make user session subdirectory under /var/dt/appconfig/appmanager
+	// Make user session subdirectory under CDE_LOGFILES_TOP/appconfig/appmanager
 
-	CString dir(dirname_);
-	dir.replace("/" + userhostdir,"");
-	if (!user->OS()->isDirectory(dir)) {	// does appmanager exist?
-	    dir.replace("/appmanager","");
-	    if (!user->OS()->isDirectory(dir)) {   // does appconfig exist?
-		dir.replace("/appconfig","");
-	        if (!user->OS()->isDirectory(dir)) {   // does dt exist?
-		    dir.replace("/dt","");
-		    if (!user->OS()->isDirectory(dir)) {  // does /var exist?
-			user->OS()->MakeDirectory(dir,0755);
-			user->OS()->changeOwnerGroup(dir,"root","bin");
-			user->OS()->changePermissions(dir,0755);
-		    }
-		    dir += "/dt";
-		    user->OS()->MakeDirectory(dir,0755);
-		    user->OS()->changeOwnerGroup(dir,"root","bin");
-		    user->OS()->changePermissions(dir,0755);
-		}
-		dir += "/appconfig";
-		user->OS()->MakeDirectory(dir,0755);
-		user->OS()->changeOwnerGroup(dir,"bin","bin");
-		user->OS()->changePermissions(dir,0755);
-	    }
-	    dir += "/appmanager";
-	    user->OS()->MakeDirectory(dir,0755);
-	    user->OS()->changeOwnerGroup(dir,"bin","bin");
-	    user->OS()->changePermissions(dir,0755);
+	CString stateDir(CDE_LOGFILES_TOP);
+	if (!user->OS()->isDirectory(stateDir)) {
+	    user->OS()->MakeDirectory(stateDir,0755);
+	    user->OS()->changeOwnerGroup(stateDir,"root","bin");
+	    user->OS()->changePermissions(stateDir,0755);
 	}
+
+	CString appconfigDir(stateDir + "/appconfig");
+	if (!user->OS()->isDirectory(appconfigDir)) {
+	    user->OS()->MakeDirectory(appconfigDir,0755);
+	    user->OS()->changeOwnerGroup(appconfigDir,"bin","bin");
+	    user->OS()->changePermissions(appconfigDir,0755);
+	}
+
+	CString appmanagerDir(appconfigDir + "/appmanager");
+	if (!user->OS()->isDirectory(appmanagerDir)) {
+	    user->OS()->MakeDirectory(appmanagerDir,0755);
+	    user->OS()->changeOwnerGroup(appmanagerDir,"bin","bin");
+	    user->OS()->changePermissions(appmanagerDir,0755);
+	}
+
 	user->OS()->MakeDirectory(dirname_,0755);
 	user->OS()->changeOwnerGroup(dirname_,"","");
     }
 
-    // Make /var/dt/tmp directory if not present
+    // Make CDE_LOGFILES_TOP/tmp directory if not present
 
     CString tmp(CDE_LOGFILES_TOP "/tmp/");
     if (!user->OS()->isDirectory(tmp)) {  // does tmp exist?

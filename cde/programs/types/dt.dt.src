@@ -349,7 +349,7 @@ ACTION DtwmrcEdit
         WINDOW_TYPE     NO_STDIO
         EXEC_STRING     sh -c 'if [ ! -f $HOME/.dt/dtwmrc ] ; then \
                                   if [ ! -f CDE_CONFIGURATION_TOP/config/sys.dtwmrc ] ; then \
-                                    cp CDE_INSTALLATION_TOP/config/$LANG/sys.dtwmrc \
+                                    cp CDE_DATA_TOP/config/$LANG/sys.dtwmrc \
                                                             $HOME/.dt/dtwmrc; \
                                   else \
                                     cp CDE_CONFIGURATION_TOP/config/sys.dtwmrc \

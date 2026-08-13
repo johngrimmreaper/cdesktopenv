@@ -2,7 +2,7 @@
 #######################################################
 ### File:		dthelpprint.sh
 ###
-### Default Location:	/usr/dt/bin/dthelpprint.sh
+### Default Location:	@bindir@/dthelpprint.sh
 ###
 ### (c) Copyright 1993, 1994 Hewlett-Packard Company
 ### (c) Copyright 1993, 1994 International Business Machines Corp.
@@ -62,9 +62,9 @@ usage()
 ### These env vars conform to the dtlp interface
 #########################################################
 # define which executables to use
-ProgDtKsh=/usr/dt/bin/dtksh
-ProgDtAction=/usr/dt/bin/dtaction
-ProgDtLp=/usr/dt/bin/dtlp          # only executed directly if Print action not avail
+ProgDtKsh=@bindir@/dtksh
+ProgDtAction=@bindir@/dtaction
+ProgDtLp=@bindir@/dtlp          # only executed directly if Print action not avail
 ProgLp=/usr/bin/lp
 ActionPrint=Print
 

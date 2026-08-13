@@ -2,8 +2,10 @@ MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = il
 
-cfgdir = $(CDE_INSTALLATION_TOP)/config/svc
-dist_cfg_DATA = CDE.lcx
+cfgdir = $(CDE_DATA_TOP)/config/svc
+nodist_cfg_DATA = CDE.lcx
+EXTRA_DIST = CDE.lcx.in
+DISTCLEANFILES = CDE.lcx
 
 
 lib_LTLIBRARIES = libDtHelp.la

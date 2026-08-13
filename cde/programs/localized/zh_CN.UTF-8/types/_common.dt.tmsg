@@ -68,10 +68,10 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 10 # 警告: 这个文件在通用桌面环境环境 (CDE) 的顺序安装中可能被覆盖。\n\
-#     因此应该在相应的数据库文件 /etc/dt/types 中而不是在这个文件中\n\
+#     因此应该在相应的数据库文件 __CDE_CONFIGURATION_TOP__/appconfig/types 中而不是在这个文件中\n\
 #     进行全系统的变更。
 $ 
 $ Message 11 and 12:
@@ -286,7 +286,7 @@ $
                         (由 EDITOR 环境变量确定的编缉器) \\\n\
                         如果 $HOME/.dt/dtwmrc 不存在，\\\n\
                         这个动作通过复制 \\\n\
-                        /usr/dt/config/<language>/sys.dtwmrc 创建文件。\\\n\
+                        __CDE_DATA_TOP__/config/<language>/sys.dtwmrc 创建文件。\\\n\
                         当您保存文件并退出编缉器时，您必须从工作空间菜单\\\n\
                         通过选择重新启动工作空间管理程序重新启动\\\n\
                         工作空间管理程序。
@@ -2450,11 +2450,11 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file 
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME 
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
-13001 # 这些数据类型定义运用在用户的 /var/dt/appconfig/appmanager/$LOGNAME\n\
+13001 # 这些数据类型定义运用在用户的 __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME\n\
 #子文件夹下找到的对象。
 $ 
 $ ----------------------------------------------------------------------------

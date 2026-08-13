@@ -747,7 +747,7 @@ LoadAltDtsResources(struct display *d)
 		i = atoi(tempbuf);
     }
 
-    strcpy(dirname[0],CDE_INSTALLATION_TOP "/config/%L/Xresources.d/");
+    strcpy(dirname[0],CDE_DATA_TOP "/config/%L/Xresources.d/");
     strcpy(dirname[1],CDE_CONFIGURATION_TOP "/config/%L/Xresources.d/");
 
     for(j = 0; j < 2 ; ++j)

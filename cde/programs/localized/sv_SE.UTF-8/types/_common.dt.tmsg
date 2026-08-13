@@ -68,12 +68,12 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "#". This indicates
 $         that it is a comment. Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 10 # VARNING:  Denna fil kan skrivas över i senare installationer av\n\
 #     CDE (Common Desktop Environment). Det innebär att alla\n\
 #     systemgenerella ändringar bör göras i en motsvarande databasfil i\n\
-#     /etc/dt/types och inte i denna fil.
+#     __CDE_CONFIGURATION_TOP__/appconfig/types och inte i denna fil.
 $ 
 $ Message 11 and 12:
 $         These Messages are headers in every *.dt file used to break up
@@ -309,7 +309,7 @@ $
                         (den redigerare som anges av EDITOR- \\\n\
                         miljövariabeln). Om $HOME/.dt/dtwmrc inte finns kommer \\\n\
                         funktionen att skapa filen genom att kopiera \\\n\
-                        /usr/dt/config/<språk>/sys.dtwmrc. När du \\\n\
+                        __CDE_DATA_TOP__/config/<språk>/sys.dtwmrc. När du \\\n\
                         sparar filen och avslutar redigeraren måste du \\\n\
                         starta om arbetsytehanteraren genom att välja \\\n\
                         Starta om arbetsytehanteraren på menyn Arbetsyta.
@@ -2663,12 +2663,12 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file 
-$         works on. Don't translate /var/dt/appconfig/appmanager/$LOGNAME 
+$         works on. Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ". This indicates
 $         that it is a comment.
 $ 
 13001 # Dessa datatypdefinitioner tillämpas på objekten som finns under\n\
-# användarens undermapp /var/dt/appconfig/appmanager/$LOGNAME.
+# användarens undermapp __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME.
 $ 
 $ ----------------------------------------------------------------------------
 $ Messages 13002 - 13008 are descriptions for the different application groups

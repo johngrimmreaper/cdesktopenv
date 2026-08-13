@@ -35,9 +35,9 @@ $ * localized path to system font
 $ *
 $ * For example, for German:
 $ *
-$ * 1 "/usr/dt/config/german/sys.font"
+$ * 1 "__CDE_DATA_TOP__/config/german/sys.font"
 $ *
-1 "/usr/dt/config/ja_JP.dt-eucJP/sys.font"
+1 "__CDE_DATA_TOP__/config/ja_JP.dt-eucJP/sys.font"
 $ 
 $ Message 2 is not used...
 $ 

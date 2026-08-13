@@ -241,7 +241,7 @@ extern XeString SPCD_Authentication_Dir;
 /*
  * Definitions for file locations
  */
-#define SPCD_ENV_INSTALL_DIRECTORY	CDE_INSTALLATION_TOP "/config"
+#define SPCD_ENV_INSTALL_DIRECTORY	CDE_DATA_TOP "/config"
 #define SPCD_ENV_CONFIG_DIRECTORY       CDE_CONFIGURATION_TOP "/config"
 #define SPCD_ENV_HOME_DIRECTORY		".dt"
 #define SPCD_ENV_FILE			"dtspcdenv"

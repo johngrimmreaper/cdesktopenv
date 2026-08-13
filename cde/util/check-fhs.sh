@@ -54,7 +54,9 @@ fi
 # A non-empty result means at least one piece of code or config didn't
 # honor the packager's --with-cde-* override.
 
-echo "==> Scanning $DESTDIR for surviving /usr/dt, /etc/dt, /var/dt literals"
+LEGACY_RE='/(usr|etc|var)/dt(/|$|"|:)|/usr/config(/|$|"|:)'
+
+echo "==> Scanning $DESTDIR for surviving /usr/dt, /etc/dt, /var/dt, /usr/config literals and misplaced FHS paths"
 
 found=$(grep -rIl --binary-files=without-match \
     --exclude='COPYING' --exclude='HISTORY' --exclude='README.md' \
@@ -62,18 +64,45 @@ found=$(grep -rIl --binary-files=without-match \
     --exclude='*.1' --exclude='*.1m' --exclude='*.3' \
     --exclude='*.4' --exclude='*.5' --exclude='*.6' \
     --exclude-dir='man*' --exclude-dir='help' --exclude-dir='infolib' \
-    -E '/(usr|etc|var)/dt(/|$|"|:)' "$DESTDIR" 2>/dev/null || true)
+    -E "$LEGACY_RE" "$DESTDIR" 2>/dev/null || true)
 
-if [ -z "$found" ]; then
-    echo "==> Clean: no surviving /usr/dt, /etc/dt, /var/dt literals."
+bad_layout=
+for relpath in \
+    usr/config \
+    usr/CONTRIBUTORS \
+    usr/COPYING \
+    usr/copyright \
+    usr/HISTORY \
+    usr/README.md
+do
+    if [ -e "$DESTDIR/$relpath" ] || [ -L "$DESTDIR/$relpath" ]; then
+        bad_layout="$bad_layout
+$DESTDIR/$relpath"
+    fi
+done
+
+if [ -z "$found" ] && [ -z "$bad_layout" ]; then
+    echo "==> Clean: no surviving legacy paths or misplaced FHS paths."
     exit 0
 fi
 
-echo "==> Found legacy paths in:"
-echo "$found" | sed 's/^/    /'
-echo
-echo "==> Sample offending lines:"
-echo "$found" | head -20 | while IFS= read -r f; do
-    grep -nE '/(usr|etc|var)/dt(/|$|"|:)' "$f" 2>/dev/null | head -3 | sed "s|^|  $f:|"
-done
+if [ -n "$bad_layout" ]; then
+    echo "==> Found misplaced FHS paths:"
+    printf '%s\n' "$bad_layout" |
+        sed '/^$/d; s/^/    /'
+    echo
+fi
+
+if [ -n "$found" ]; then
+    echo "==> Found legacy paths in:"
+    echo "$found" | sed 's/^/    /'
+    echo
+    echo "==> Sample offending lines:"
+    echo "$found" | head -20 | while IFS= read -r f; do
+        grep -nE "$LEGACY_RE" "$f" 2>/dev/null |
+            head -3 |
+            sed "s|^|  $f:|"
+    done
+fi
+
 exit 1

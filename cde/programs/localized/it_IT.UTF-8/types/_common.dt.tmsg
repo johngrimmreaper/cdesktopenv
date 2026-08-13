@@ -68,13 +68,13 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 
 10 # ATTENZIONE: Questo file potrà essere sovrascritto in una successiva \n\
 #     installazione del Common Desktop Environment (CDE). Di conseguenza, \n\
 #     le modifiche a livello di sistema dovranno essere apportate nei \n\
-#     file di database equivalenti in /etc/dt/types, e non su questo file.
+#     file di database equivalenti in __CDE_CONFIGURATION_TOP__/appconfig/types, e non su questo file.
 $ 
 $ Message 11 and 12:
 $         These Messages are headers in every *.dt file used to break up
@@ -307,7 +307,7 @@ $
                         $HOME/.dt/dtwmrc nell'editor di sistema (l'editor \\\n\
                         specificato dalla variabile d'ambiente EDITOR). \\\n\
                         Se il file $HOME/.dt/dtwmrc non esiste, l'azione lo crea \\\n\
-                        copiando il file /usr/dt/config/<lingua>/sys.dtwmrc. \\\n\
+                        copiando il file __CDE_DATA_TOP__/config/<lingua>/sys.dtwmrc. \\\n\
                         Dopo aver salvato il file ed essere usciti dall'editor, \\\n\
                         è necessario riavviare la Gestione dello spazio di lavoro \\\n\
                         scegliendo Riavviare gestione dello spazio di lavoro dal \\\n\
@@ -2677,12 +2677,12 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
 13001 # Le definizioni dei tipi di dati seguenti si riferiscono agli oggetti \n\
-# trovati nella cartella /var/dt/appconfig/appmanager/$LOGNAME dell'utente.
+# trovati nella cartella __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME dell'utente.
 $ 
 $ ----------------------------------------------------------------------------
 $ Messages 13002 - 13008 are descriptions for the different application groups

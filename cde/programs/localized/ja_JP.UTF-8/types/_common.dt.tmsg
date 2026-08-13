@@ -68,11 +68,11 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 10 # 警告:  このファイルは共通デスクトップ環境(CDE)をインストールする\n\
 #     たびに書き換えられます。システム全体に関連する変更は、\n\
-#     /etc/dt/types の該当するデータベース・ファイルに行い、\n\
+#     __CDE_CONFIGURATION_TOP__/appconfig/types の該当するデータベース・ファイルに行い、\n\
 #     このファイルには行わないでください。
 $ 
 $ Message 11 and 12:
@@ -315,7 +315,7 @@ $
                         エディタ (環境変数 EDITOR で指定したエディタ) で\\\n\
                         開きます。$HOME/.dt/dtwmrc が存在しない場合には、\\\n\
                         アクションはファイルを \\\n\
-                        /usr/dt/config/<language>/sys.dtwmrc からコピー\\\n\
+                        __CDE_DATA_TOP__/config/<language>/sys.dtwmrc からコピー\\\n\
                         します。ファイルを保存してエディタを終了した時は、\\\n\
                         ワークスペース・メニューで \\\n\
                         [ワークスペースマネージャの再起動] を選択して、\\\n\
@@ -2731,11 +2731,11 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file 
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME 
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
-13001 # これらのデータ型定義は、/var/dt/appconfig/appmanager/$LOGNAME \n\
+13001 # これらのデータ型定義は、__CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME \n\
 # サブフォルダの下にあるオブジェクトに適用されます。
 $ 
 $ ----------------------------------------------------------------------------

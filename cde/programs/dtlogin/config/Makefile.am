@@ -70,11 +70,11 @@ CLEANFILES = $(CPP_TARGETS)
 # Some of these are installed here, others are installed via
 # programs/localization/
 
-configsdir=$(CDE_INSTALLATION_TOP)/config
+configsdir=$(CDE_DATA_TOP)/config
 dist_configs_DATA = Xaccess Xconfig Xservers
 dist_configs_SCRIPTS = sys.dtprofile Xfailsafe Xreset Xsetup Xstartup
 
-xsessdir=$(CDE_INSTALLATION_TOP)/config/Xsession.d
+xsessdir=$(CDE_DATA_TOP)/config/Xsession.d
 dist_xsess_SCRIPTS = 0060.dtsysenv
 
 dist_bin_SCRIPTS = Xsession

@@ -294,17 +294,17 @@ $ Messages 54 through 59 are location specific pixmaps.  These could
 $  be different for different locales.   
 $    
 
-54 "/usr/dt/appconfig/icons/C/DtCMapt.m.pm"
+54 "__CDE_DATA_TOP__/appconfig/icons/C/DtCMapt.m.pm"
 
-55 "/usr/dt/appconfig/icons/C/DtCMtdo.m.pm"
+55 "__CDE_DATA_TOP__/appconfig/icons/C/DtCMtdo.m.pm"
 
-56 "/usr/dt/appconfig/icons/C/DtCMday.m.pm"
+56 "__CDE_DATA_TOP__/appconfig/icons/C/DtCMday.m.pm"
 
-57 "/usr/dt/appconfig/icons/C/DtCMwk.m.pm"
+57 "__CDE_DATA_TOP__/appconfig/icons/C/DtCMwk.m.pm"
 
-58 "/usr/dt/appconfig/icons/C/DtCMmth.m.pm"
+58 "__CDE_DATA_TOP__/appconfig/icons/C/DtCMmth.m.pm"
 
-59 "/usr/dt/appconfig/icons/C/DtCMyr.m.pm"
+59 "__CDE_DATA_TOP__/appconfig/icons/C/DtCMyr.m.pm"
 $    
 $ Messages 60 - 63 are font lists.   
 $    

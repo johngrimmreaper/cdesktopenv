@@ -81,13 +81,13 @@ $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the
 $ \ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 
 10 "# AVERTISSEMENT: Il est possible que ce fichier soit écrasé lors des \n\
 #     installations suivantes du Bureau CDE. Il est donc conseillé d'effectuer\n\
 #     les modifications devant s'appliquer sur tout le système dans un\n\
-#     fichier de base de données équivalent du répertoire /etc/dt/types."
+#     fichier de base de données équivalent du répertoire __CDE_CONFIGURATION_TOP__/appconfig/types."
 $ 
 $ Message 11 and 12:
 $         These Messages are headers in every *.dt file used to break up
@@ -348,7 +348,7 @@ $
                         $HOME/.dt/dtwmrc sous l'éditeur système (celui spécifié \\\n\
                         par la variable d'environnement EDITOR). Si \\\n\
                         $HOME/.dt/dtwmrc n'existe pas, cette action le \\\n\
-                        crée, en copiant le fichier /usr/dt/config/<langue>/sys.dtwmrc. \\\n\
+                        crée, en copiant le fichier __CDE_DATA_TOP__/config/<langue>/sys.dtwmrc. \\\n\
                         Lorsque vous sauvegardez le fichier et quittez l'éditeur, \\\n\
                         vous devez relancer le Gestionnaire de l'espace de travail \\\n\
                         à l'aide de l'option Relancer le Gestionnaire de travail du \\\n\
@@ -3020,13 +3020,13 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
 
 13001 "# Ces définitions de types de données s'appliquent aux objets du\n\
-# sous-dossier /var/dt/appconfig/appmanager/$LOGNAME de l'utilisateur."
+# sous-dossier __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME de l'utilisateur."
 $ 
 $ ----------------------------------------------------------------------------
 $ Messages 13002 - 13008 are descriptions for the different application groups

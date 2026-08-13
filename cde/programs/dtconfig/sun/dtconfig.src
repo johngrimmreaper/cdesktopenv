@@ -62,9 +62,9 @@ XCOMM
 if [ -f CDE_CONFIGURATION_TOP/config/dtlogin.rc ]
 then
   RC_MASTER=CDE_CONFIGURATION_TOP/config/dtlogin.rc
-elif [ -f CDE_INSTALLATION_TOP/config/dtlogin.rc ]
+elif [ -f CDE_DATA_TOP/config/dtlogin.rc ]
 then
-  RC_MASTER=CDE_INSTALLATION_TOP/config/dtlogin.rc
+  RC_MASTER=CDE_DATA_TOP/config/dtlogin.rc
 fi
 
 RC_COPY=/etc/init.d/dtlogin
@@ -76,9 +76,9 @@ XCOMM
 if [ -f CDE_CONFIGURATION_TOP/config/dtlogin.xml ]
 then
   SVC_MASTER=CDE_CONFIGURATION_TOP/config/dtlogin.xml
-elif [ -f CDE_INSTALLATION_TOP/config/dtlogin.xml ]
+elif [ -f CDE_DATA_TOP/config/dtlogin.xml ]
 then
-  SVC_MASTER=CDE_INSTALLATION_TOP/config/dtlogin.xml
+  SVC_MASTER=CDE_DATA_TOP/config/dtlogin.xml
 fi
 
 SVC_COPY=application/graphical-login/dtlogin

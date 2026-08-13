@@ -53,7 +53,7 @@
 	CDE_DATA_TOP "/lib/nls/msg/%L/%N.cat:" CDE_DATA_TOP "/lib/nls/msg/C/%N.cat"
 
 	/* configuration */
-#define	DTIMS_CONFDIR		CDE_INSTALLATION_TOP "/config/ims"
+#define	DTIMS_CONFDIR		CDE_DATA_TOP "/config/ims"
 #define	DTIMS_APPDIR		CDE_DATA_TOP "/app-defaults"
 #define	DTIMS_CONFFILE		"start.conf"
 
@@ -102,7 +102,7 @@
 #define	DTSESSION_RES_PATH	CDE_INSTALLATION_TOP "/bin/dtsession_res"
 
     /* DT dirs */
-#define	DT_CONFDIR		CDE_INSTALLATION_TOP "/config"
+#define	DT_CONFDIR		CDE_DATA_TOP "/config"
 #define	DT_USERDIR		"%H/.dt"
 
 #endif	/* _XIMSPATH_H_ */

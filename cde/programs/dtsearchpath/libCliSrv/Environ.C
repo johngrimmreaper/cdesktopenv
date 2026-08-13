@@ -58,7 +58,7 @@ CDEEnvironment::CDEEnvironment
 
     sysAdmConfig = CDE_CONFIGURATION_TOP "/appconfig";
     factoryInstall = CDE_DATA_TOP "/appconfig";
-    factoryManPath = CDE_INSTALLATION_TOP "/man";
+    factoryManPath = CDE_MAN_DIR;
 
     envVar = os->getEnvironmentVariable("DTSPSYSAPPHOSTS");
     if (!envVar.isNull())

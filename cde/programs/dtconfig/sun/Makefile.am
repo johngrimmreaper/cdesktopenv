@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 dist_bin_SCRIPTS = dtconfig
 
-configdir = $(CDE_INSTALLATION_TOP)/config
+configdir = $(CDE_DATA_TOP)/config
 dist_config_DATA = dtlogin.rc dtlogin.xml
 
 SCRIPTFLAGS = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) \

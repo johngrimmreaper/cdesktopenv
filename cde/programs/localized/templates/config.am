@@ -9,18 +9,28 @@ if SOLARIS
 BUILT_SOURCES += Xresources.ow
 endif
 
-CLEANFILES = $(BUILT_SOURCES)
+SYS_RESOURCES_TMSG = sys.resources.tmsg.paths
+CLEANFILES = $(BUILT_SOURCES) $(SYS_RESOURCES_TMSG)
+EXTRA_DIST = sys.resources.tmsg
 
-cfgmaindir = $(CDE_INSTALLATION_TOP)/config/$(LANG)
+cfgmaindir = $(CDE_DATA_TOP)/config/$(LANG)
 dist_cfgmain_DATA = dtfile.config sys.dtwmrc sys.resources Xresources	\
 	sys.font sys.session
 
-cfgrsrcdir = $(CDE_INSTALLATION_TOP)/config/$(LANG)/Xresources.d
+cfgrsrcdir = $(CDE_DATA_TOP)/config/$(LANG)/Xresources.d
 dist_cfgrsrc_DATA = 0100.session 0120.session 0140.session	\
 	0160.session
 
 TOP = $(top_builddir)/programs
 MERGE = $(top_builddir)/programs/localized/util/merge
+
+LOCALIZED_PATH_SUBST = $(SED) \
+	-e 's|__CDE_DATA_TOP__|$(CDE_DATA_TOP)|g' \
+	-e 's|__CDE_CONFIGURATION_TOP__|$(CDE_CONFIGURATION_TOP)|g' \
+	-e 's|__CDE_LOGFILES_TOP__|$(CDE_LOGFILES_TOP)|g'
+
+$(SYS_RESOURCES_TMSG): $(srcdir)/sys.resources.tmsg
+	$(LOCALIZED_PATH_SUBST) $< > $@ || { $(RM) $@; exit 1; }
 
 # these are the names these 4 file are really installed as, so create
 # symlinks to them for installation
@@ -42,8 +52,8 @@ MERGE = $(top_builddir)/programs/localized/util/merge
 
 
 # these are the real targets
-sys.resources: $(TOP)/dtsession/sys.resources sys.resources.tmsg
-	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@
+sys.resources: $(TOP)/dtsession/sys.resources $(SYS_RESOURCES_TMSG)
+	$(MERGE) -lang $(LANG) $(SYS_RESOURCES_TMSG) < $< > $@ || $(RM) $@
 
 sys.session: $(TOP)/dtsession/sys.session sys.session.tmsg
 	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@

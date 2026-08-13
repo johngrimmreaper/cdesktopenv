@@ -530,7 +530,7 @@ ReinitResources( void )
     
     configFileName = qualifyWithFirst(DEF_XDM_CONFIG,
 				      CDE_CONFIGURATION_TOP "/config:"
-				      CDE_INSTALLATION_TOP "/config");
+				      CDE_DATA_TOP "/config");
 
     GetResource ("Dtlogin.configFile", "Dtlogin.ConfigFile",
 		 DM_STRING, &config, configFileName);
@@ -787,7 +787,7 @@ char * newname;
                  /*********************/
             newname = qualifyWithFirst(name,
                                        CDE_CONFIGURATION_TOP "/config:"
-                                       CDE_INSTALLATION_TOP "/config");
+                                       CDE_DATA_TOP "/config");
             return (newname);
 
                  /***************************************/
@@ -806,7 +806,7 @@ char * newname;
             } else {
                 newname = qualifyWithFirst(name,
                                            CDE_CONFIGURATION_TOP "/config:"
-                                           CDE_INSTALLATION_TOP "/config");
+                                           CDE_DATA_TOP "/config");
                 return (newname);
             }
 
@@ -817,7 +817,7 @@ char * newname;
                 /** no special processing needed **/
                 newname = qualifyWithFirst(name,
                                            CDE_CONFIGURATION_TOP "/config:"
-                                           CDE_INSTALLATION_TOP "/config");
+                                           CDE_DATA_TOP "/config");
                 return (newname);
             } else {
                 char *langString;
@@ -830,13 +830,13 @@ char * newname;
                 langString = _ExpandLang(name, lang);
                 if ( (tempName = qualifyWithFirst(langString,
                                            CDE_CONFIGURATION_TOP "/config:"
-                                           CDE_INSTALLATION_TOP "/config") )
+                                           CDE_DATA_TOP "/config") )
                     == NULL) {
                     free(langString);
                     langString = _ExpandLang(name, "C");
                     if ( (tempName = qualifyWithFirst(langString,
                                            CDE_CONFIGURATION_TOP "/config:"
-                                           CDE_INSTALLATION_TOP "/config") )
+                                           CDE_DATA_TOP "/config") )
                         == NULL) {
                         free(langString);
                         return(NULL);

@@ -6,7 +6,9 @@ BUILT_SOURCES = Dthelpview Dtimsstart Dtlogin Dthello Dtsession		\
 	Dtscreen Dtwm Dtfile Dtstyle Dtpad Dticon Dtcreate Dtcalc	\
 	Dtcm Dtterm Dtmail Dtbuilder Dtudcfonted Dt Dtinfo
 
-CLEANFILES = $(BUILT_SOURCES)
+DTCM_TMSG = Dtcm.tmsg.paths
+CLEANFILES = $(BUILT_SOURCES) $(DTCM_TMSG)
+EXTRA_DIST = Dtcm.tmsg
 
 appdefdir = $(CDE_DATA_TOP)/app-defaults/$(LANG)
 dist_appdef_DATA = $(BUILT_SOURCES)
@@ -14,6 +16,14 @@ dist_appdef_DATA = $(BUILT_SOURCES)
 TOP = $(top_builddir)/programs
 DTSVCSRC = $(top_builddir)/lib/DtSvc
 MERGE = $(top_builddir)/programs/localized/util/merge
+
+LOCALIZED_PATH_SUBST = $(SED) \
+	-e 's|__CDE_DATA_TOP__|$(CDE_DATA_TOP)|g' \
+	-e 's|__CDE_CONFIGURATION_TOP__|$(CDE_CONFIGURATION_TOP)|g' \
+	-e 's|__CDE_LOGFILES_TOP__|$(CDE_LOGFILES_TOP)|g'
+
+$(DTCM_TMSG): $(srcdir)/Dtcm.tmsg
+	$(LOCALIZED_PATH_SUBST) $< > $@ || { $(RM) $@; exit 1; }
 
 
 Dthelpview: $(TOP)/dthelp/dthelpview/Dthelpview Dthelpview.tmsg
@@ -55,8 +65,8 @@ Dtcreate: $(TOP)/dtcreate/Dtcreate Dtcreate.tmsg
 Dtcalc: $(TOP)/dtcalc/Dtcalc Dtcalc.tmsg
 	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@
 
-Dtcm: $(TOP)/dtcm/dtcm/Dtcm.ad Dtcm.tmsg
-	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@
+Dtcm: $(TOP)/dtcm/dtcm/Dtcm.ad $(DTCM_TMSG)
+	$(MERGE) -lang $(LANG) $(DTCM_TMSG) < $< > $@ || $(RM) $@
 
 Dtterm: $(TOP)/dtterm/Dtterm.ad Dtterm.tmsg
 	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@

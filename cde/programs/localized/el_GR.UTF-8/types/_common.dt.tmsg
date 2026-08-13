@@ -69,12 +69,12 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "\#".  This indicates
 $         that it is a comment.  Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 10 \# ΠΡΟΕΙΔΟΠΟΙΗΣΗ:  Αυτό το αρχείο μπορεί να γραφτεί εκ νέου σε επόμενες εγκαταστάσεις του\n\
 \#     Common Desktop Environment (CDE).  Συνεπώς, οποιεσδήποτε αλλαγές στο σύστημα\n\
 \#     πρέπει να γίνει στην ισοδύναμη βάση αρχείων στο\n\
-\#     /etc/dt/types και όχι σε αυτό το αρχείο.
+\#     __CDE_CONFIGURATION_TOP__/appconfig/types και όχι σε αυτό το αρχείο.
 $ 
 $ Message 11 and 12:
 $         These Messages are headers in every *.dt file used to break up
@@ -312,7 +312,7 @@ $
                         (την εφαρμογή που καθορίζει η μεταβλητή EDITOR)  \\\n\
                         Αν το $HOME/.dt/dtwmrc δεν υπάρχει, η ενέργεια δημιουργεί \\\n\
                         το αρχείο αντιγράφοντάς το \\\n\
-                        /usr/dt/config/<language>/sys.dtwmrc.  Αφού αποθηκεύσετε \\\n\
+                        __CDE_DATA_TOP__/config/<language>/sys.dtwmrc.  Αφού αποθηκεύσετε \\\n\
                         το αρχείο και κλείσετε τον επεξεργαστή αρχείων, πρέπει να \\\n\
                         επανεκκινήσετε τον Διαχειριστή της επιφάνειας εργασίας επιλέγοντας \\\n\
                         Επανεκκίνηση Επιφάνειας Εργασίας από το μενού της επιφάνειας εργασίας.
@@ -2701,12 +2701,12 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file 
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME 
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "\#  ".  This indicates
 $         that it is a comment.
 $ 
 13001 \# Αυτοί οι ορισμοί των δεδομένων εφαρμόζεται στα αντικείμενα που βρίσκονται στον\n\
-\# υποφάκελο του χρήστη στο /var/dt/appconfig/appmanager/$LOGNAME.
+\# υποφάκελο του χρήστη στο __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME.
 $ 
 $ ----------------------------------------------------------------------------
 $ Messages 13002 - 13008 are descriptions for the different application groups

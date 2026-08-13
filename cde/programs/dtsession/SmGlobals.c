@@ -744,10 +744,10 @@ FixPath
 {
     char * tempPath;
     char * pathList = (char *)XtMalloc(strlen(SM_SYSTEM_PATH) +
-			 strlen(":" CDE_INSTALLATION_TOP "/config") + 1);
+			 strlen(":" CDE_DATA_TOP "/config") + 1);
 
     strcpy(pathList,SM_SYSTEM_PATH);
-    strcat(pathList,":" CDE_INSTALLATION_TOP "/config");
+    strcat(pathList,":" CDE_DATA_TOP "/config");
 
     tempPath = _DtQualifyWithFirst(the1stPath,pathList);
     if (tempPath != NULL) {

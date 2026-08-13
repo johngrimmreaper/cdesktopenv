@@ -80,13 +80,13 @@ $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the
 $ \ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 
 10 "# ACHTUNG:  Bei späteren Installationen der CDE-Umgebung (CDE = Common Desktop\n\
 #     Environment) wird diese Datei möglicherweise überschrieben. Alle das gesamte\n\
 #     System betreffenden Änderungen sollten demzufolge in einer äquivalenten \n\
-#     Datenbankdatei in /etc/dt/types und nicht in dieser Datei vorgenommen werden."
+#     Datenbankdatei in __CDE_CONFIGURATION_TOP__/appconfig/types und nicht in dieser Datei vorgenommen werden."
 $ 
 $ Message 11 and 12:
 $         These Messages are headers in every *.dt file used to break up
@@ -359,7 +359,7 @@ $
                         die Variable für die Editorumgebung angegebenen Editor). \\\n\
                         Wenn die Datei $HOME/.dt/dtwmrc nicht vorhanden ist, wird \\\n\
                         sie von der Aktion durch Kopieren der Datei \\\n\
-                        /usr/dt/config/<language>/sys.dtwmrc erstellt. \\\n\
+                        __CDE_DATA_TOP__/config/<language>/sys.dtwmrc erstellt. \\\n\
                         Nach dem Speichern der Datei und Verlassen des Editors muß \\\n\
                         der Arbeitsbereichsmanager im Arbeitsbereichsmenü \\\n\
                         durch Auswählen von 'Neustart' erneut gestartet werden."
@@ -3066,13 +3066,13 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
 
 13001 "# Diese Definitionen für den Datentyp beziehen sich auf Objekte, die im\n\
-# Benutzerunterordner /var/dt/appconfig/appmanager/$LOGNAME gefunden wurden."
+# Benutzerunterordner __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME gefunden wurden."
 $ 
 $ ----------------------------------------------------------------------------
 $ Messages 13002 - 13008 are descriptions for the different application groups

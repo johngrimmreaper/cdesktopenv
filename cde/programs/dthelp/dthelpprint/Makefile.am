@@ -1,7 +1,9 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 bin_PROGRAMS = dthelpprint
-bin_SCRIPTS =  dthelpprint.sh
+nodist_bin_SCRIPTS = dthelpprint.sh
+EXTRA_DIST = dthelpprint.sh.in
+DISTCLEANFILES = dthelpprint.sh
 
 dthelpprint_CPPFLAGS = -I.. -I ../../../lib/DtHelp \
 	-DCDE_CONFIGURATION_TOP='"${prefix}"' \

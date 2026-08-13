@@ -33,7 +33,7 @@ TRADCPP = $(top_builddir)/util/tradcpp/tradcpp
 $(TRADCPP):
 	$(MAKE) -C $(top_builddir)/util/tradcpp tradcpp
 
-cfgdir = $(CDE_INSTALLATION_TOP)/config
+cfgdir = $(CDE_DATA_TOP)/config
 dist_cfg_DATA = dtterm.ti
 
 Dtterm.ad: Dtterm.ad.src $(TRADCPP)

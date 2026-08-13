@@ -1,6 +1,6 @@
 !!!!!!!!!!!!!! CDE Standard Lang_Terr and Codeset Strings !!!!!!!!!!!!!!
 ! File:			CDE.lcx
-! Default location:	/usr/dt/config/svc/CDE.lcx
+! Default location:	@CDE_DATA_TOP@/config/svc/CDE.lcx
 ! Purpose:
 !    Define the CDE standard set of locale-related strings.
 ! Description:
@@ -531,7 +531,7 @@ CDE.100+.mime.~.?.UTF-16:	X-UTF-16	! multibyte encoding of Unicode
 !! If other mailers are using other codeset identifiers in their MIME
 !! messages, dtmail will not be able to process them correctly. 
 !! To correct this, additional .<. translations for these identifiers 
-!! can be added to a <platform>.lcx file in the /etc/dt/config/svc 
+!! can be added to a <platform>.lcx file in the @CDE_CONFIGURATION_TOP@/config/svc
 !! or $HOME/.dt/config/svc directories.  Such translations should read:
 !! <platform>.100+.mime.<.?.<CDE std codeset>: <mailer identifier for the codeset>
 !!

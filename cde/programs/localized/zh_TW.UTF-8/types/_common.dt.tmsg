@@ -68,10 +68,10 @@ $         This Message is a header to every *.dt file.
 $         NOTE: make sure each new line begins with a "#".  This indicates
 $         that it is a comment.  Also, keep the \n\ at the end of each
 $         line.
-$   Don't translate /etc/dt/types.
+$   Don't translate __CDE_CONFIGURATION_TOP__/appconfig/types.
 $ 
 10 #      此檔案可能會被覆蓋過去。  因此整個系統需做變更時，\n\
-#      請更改在類似的 /etc/dt/types 資料庫檔案中，\n\
+#      請更改在類似的 __CDE_CONFIGURATION_TOP__/appconfig/types 資料庫檔案中，\n\
 #      而不要更改在此檔案。
 $ 
 $ Message 11 and 12:
@@ -307,7 +307,7 @@ $
 			(EDITOR 環境變數指定的編輯器)\\\n\
                         中開啟 $HOME/.dt/dtwmrc 檔案。\\\n\
                         如果 $HOME/.dt/dtwmrc 不存在，此\\\n\
-                        動作會以複製 /usr/dt/config/<language>/sys.dtwmrc \\\n\
+                        動作會以複製 __CDE_DATA_TOP__/config/<language>/sys.dtwmrc \\\n\
                         的方式建立該檔案。當您儲存\\\n\
                         檔案並離開編輯器後，必須\\\n\
                         從工作空間功能表選擇重新啟動工作空間管理者，\\\n\
@@ -2624,12 +2624,12 @@ $
 $ ----------------------------------------------------------------------------
 $ Messages 13001:
 $         This Message is a header used to explain what objects this file 
-$         works on.  Don't translate /var/dt/appconfig/appmanager/$LOGNAME 
+$         works on.  Don't translate __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME
 $         NOTE: make sure each line begins with a "#  ".  This indicates
 $         that it is a comment.
 $ 
 13001 # 這些資料類型定義應用於使用者在 \n\
-# /var/dt/appconfig/appmanager/$LOGNAME \n\
+# __CDE_LOGFILES_TOP__/appconfig/appmanager/$LOGNAME \n\
 # 次檔案夾中所建立的物件。
 $ 
 $ ----------------------------------------------------------------------------
