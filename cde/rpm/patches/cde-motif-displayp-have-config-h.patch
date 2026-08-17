@@ -1,0 +1,74 @@
+Subject: [PATCH] build: avoid Motif DisplayP.h HAVE_CONFIG_H collision
+
+RHEL 9 motif-devel 2.3.4 installs Xm/DisplayP.h but does not install
+Motif's build-time config.h.
+
+CDE is built by Automake with HAVE_CONFIG_H defined for CDE's generated
+include/cde_config.h. When CDE includes Motif's private DisplayP.h,
+that header interprets HAVE_CONFIG_H as referring to Motif's config.h
+and tries to include <config.h>, causing the build to fail.
+
+Temporarily hide HAVE_CONFIG_H only while including Xm/DisplayP.h and
+restore its previous state immediately afterward.
+
+This is carried as an RPM/RHEL compatibility patch rather than changing
+the generic CDE sources.
+---
+diff --git a/cde/lib/DtTerm/TermPrim/TermPrim.c b/cde/lib/DtTerm/TermPrim/TermPrim.c
+index 2221afd3e..ec3806519 100644
+--- a/cde/lib/DtTerm/TermPrim/TermPrim.c
++++ b/cde/lib/DtTerm/TermPrim/TermPrim.c
+@@ -42,7 +42,24 @@ extern char * _DtTermPrimGetMessage( char *filename, int set, int n, char *s );
+ #include <X11/keysym.h>
+ #include <Xm/MessageB.h>
+ #include <Xm/XmP.h>
++/*
++ * Motif's private DisplayP.h uses HAVE_CONFIG_H to decide whether to
++ * include <config.h>.  Automake defines HAVE_CONFIG_H for CDE, but CDE's
++ * generated configuration header is include/cde_config.h and packaged
++ * Motif does not install its private config.h.
++ *
++ * Hide CDE's HAVE_CONFIG_H while including this Motif private header,
++ * then restore it immediately afterwards.
++ */
++#ifdef HAVE_CONFIG_H
++#define CDE_MOTIF_RESTORE_HAVE_CONFIG_H 1
++#undef HAVE_CONFIG_H
++#endif
+ #include <Xm/DisplayP.h>
++#ifdef CDE_MOTIF_RESTORE_HAVE_CONFIG_H
++#define HAVE_CONFIG_H 1
++#undef CDE_MOTIF_RESTORE_HAVE_CONFIG_H
++#endif
+ #include <Xm/XmPrivate.h>
+ #include <Xm/VirtKeys.h>
+ #include <Xm/MwmUtil.h>
+diff --git a/cde/lib/DtWidget/ComboBox.c b/cde/lib/DtWidget/ComboBox.c
+index 8f98e0045..6e2b4131b 100644
+--- a/cde/lib/DtWidget/ComboBox.c
++++ b/cde/lib/DtWidget/ComboBox.c
+@@ -110,7 +110,24 @@ express or implied warranty.
+ #include <Dt/DtMsgsP.h>
+ #include "ComboBoxP.h"
+ #include <Xm/DrawP.h>
++/*
++ * Motif's private DisplayP.h uses HAVE_CONFIG_H to decide whether to
++ * include <config.h>.  Automake defines HAVE_CONFIG_H for CDE, but CDE's
++ * generated configuration header is include/cde_config.h and packaged
++ * Motif does not install its private config.h.
++ *
++ * Hide CDE's HAVE_CONFIG_H while including this Motif private header,
++ * then restore it immediately afterwards.
++ */
++#ifdef HAVE_CONFIG_H
++#define CDE_MOTIF_RESTORE_HAVE_CONFIG_H 1
++#undef HAVE_CONFIG_H
++#endif
+ #include <Xm/DisplayP.h>
++#ifdef CDE_MOTIF_RESTORE_HAVE_CONFIG_H
++#define HAVE_CONFIG_H 1
++#undef CDE_MOTIF_RESTORE_HAVE_CONFIG_H
++#endif
+ #include <Xm/List.h>
+ #include <Xm/ComboBox.h>	/* for redirecting utility functions */
+ #include "DtWidgetI.h"		/* for _Dt thread-safety macros */

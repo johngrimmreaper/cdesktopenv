@@ -1,0 +1,22 @@
+From: Reaper <JohnGrimmReaper@disroot.org>
+Subject: [PATCH] DtSvc: make Saver.h self-contained
+
+DtSaverGetWindows() exposes the X11 Boolean, Display, and Window types,
+but Saver.h does not include a header defining those types.  Consumers
+that include Dt/Saver.h directly therefore fail to compile unless an
+unrelated X11 header happened to be included first.
+
+Include X11/Intrinsic.h so the public header supplies the declarations
+required by its own interface.
+
+--- a/cde/include/Dt/Saver.h
++++ b/cde/include/Dt/Saver.h
+@@ -31,6 +31,8 @@
+ #ifndef _dtsaver_h
+ #define _dtsaver_h
+ 
++#include <X11/Intrinsic.h>
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif

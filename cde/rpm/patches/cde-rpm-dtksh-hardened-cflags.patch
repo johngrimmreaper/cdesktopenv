@@ -1,0 +1,32 @@
+Subject: [PATCH] rpm: pass distribution CFLAGS to bundled ksh93 build
+
+The dtksh Makefile invokes the bundled ksh93 package build with CCFLAGS
+set only to CDE's SHOPT preprocessor definitions.  This discards the
+compiler flags supplied by the RPM build environment.
+
+On Enterprise Linux 9 the linker still receives the distribution
+hardening flags and produces PIE executables.  The ksh93 bootstrap
+mamake object is therefore compiled without the corresponding compiler
+hardening/PIE flags and cannot be linked:
+
+  relocation R_X86_64_32 ... can not be used when making a PIE object
+
+Preserve the ksh93 SHOPT definitions while also passing the configured
+CFLAGS into its CCFLAGS variable.
+
+This keeps the distribution hardening policy intact rather than
+disabling PIE for the bundled build.
+---
+diff --git a/cde/programs/dtksh/Makefile.am b/cde/programs/dtksh/Makefile.am
+index 52c5990b6..8c0eb60e5 100644
+--- a/cde/programs/dtksh/Makefile.am
++++ b/cde/programs/dtksh/Makefile.am
+@@ -59,7 +59,7 @@ dtksh_SOURCES = init.c \
+                 msgs.c
+ 
+ ksh93/bin/ksh:
+-	ksh93/bin/package flat make CCFLAGS='$(KSH93_SHOPTS)'
++	ksh93/bin/package flat make CCFLAGS='$(CFLAGS) $(KSH93_SHOPTS)'
+ 
+ init.c: ksh93/bin/ksh
+ 	$(CP) ksh93/src/cmd/ksh93/sh/init.c ./

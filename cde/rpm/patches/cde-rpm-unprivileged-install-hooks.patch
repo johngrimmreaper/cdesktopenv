@@ -1,0 +1,70 @@
+Subject: [PATCH] rpm: leave privileged file modes to package metadata
+
+RPM package builds must not depend on privileged chown, chgrp, or chmod
+operations during make install.
+
+Remove the four CDE install-exec hooks which attempt to assign privileged
+runtime ownership or mode bits. The RPM package's %files metadata will
+assign the required final ownership and modes instead.
+
+This is an RPM packaging-policy patch and does not change the intended
+installed runtime permissions.
+---
+diff --git a/cde/programs/dtmail/dtmail/Makefile.am b/cde/programs/dtmail/dtmail/Makefile.am
+index 7028b93ba..273b16500 100644
+--- a/cde/programs/dtmail/dtmail/Makefile.am
++++ b/cde/programs/dtmail/dtmail/Makefile.am
+@@ -43,8 +43,3 @@ dtmail_SOURCES = AliasListUiItem.C               AlternatesListUiItem.C \
+ 		 XmTextEditor.C                  XtArgCollector.C \
+ 		 dtb_utils.C                     options_stubs.C \
+ 		 options_ui.C                    options_util.C
+-
+-# Don't fail if we can't set the mail group which might not exist on
+-# some systems
+-install-exec-hook:
+-	-(chgrp mail $(DESTDIR)$(bindir)/dtmail && chmod 2755 $(DESTDIR)$(bindir)/dtmail)
+diff --git a/cde/programs/dtsearchpath/dtappg/Makefile.am b/cde/programs/dtsearchpath/dtappg/Makefile.am
+index 114adcc97..4de8865ec 100644
+--- a/cde/programs/dtsearchpath/dtappg/Makefile.am
++++ b/cde/programs/dtsearchpath/dtappg/Makefile.am
+@@ -15,8 +15,3 @@ dtappgather_LDADD += -lintl
+ endif
+ 
+ dtappgather_SOURCES = Options.C dtappgather.C dtappgather.h Options.h
+-
+-# can't use INSTALL here as the program is already installed
+-install-exec-hook:
+-	-chown root $(DESTDIR)$(bindir)/dtappgather
+-	-chmod 4755 $(DESTDIR)$(bindir)/dtappgather
+diff --git a/cde/programs/dtsession/Makefile.am b/cde/programs/dtsession/Makefile.am
+index 29fc5cd4c..2fc476ef0 100644
+--- a/cde/programs/dtsession/Makefile.am
++++ b/cde/programs/dtsession/Makefile.am
+@@ -126,13 +126,3 @@ sys.session: sys.session.src
+ sys.session.ive: sys.session.src
+ 	$(RM) $@
+ 	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) -DIVE $< > $@
+-
+-
+-# systems without a PAM library need dtsession to be SUID root
+-
+-install-exec-hook:
+-if !HAS_PAM_LIBRARY
+-	-chown root $(DESTDIR)$(bindir)/dtsession
+-	-chmod 4755 $(DESTDIR)$(bindir)/dtsession
+-endif
+-
+diff --git a/cde/programs/dtterm/Makefile.am b/cde/programs/dtterm/Makefile.am
+index d525f5f98..59b6a3920 100644
+--- a/cde/programs/dtterm/Makefile.am
++++ b/cde/programs/dtterm/Makefile.am
+@@ -51,9 +51,3 @@ DtTermFallBackResources.c: DtTermFallBackResources.c.src
+ dtterm.ti: terminfoChecklist $(TRADCPP)
+ 	$(RM) $@
+ 	CPP="$(GENCPP)" $(SHELL) terminfoCreate < terminfoChecklist > $@
+-
+-install-exec-hook:
+-if !HAS_UTEMPTER_LIBRARY
+-	-chown root $(DESTDIR)$(bindir)/dtterm
+-	-chmod 4755 $(DESTDIR)$(bindir)/dtterm
+-endif
