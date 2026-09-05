@@ -1,0 +1,449 @@
+name: CDE source CI - Fedora 44 / Fedora Motif 2.3.8
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cde-source-fedora44-fedora-motif-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-install:
+    name: Build and diagnose CDE with Fedora 44 Motif
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    container:
+      image: fedora:44
+
+    env:
+      IFFEFLAGS: -d1
+
+    steps:
+      - name: Show pristine Fedora container
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cat /etc/os-release
+          uname -a
+          printf 'CPUs: %s\n' "$(nproc)"
+
+      - name: Install Fedora source-build prerequisites
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          dnf -y upgrade --refresh
+          dnf -y install \
+            autoconf \
+            automake \
+            bash \
+            bdftopcf \
+            binutils \
+            bison \
+            cpp \
+            diffutils \
+            file \
+            findutils \
+            flex \
+            freetype-devel \
+            gcc \
+            gcc-c++ \
+            git \
+            glibc-common \
+            glibc-langpack-en \
+            gzip \
+            ksh \
+            libICE-devel \
+            libSM-devel \
+            libX11-devel \
+            libXau-devel \
+            libXaw-devel \
+            libXdmcp-devel \
+            libXext-devel \
+            libXft-devel \
+            libXinerama-devel \
+            libXmu-devel \
+            libXp-devel \
+            libXpm-devel \
+            libXrender-devel \
+            libXScrnSaver-devel \
+            libXt-devel \
+            libjpeg-turbo-devel \
+            libtirpc-devel \
+            libtool \
+            libutempter-devel \
+            libxcrypt-devel \
+            lmdb-devel \
+            m4 \
+            make \
+            mkfontscale \
+            motif-devel \
+            ncompress \
+            opensp \
+            openssl-devel \
+            pam-devel \
+            patch \
+            perl-interpreter \
+            pkgconf-pkg-config \
+            python3 \
+            rpcgen \
+            sessreg \
+            shadow-utils \
+            tar \
+            tcl-devel \
+            util-linux \
+            xrdb \
+            xorg-x11-proto-devel
+          dnf clean all
+
+      - name: Snapshot compiler and build toolchain
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== Fedora release ==='
+          cat /etc/fedora-release
+          echo '=== compiler ==='
+          gcc --version
+          gcc -v 2>&1
+          g++ --version
+          echo '=== linker ==='
+          ld --version | head -n 2
+          echo '=== build tools ==='
+          make --version | head -n 2
+          autoconf --version | head -n 2
+          automake --version | head -n 2
+          libtool --version | head -n 2
+          bison --version | head -n 2
+          flex --version | head -n 2
+          python3 --version
+          echo '=== exact RPM versions ==='
+          rpm -q gcc gcc-c++ glibc glibc-devel binutils make autoconf automake libtool bison flex python3
+          echo '=== relevant build variables ==='
+          printf 'CC=%s\n' "${CC-}"
+          printf 'CXX=%s\n' "${CXX-}"
+          printf 'CPPFLAGS=%s\n' "${CPPFLAGS-}"
+          printf 'CFLAGS=%s\n' "${CFLAGS-}"
+          printf 'CXXFLAGS=%s\n' "${CXXFLAGS-}"
+          printf 'LDFLAGS=%s\n' "${LDFLAGS-}"
+          printf 'LD_LIBRARY_PATH=%s\n' "${LD_LIBRARY_PATH-}"
+          printf 'PKG_CONFIG_PATH=%s\n' "${PKG_CONFIG_PATH-}"
+          printf 'IFFEFLAGS=%s\n' "$IFFEFLAGS"
+
+      - name: Prove and inspect Fedora Motif provenance
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== installed Motif RPMs ==='
+          rpm -q motif motif-devel
+          echo '=== Motif package metadata ==='
+          rpm -qi motif motif-devel
+          echo '=== public/private header ownership ==='
+          test -f /usr/include/Xm/Xm.h
+          test -f /usr/include/Xm/DisplayP.h
+          rpm -qf /usr/include/Xm/Xm.h
+          rpm -qf /usr/include/Xm/DisplayP.h
+          echo '=== Motif version declarations ==='
+          grep -nE 'Xm(VERSION|REVISION|UPDATE_LEVEL|VERSION_STRING)' /usr/include/Xm/Xm.h || true
+          echo '=== sample installed Xm headers ==='
+          rpm -ql motif-devel | grep '/Xm/.*[.]h$' | LC_ALL=C sort | head -n 100 || true
+          echo '=== dynamic linker view of libXm ==='
+          ldconfig -p | grep -E 'libXm[.]so'
+          libxm="$(ldconfig -p | awk '/libXm[.]so[.]4 .*x86-64/ {print $NF; exit} /libXm[.]so/ {candidate=$NF} END {if (candidate) print candidate}')"
+          test -n "$libxm"
+          test -e "$libxm"
+          printf 'libXm: %s\n' "$libxm"
+          file "$libxm"
+          readelf -d "$libxm" | grep -E '\(SONAME\)|\(NEEDED\)' || true
+          readelf -Ws "$libxm" | grep -E 'XmCreateDrawingArea$' || true
+          rpm -qf "$libxm"
+
+      - name: Check out exact CDE commit under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Trust GitHub checkout mount inside Fedora container
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Show CDE commit under test
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git show --no-patch \
+            --format='commit:    %H%nauthor:    %an <%ae>%nauthor date: %aI%ncommitter: %cn <%ce>%ncommit date: %cI%nsubject:   %s' \
+            HEAD
+          git status --short --branch
+
+      - name: Simulate a fresh local Git clone
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          source_tree="$RUNNER_TEMP/cdesktopenv-code"
+          target_sha="$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)"
+          rm -rf "$source_tree"
+          git clone --no-local --no-checkout "$GITHUB_WORKSPACE" "$source_tree"
+          git -C "$source_tree" checkout --detach "$target_sha"
+          seed_tree="$(git -C "$GITHUB_WORKSPACE" rev-parse 'HEAD^{tree}')"
+          clone_tree="$(git -C "$source_tree" rev-parse 'HEAD^{tree}')"
+          printf 'CI seed tree: %s\n' "$seed_tree"
+          printf 'local clone:  %s\n' "$clone_tree"
+          test "$seed_tree" = "$clone_tree"
+          test -z "$(git -C "$source_tree" status --porcelain)"
+          useradd --create-home --shell /bin/bash cdebuild
+          chown -R cdebuild:cdebuild "$source_tree"
+          printf 'SOURCE_TREE=%s\n' "$source_tree" >> "$GITHUB_ENV"
+
+      - name: Prepare required locale
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          locale -a | grep -i '^en_US'
+          locale -a | grep -Eiq '^en_US[.]utf-?8$'
+          {
+            echo 'LANG=en_US.UTF-8'
+            echo 'LC_ALL=en_US.UTF-8'
+          } >> "$GITHUB_ENV"
+
+      - name: Verify clean pre-install state
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if test -e /usr/dt; then
+            echo 'ERROR: /usr/dt already exists before CDE installation' >&2
+            find /usr/dt -maxdepth 2 -print >&2
+            exit 1
+          fi
+          echo '/usr/dt does not exist: clean installation target confirmed'
+
+      - name: Bootstrap CDE source tree with log capture
+        id: cde_bootstrap
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env \
+            LANG="$LANG" LC_ALL="$LC_ALL" IFFEFLAGS="$IFFEFLAGS" \
+            bash -lc "cd '$SOURCE_TREE/cde' && ./autogen.sh" \
+            2>&1 | tee "$RUNNER_TEMP/cde-autogen.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          exit "$status"
+
+      - name: Configure CDE for upstream /usr/dt layout with log capture
+        id: cde_configure
+        if: ${{ steps.cde_bootstrap.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env \
+            LANG="$LANG" LC_ALL="$LC_ALL" IFFEFLAGS="$IFFEFLAGS" \
+            bash -lc "cd '$SOURCE_TREE/cde' && ./configure" \
+            2>&1 | tee "$RUNNER_TEMP/cde-configure.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo '=== configure error index ===' >&2
+            grep -nEi 'configure: error:|error:|failed|not found|cannot find|cannot compile' \
+              "$SOURCE_TREE/cde/config.log" | tail -n 200 >&2 || true
+            echo '=== config.log tail ===' >&2
+            tail -n 500 "$SOURCE_TREE/cde/config.log" >&2 || true
+            exit "$status"
+          fi
+          echo '=== configured CDE paths ==='
+          grep -E '^(prefix|exec_prefix|bindir|libdir|datadir|sysconfdir)[[:space:]]*=' \
+            "$SOURCE_TREE/cde/Makefile" || true
+
+      - name: Build CDE diagnostically from source
+        id: cde_build
+        if: ${{ steps.cde_configure.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env \
+            LANG="$LANG" LC_ALL="$LC_ALL" IFFEFLAGS="$IFFEFLAGS" \
+            bash -lc "cd '$SOURCE_TREE/cde' && make -k -j2 --output-sync=target V=1" \
+            2>&1 | tee "$RUNNER_TEMP/cde-make.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo 'CDE build failed; structured root-cause extraction follows in the next step.' >&2
+          fi
+          exit "$status"
+
+      - name: Analyze CDE build log
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 "$GITHUB_WORKSPACE/.github/scripts/analyze-build-log.py" \
+            --log "$RUNNER_TEMP/cde-make.log" \
+            --label 'CDE build / Fedora 44 packaged Motif' \
+            --output-dir "$RUNNER_TEMP/ci-diagnostics/cde" \
+            --summary-file "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect CDE diagnostic summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== stage outcomes ==='
+          printf 'bootstrap: %s\n' '${{ steps.cde_bootstrap.outcome }}'
+          printf 'configure: %s\n' '${{ steps.cde_configure.outcome }}'
+          printf 'build:     %s\n' '${{ steps.cde_build.outcome }}'
+          if test -n "${SOURCE_TREE-}" && test -f "$SOURCE_TREE/cde/config.log"; then
+            echo '=== configure result markers ==='
+            grep -nE 'configure: (exit|error)|^configure:' "$SOURCE_TREE/cde/config.log" | tail -n 120 || true
+          fi
+          {
+            echo '## Fedora 44 / Fedora Motif stage result'
+            echo
+            echo '| Stage | Outcome |'
+            echo '|---|---|'
+            printf '| CDE bootstrap | `%s` |\n' '${{ steps.cde_bootstrap.outcome }}'
+            printf '| CDE configure | `%s` |\n' '${{ steps.cde_configure.outcome }}'
+            printf '| CDE build | `%s` |\n' '${{ steps.cde_build.outcome }}'
+            echo
+            echo 'The build uses `make -k -j2 --output-sync=target V=1`; structured diagnostics prefer compiler/linker errors over recursive Make cascades.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install CDE directly into /usr/dt
+        id: cde_install
+        if: ${{ steps.cde_build.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_TREE/cde"
+          make install 2>&1 | tee "$RUNNER_TEMP/cde-install.log"
+
+      - name: Verify /usr/dt source installation
+        id: cde_verify
+        if: ${{ steps.cde_install.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -d /usr/dt
+          programs=(/usr/dt/bin/dtwm /usr/dt/bin/dtsession /usr/dt/bin/dtterm)
+          for program in "${programs[@]}"; do
+            test -x "$program" || { echo "ERROR: missing executable: $program" >&2; exit 1; }
+            ls -l "$program"
+          done
+          for directory in /usr/dt/bin /usr/dt/lib /usr/dt/appconfig; do
+            test -d "$directory" || { echo "ERROR: missing directory: $directory" >&2; exit 1; }
+          done
+          elf_count=0
+          while IFS= read -r -d '' candidate; do
+            file -b "$candidate" | grep -q '^ELF ' || continue
+            ((elf_count += 1))
+            dependencies="$(ldd "$candidate" 2>&1 || true)"
+            if grep -q '=> not found' <<<"$dependencies"; then
+              echo "ERROR: unresolved runtime dependency: $candidate" >&2
+              printf '%s\n' "$dependencies" >&2
+              exit 1
+            fi
+          done < <(find /usr/dt -type f -print0)
+          test "$elf_count" -gt 0
+          broken_links=0
+          while IFS= read -r -d '' link; do
+            if ! test -e "$link"; then
+              printf 'ERROR: broken link: %s -> %s\n' "$link" "$(readlink "$link")" >&2
+              broken_links=1
+            fi
+          done < <(find /usr/dt -type l -print0)
+          test "$broken_links" -eq 0
+          printf 'ELF files checked: %d\n' "$elf_count"
+          du -sh /usr/dt
+
+      - name: Verify build used Fedora Motif libraries
+        id: motif_runtime
+        if: ${{ steps.cde_verify.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ldd /usr/dt/bin/dtwm | grep -E 'libXm[.]so'
+          ldd /usr/dt/bin/dtsession | grep -E 'libXm[.]so'
+          libxm="$(ldd /usr/dt/bin/dtwm | awk '/libXm[.]so/ {print $3; exit}')"
+          test -n "$libxm"
+          test -e "$libxm"
+          printf 'linked libXm: %s\n' "$libxm"
+          rpm -qf "$libxm"
+
+      - name: Prepare diagnostic artifact bundle
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bundle="$RUNNER_TEMP/ci-diagnostics/raw"
+          mkdir -p "$bundle"
+          for item in cde-autogen.log cde-configure.log cde-make.log cde-install.log; do
+            if test -f "$RUNNER_TEMP/$item"; then
+              cp -a "$RUNNER_TEMP/$item" "$bundle/$item" || echo "warning: could not copy $item" >&2
+            fi
+          done
+          if test -n "${SOURCE_TREE-}" && test -f "$SOURCE_TREE/cde/config.log"; then
+            cp -a "$SOURCE_TREE/cde/config.log" "$bundle/cde-config.log" ||
+              echo 'warning: could not copy CDE config.log' >&2
+          fi
+          {
+            echo '=== CDE commit ==='
+            git -C "$GITHUB_WORKSPACE" show --no-patch --format='%H%n%aI%n%an <%ae>%n%s' HEAD ||
+              echo 'warning: CDE Git metadata unavailable' >&2
+            echo '=== Fedora ==='
+            cat /etc/fedora-release || echo 'warning: Fedora release metadata unavailable' >&2
+            echo '=== Motif RPMs ==='
+            rpm -q motif motif-devel || true
+            echo '=== compiler ==='
+            gcc --version || echo 'warning: compiler metadata unavailable' >&2
+            echo '=== environment ==='
+            env | LC_ALL=C sort || echo 'warning: environment snapshot unavailable' >&2
+          } > "$bundle/environment.txt"
+
+      - name: Upload diagnostic artifact bundle
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-fedora44-fedora-motif-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/ci-diagnostics
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+
+      - name: Final diagnostic gate
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bootstrap='${{ steps.cde_bootstrap.outcome }}'
+          configure='${{ steps.cde_configure.outcome }}'
+          build='${{ steps.cde_build.outcome }}'
+          install='${{ steps.cde_install.outcome }}'
+          verify='${{ steps.cde_verify.outcome }}'
+          motif_runtime='${{ steps.motif_runtime.outcome }}'
+
+          printf 'bootstrap=%s configure=%s build=%s install=%s verify=%s motif_runtime=%s\n' \
+            "$bootstrap" "$configure" "$build" "$install" "$verify" "$motif_runtime"
+
+          test "$bootstrap" = success || exit 1
+          test "$configure" = success || exit 1
+          test "$build" = success || exit 1
+          test "$install" = success || exit 1
+          test "$verify" = success || exit 1
+          test "$motif_runtime" = success || exit 1
