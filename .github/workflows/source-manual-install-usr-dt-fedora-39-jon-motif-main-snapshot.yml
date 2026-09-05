@@ -1,0 +1,700 @@
+name: CDE source CI - Fedora 39 / Jon Motif main snapshot
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cde-source-fedora39-jon-motif-main-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-install:
+    name: Diagnose CDE with current Jon Motif main
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    container:
+      image: fedora:39
+
+    env:
+      IFFEFLAGS: -d1
+      MOTIF_PREFIX: /opt/jon-motif
+      MOTIF_LIBDIR: /opt/jon-motif/lib64
+      MOTIF_REPOSITORY: https://github.com/jontrulson/motif.git
+      MOTIF_REF: refs/heads/main
+
+    steps:
+      - name: Show pristine Fedora container
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cat /etc/os-release
+          uname -a
+          printf 'CPUs: %s\n' "$(nproc)"
+
+      - name: Configure Fedora 39 archive repositories
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p /etc/yum.repos.d/disabled
+          shopt -s nullglob
+          repos=(/etc/yum.repos.d/*.repo)
+          if ((${#repos[@]})); then
+            mv "${repos[@]}" /etc/yum.repos.d/disabled/
+          fi
+          cat > /etc/yum.repos.d/fedora39-archive.repo <<'EOF'
+          [fedora39]
+          name=Fedora 39 - $basearch - Archive
+          baseurl=https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/39/Everything/$basearch/os/
+          enabled=1
+          metadata_expire=never
+          gpgcheck=1
+          gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-39-primary
+
+          [updates39]
+          name=Fedora 39 - $basearch - Updates Archive
+          baseurl=https://archives.fedoraproject.org/pub/archive/fedora/linux/updates/39/Everything/$basearch/
+          enabled=1
+          metadata_expire=never
+          gpgcheck=1
+          gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-39-primary
+          EOF
+          dnf -y clean all
+          dnf -y makecache --refresh
+
+      - name: Install Fedora source-build prerequisites
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          dnf -y upgrade --refresh
+          dnf -y install \
+            autoconf \
+            automake \
+            bash \
+            bdftopcf \
+            binutils \
+            bison \
+            byacc \
+            cpp \
+            curl \
+            diffutils \
+            file \
+            findutils \
+            flex \
+            fontconfig-devel \
+            freetype-devel \
+            gcc \
+            gcc-c++ \
+            git \
+            glibc-common \
+            glibc-langpack-en \
+            gzip \
+            ksh \
+            libICE-devel \
+            libSM-devel \
+            libX11-devel \
+            libXau-devel \
+            libXaw-devel \
+            libXcursor-devel \
+            libXdmcp-devel \
+            libXext-devel \
+            libXft-devel \
+            libXinerama-devel \
+            libXmu-devel \
+            libXp-devel \
+            libXpm-devel \
+            libXrandr-devel \
+            libXrender-devel \
+            libXScrnSaver-devel \
+            libXt-devel \
+            libjpeg-turbo-devel \
+            libpng-devel \
+            libtirpc-devel \
+            libtool \
+            libutempter-devel \
+            libxcrypt-devel \
+            lmdb-devel \
+            m4 \
+            make \
+            mkfontscale \
+            ncompress \
+            opensp \
+            openssl-devel \
+            pam-devel \
+            patch \
+            perl-interpreter \
+            pkgconf-pkg-config \
+            python3 \
+            rpcgen \
+            sessreg \
+            shadow-utils \
+            tar \
+            tcl-devel \
+            util-linux \
+            xrdb \
+            xorg-x11-proto-devel \
+            xorg-x11-xbitmaps
+          dnf clean all
+
+      - name: Snapshot compiler and build toolchain
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== Fedora release ==='
+          cat /etc/fedora-release
+          echo '=== compiler ==='
+          gcc --version
+          gcc -v 2>&1
+          g++ --version
+          echo '=== linker ==='
+          ld --version | head -n 2
+          echo '=== build tools ==='
+          make --version | head -n 2
+          autoconf --version | head -n 2
+          automake --version | head -n 2
+          libtool --version | head -n 2
+          bison --version | head -n 2
+          yacc -V 2>&1 || yacc --version 2>&1 || true
+          flex --version
+          python3 --version
+          echo '=== exact RPM versions ==='
+          rpm -q gcc gcc-c++ glibc glibc-devel binutils make autoconf automake libtool bison byacc flex python3
+          echo '=== relevant build variables before custom Motif ==='
+          printf 'CC=%s\n' "${CC-}"
+          printf 'CXX=%s\n' "${CXX-}"
+          printf 'CPPFLAGS=%s\n' "${CPPFLAGS-}"
+          printf 'CFLAGS=%s\n' "${CFLAGS-}"
+          printf 'CXXFLAGS=%s\n' "${CXXFLAGS-}"
+          printf 'LDFLAGS=%s\n' "${LDFLAGS-}"
+          printf 'LD_LIBRARY_PATH=%s\n' "${LD_LIBRARY_PATH-}"
+          printf 'PKG_CONFIG_PATH=%s\n' "${PKG_CONFIG_PATH-}"
+          printf 'IFFEFLAGS=%s\n' "$IFFEFLAGS"
+
+      - name: Prove Fedora Motif is absent
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for package in motif motif-devel; do
+            if rpm -q "$package"; then
+              echo "ERROR: Fedora $package must not be installed in this workflow" >&2
+              exit 1
+            fi
+          done
+          if test -e /usr/include/Xm/Xm.h; then
+            echo 'ERROR: unexpected system Motif header found before Jon Motif build' >&2
+            rpm -qf /usr/include/Xm/Xm.h || true
+            exit 1
+          fi
+
+      - name: Fetch exact current Jon Motif main source
+        id: motif_source
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          motif_tree="$RUNNER_TEMP/jon-motif-source"
+          rm -rf "$motif_tree"
+          mkdir -p "$motif_tree"
+          git -C "$motif_tree" init
+          git -C "$motif_tree" remote add origin "$MOTIF_REPOSITORY"
+          git -C "$motif_tree" fetch --depth=1 origin "$MOTIF_REF"
+          motif_sha="$(git -C "$motif_tree" rev-parse FETCH_HEAD)"
+          git -C "$motif_tree" checkout --detach "$motif_sha"
+          echo '=== exact Jon Motif main source ==='
+          printf 'requested ref: %s\n' "$MOTIF_REF"
+          git -C "$motif_tree" show --no-patch \
+            --format='commit:    %H%nauthor:    %an <%ae>%nauthor date: %aI%ncommitter: %cn <%ce>%ncommit date: %cI%nsubject:   %s' \
+            HEAD
+          git -C "$motif_tree" status --short --branch
+          test -z "$(git -C "$motif_tree" status --porcelain)"
+          useradd --create-home --shell /bin/bash cdebuild
+          chown -R cdebuild:cdebuild "$motif_tree"
+          {
+            printf 'MOTIF_SOURCE_TREE=%s\n' "$motif_tree"
+            printf 'MOTIF_SHA=%s\n' "$motif_sha"
+          } >> "$GITHUB_ENV"
+
+      - name: Bootstrap Jon Motif main with log capture
+        id: motif_bootstrap
+        if: ${{ steps.motif_source.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env PATH="$PATH" \
+            bash -lc "cd '$MOTIF_SOURCE_TREE' && ./autogen.sh" \
+            2>&1 | tee "$RUNNER_TEMP/jon-motif-autogen.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo '=== Jon Motif main bootstrap error index ===' >&2
+            grep -nEi 'error:|fatal:|failed|not found|cannot' "$RUNNER_TEMP/jon-motif-autogen.log" | tail -n 300 >&2 || true
+            tail -n 500 "$RUNNER_TEMP/jon-motif-autogen.log" >&2 || true
+          fi
+          exit "$status"
+
+      - name: Configure Jon Motif main with log capture
+        id: motif_configure
+        if: ${{ steps.motif_bootstrap.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env PATH="$PATH" \
+            bash -lc "cd '$MOTIF_SOURCE_TREE' && ./configure --prefix='$MOTIF_PREFIX' --libdir='$MOTIF_LIBDIR' --disable-demos" \
+            2>&1 | tee "$RUNNER_TEMP/jon-motif-configure.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo '=== Jon Motif main configure error index ===' >&2
+            grep -nEi 'configure: error:|error:|fatal:|failed|not found|cannot find|cannot compile' \
+              "$RUNNER_TEMP/jon-motif-configure.log" | tail -n 300 >&2 || true
+            if test -f "$MOTIF_SOURCE_TREE/config.log"; then
+              echo '=== Jon Motif main config.log tail ===' >&2
+              tail -n 600 "$MOTIF_SOURCE_TREE/config.log" >&2 || true
+            fi
+          fi
+          exit "$status"
+
+      - name: Build Jon Motif main diagnostically
+        id: motif_build
+        if: ${{ steps.motif_configure.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env PATH="$PATH" \
+            bash -lc "cd '$MOTIF_SOURCE_TREE' && make -k -j2 --output-sync=target V=1" \
+            2>&1 | tee "$RUNNER_TEMP/jon-motif-make.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo 'Jon Motif main build failed; structured root-cause extraction will run after checkout.' >&2
+          fi
+          exit "$status"
+
+      - name: Install Jon Motif main into isolated prefix
+        id: motif_install
+        if: ${{ steps.motif_build.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd "$MOTIF_SOURCE_TREE"
+          make install 2>&1 | tee "$RUNNER_TEMP/jon-motif-install.log"
+
+      - name: Prove and inspect Jon Motif main installation provenance
+        id: motif_provenance
+        if: ${{ steps.motif_install.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -f "$MOTIF_PREFIX/include/Xm/Xm.h"
+          test -f "$MOTIF_PREFIX/include/Xm/DisplayP.h"
+          libxm="$(find "$MOTIF_LIBDIR" -maxdepth 1 -type f -name 'libXm.so*' -print -quit)"
+          test -n "$libxm"
+          echo '=== custom Motif main installation ==='
+          printf 'main SHA: %s\n' "$MOTIF_SHA"
+          printf 'prefix:   %s\n' "$MOTIF_PREFIX"
+          printf 'libXm file: %s\n' "$libxm"
+          echo '=== Motif version declarations ==='
+          grep -nE 'Xm(VERSION|REVISION|UPDATE_LEVEL|VERSION_STRING)' "$MOTIF_PREFIX/include/Xm/Xm.h" || true
+          echo '=== installed Xm headers ==='
+          find "$MOTIF_PREFIX/include/Xm" -maxdepth 1 -type f -name '*.h' -printf '%f\n' | LC_ALL=C sort | head -n 150
+          echo '=== library metadata ==='
+          file "$libxm"
+          readelf -d "$libxm" | grep -E '\(SONAME\)|\(NEEDED\)' || true
+          readelf -Ws "$libxm" | grep -E 'XmCreateDrawingArea$' || true
+          if rpm -qf "$MOTIF_PREFIX/include/Xm/Xm.h"; then
+            echo 'ERROR: custom Jon Motif header unexpectedly belongs to an RPM' >&2
+            exit 1
+          fi
+          if rpm -qf "$libxm"; then
+            echo 'ERROR: custom Jon Motif library unexpectedly belongs to an RPM' >&2
+            exit 1
+          fi
+
+      - name: Check out exact CDE commit under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Trust GitHub checkout mount inside Fedora container
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Show CDE commit under test
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git show --no-patch \
+            --format='commit:    %H%nauthor:    %an <%ae>%nauthor date: %aI%ncommitter: %cn <%ce>%ncommit date: %cI%nsubject:   %s' \
+            HEAD
+          git status --short --branch
+
+      - name: Simulate a fresh local CDE Git clone
+        id: cde_source
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          source_tree="$RUNNER_TEMP/cdesktopenv-code"
+          target_sha="$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)"
+          rm -rf "$source_tree"
+          git clone --no-local --no-checkout "$GITHUB_WORKSPACE" "$source_tree"
+          git -C "$source_tree" checkout --detach "$target_sha"
+          seed_tree="$(git -C "$GITHUB_WORKSPACE" rev-parse 'HEAD^{tree}')"
+          clone_tree="$(git -C "$source_tree" rev-parse 'HEAD^{tree}')"
+          printf 'CI seed tree: %s\n' "$seed_tree"
+          printf 'local clone:  %s\n' "$clone_tree"
+          test "$seed_tree" = "$clone_tree"
+          test -z "$(git -C "$source_tree" status --porcelain)"
+          chown -R cdebuild:cdebuild "$source_tree"
+          printf 'SOURCE_TREE=%s\n' "$source_tree" >> "$GITHUB_ENV"
+
+      - name: Prepare locale and isolated Jon Motif environment
+        id: cde_environment
+        if: ${{ steps.motif_provenance.outcome == 'success' && steps.cde_source.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          locale -a | grep -i '^en_US'
+          locale -a | grep -Eiq '^en_US[.]utf-?8$'
+          {
+            echo 'LANG=en_US.UTF-8'
+            echo 'LC_ALL=en_US.UTF-8'
+            printf 'CPPFLAGS=-I%s/include\n' "$MOTIF_PREFIX"
+            printf 'LDFLAGS=-L%s -Wl,-rpath,%s\n' "$MOTIF_LIBDIR" "$MOTIF_LIBDIR"
+            printf 'LD_LIBRARY_PATH=%s\n' "$MOTIF_LIBDIR"
+            printf 'PKG_CONFIG_PATH=%s/pkgconfig:%s/share/pkgconfig\n' "$MOTIF_LIBDIR" "$MOTIF_PREFIX"
+          } >> "$GITHUB_ENV"
+
+      - name: Prove custom Motif compiler and linker path
+        id: motif_smoke
+        if: ${{ steps.cde_environment.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          smoke_source="$RUNNER_TEMP/motif-smoke.c"
+          smoke_binary="$RUNNER_TEMP/motif-smoke"
+          cat > "$smoke_source" <<'EOF'
+          #include <Xm/Xm.h>
+          #include <Xm/DrawingA.h>
+          int main(void)
+          {
+              (void)XmCreateDrawingArea;
+              return 0;
+          }
+          EOF
+          echo '=== smoke compiler command ==='
+          printf 'gcc %q %q %q -lXm -lXt -lX11 -o %q\n' "$CPPFLAGS" "$smoke_source" "$LDFLAGS" "$smoke_binary"
+          # shellcheck disable=SC2086
+          gcc -v $CPPFLAGS "$smoke_source" $LDFLAGS -lXm -lXt -lX11 -o "$smoke_binary"
+          file "$smoke_binary"
+          readelf -d "$smoke_binary" | grep -E '\(RPATH\)|\(RUNPATH\)|\(NEEDED\)' || true
+          smoke_ldd="$(env -u LD_LIBRARY_PATH ldd "$smoke_binary")"
+          printf '%s\n' "$smoke_ldd"
+          motif_line="$(printf '%s\n' "$smoke_ldd" | grep -E 'libXm[.]so')"
+          test -n "$motif_line"
+          libxm="$(awk '{print $3}' <<<"$motif_line")"
+          case "$libxm" in
+            "$MOTIF_LIBDIR"/*) ;;
+            *) echo "ERROR: smoke test resolved libXm outside $MOTIF_LIBDIR: $libxm" >&2; exit 1 ;;
+          esac
+
+      - name: Verify clean pre-install state
+        id: clean_prefix
+        if: ${{ steps.motif_smoke.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if test -e /usr/dt; then
+            echo 'ERROR: /usr/dt already exists before CDE installation' >&2
+            find /usr/dt -maxdepth 2 -print >&2
+            exit 1
+          fi
+          echo '/usr/dt does not exist: clean installation target confirmed'
+
+      - name: Bootstrap CDE source tree with log capture
+        id: cde_bootstrap
+        if: ${{ steps.clean_prefix.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env \
+            LANG="$LANG" LC_ALL="$LC_ALL" IFFEFLAGS="$IFFEFLAGS" \
+            CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+            LD_LIBRARY_PATH="$LD_LIBRARY_PATH" PKG_CONFIG_PATH="$PKG_CONFIG_PATH" \
+            bash -lc "cd '$SOURCE_TREE/cde' && ./autogen.sh" \
+            2>&1 | tee "$RUNNER_TEMP/cde-autogen.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            grep -nEi 'error:|fatal:|failed|not found|cannot' "$RUNNER_TEMP/cde-autogen.log" | tail -n 300 >&2 || true
+            tail -n 500 "$RUNNER_TEMP/cde-autogen.log" >&2 || true
+          fi
+          exit "$status"
+
+      - name: Configure CDE for /usr/dt against Jon Motif main with log capture
+        id: cde_configure
+        if: ${{ steps.cde_bootstrap.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env \
+            LANG="$LANG" LC_ALL="$LC_ALL" IFFEFLAGS="$IFFEFLAGS" \
+            CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+            LD_LIBRARY_PATH="$LD_LIBRARY_PATH" PKG_CONFIG_PATH="$PKG_CONFIG_PATH" \
+            bash -lc "cd '$SOURCE_TREE/cde' && ./configure" \
+            2>&1 | tee "$RUNNER_TEMP/cde-configure.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo '=== CDE configure error index ===' >&2
+            grep -nEi 'configure: error:|error:|failed|not found|cannot find|cannot compile' \
+              "$SOURCE_TREE/cde/config.log" | tail -n 250 >&2 || true
+            echo '=== CDE config.log tail ===' >&2
+            tail -n 600 "$SOURCE_TREE/cde/config.log" >&2 || true
+            exit "$status"
+          fi
+          echo '=== configured CDE paths ==='
+          grep -E '^(prefix|exec_prefix|bindir|libdir|datadir|sysconfdir)[[:space:]]*=' \
+            "$SOURCE_TREE/cde/Makefile" || true
+
+      - name: Build CDE diagnostically against Jon Motif main
+        id: cde_build
+        if: ${{ steps.cde_configure.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          set +e
+          runuser -u cdebuild -- env \
+            LANG="$LANG" LC_ALL="$LC_ALL" IFFEFLAGS="$IFFEFLAGS" \
+            CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" \
+            LD_LIBRARY_PATH="$LD_LIBRARY_PATH" PKG_CONFIG_PATH="$PKG_CONFIG_PATH" \
+            bash -lc "cd '$SOURCE_TREE/cde' && make -k -j2 --output-sync=target V=1" \
+            2>&1 | tee "$RUNNER_TEMP/cde-make.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo 'CDE build failed; structured root-cause extraction follows in the next step.' >&2
+          fi
+          exit "$status"
+
+      - name: Analyze captured build logs
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          diagnostics="$RUNNER_TEMP/ci-diagnostics"
+          python3 "$GITHUB_WORKSPACE/.github/scripts/analyze-build-log.py" \
+            --log "$RUNNER_TEMP/jon-motif-make.log" \
+            --label 'Jon Motif main build' \
+            --output-dir "$diagnostics/motif" \
+            --summary-file "$GITHUB_STEP_SUMMARY"
+          python3 "$GITHUB_WORKSPACE/.github/scripts/analyze-build-log.py" \
+            --log "$RUNNER_TEMP/cde-make.log" \
+            --label 'CDE build / Jon Motif main' \
+            --output-dir "$diagnostics/cde" \
+            --summary-file "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect diagnostic evidence and stage summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== Jon Motif main identity ==='
+          printf 'ref=%s\n' "$MOTIF_REF"
+          printf 'sha=%s\n' "${MOTIF_SHA-unknown}"
+          echo '=== stage outcomes ==='
+          printf 'motif source:     %s\n' '${{ steps.motif_source.outcome }}'
+          printf 'motif bootstrap:  %s\n' '${{ steps.motif_bootstrap.outcome }}'
+          printf 'motif configure:  %s\n' '${{ steps.motif_configure.outcome }}'
+          printf 'motif build:      %s\n' '${{ steps.motif_build.outcome }}'
+          printf 'motif install:    %s\n' '${{ steps.motif_install.outcome }}'
+          printf 'motif provenance: %s\n' '${{ steps.motif_provenance.outcome }}'
+          printf 'motif smoke:      %s\n' '${{ steps.motif_smoke.outcome }}'
+          printf 'CDE source:       %s\n' '${{ steps.cde_source.outcome }}'
+          printf 'CDE bootstrap:    %s\n' '${{ steps.cde_bootstrap.outcome }}'
+          printf 'CDE configure:    %s\n' '${{ steps.cde_configure.outcome }}'
+          printf 'CDE build:        %s\n' '${{ steps.cde_build.outcome }}'
+          {
+            echo '## Fedora 39 / Jon Motif main stage result'
+            echo
+            printf -- '- Motif ref: `%s`\n' "$MOTIF_REF"
+            printf -- '- Motif SHA: `%s`\n' "${MOTIF_SHA-unknown}"
+            echo
+            echo '| Stage | Outcome |'
+            echo '|---|---|'
+            printf '| Motif source | `%s` |\n' '${{ steps.motif_source.outcome }}'
+            printf '| Motif bootstrap | `%s` |\n' '${{ steps.motif_bootstrap.outcome }}'
+            printf '| Motif configure | `%s` |\n' '${{ steps.motif_configure.outcome }}'
+            printf '| Motif build | `%s` |\n' '${{ steps.motif_build.outcome }}'
+            printf '| Motif install | `%s` |\n' '${{ steps.motif_install.outcome }}'
+            printf '| Motif provenance | `%s` |\n' '${{ steps.motif_provenance.outcome }}'
+            printf '| Motif smoke-link | `%s` |\n' '${{ steps.motif_smoke.outcome }}'
+            printf '| CDE bootstrap | `%s` |\n' '${{ steps.cde_bootstrap.outcome }}'
+            printf '| CDE configure | `%s` |\n' '${{ steps.cde_configure.outcome }}'
+            printf '| CDE build | `%s` |\n' '${{ steps.cde_build.outcome }}'
+            echo
+            echo 'Both Motif and CDE builds use `make -k -j2 --output-sync=target V=1`. The structured analyzer reports the first compiler/linker root diagnostic before recursive Make failures.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install CDE directly into /usr/dt
+        id: cde_install
+        if: ${{ steps.cde_build.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_TREE/cde"
+          env LD_LIBRARY_PATH="$LD_LIBRARY_PATH" make install 2>&1 | tee "$RUNNER_TEMP/cde-install.log"
+
+      - name: Verify /usr/dt source installation without LD_LIBRARY_PATH
+        id: cde_verify
+        if: ${{ steps.cde_install.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -d /usr/dt
+          programs=(/usr/dt/bin/dtwm /usr/dt/bin/dtsession /usr/dt/bin/dtterm)
+          for program in "${programs[@]}"; do
+            test -x "$program" || { echo "ERROR: missing executable: $program" >&2; exit 1; }
+            ls -l "$program"
+          done
+          elf_count=0
+          while IFS= read -r -d '' candidate; do
+            file -b "$candidate" | grep -q '^ELF ' || continue
+            ((elf_count += 1))
+            dependencies="$(env -u LD_LIBRARY_PATH ldd "$candidate" 2>&1 || true)"
+            if grep -q '=> not found' <<<"$dependencies"; then
+              echo "ERROR: unresolved runtime dependency without LD_LIBRARY_PATH: $candidate" >&2
+              printf '%s\n' "$dependencies" >&2
+              exit 1
+            fi
+          done < <(find /usr/dt -type f -print0)
+          test "$elf_count" -gt 0
+          printf 'ELF files checked: %d\n' "$elf_count"
+          du -sh /usr/dt
+
+      - name: Verify CDE resolves Jon Motif main without environment assistance
+        id: motif_runtime
+        if: ${{ steps.cde_verify.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          dtwm_ldd="$(env -u LD_LIBRARY_PATH ldd /usr/dt/bin/dtwm)"
+          printf '%s\n' "$dtwm_ldd"
+          motif_line="$(printf '%s\n' "$dtwm_ldd" | grep -E 'libXm[.]so')"
+          test -n "$motif_line"
+          libxm="$(awk '{print $3}' <<<"$motif_line")"
+          case "$libxm" in
+            "$MOTIF_LIBDIR"/*) ;;
+            *) echo "ERROR: dtwm resolved libXm outside $MOTIF_LIBDIR: $libxm" >&2; exit 1 ;;
+          esac
+          if rpm -qf "$libxm"; then
+            echo "ERROR: linked Jon Motif library unexpectedly belongs to an RPM: $libxm" >&2
+            exit 1
+          fi
+          echo '=== dtwm dynamic section ==='
+          readelf -d /usr/dt/bin/dtwm | grep -E '\(RPATH\)|\(RUNPATH\)|\(NEEDED\)'
+          readelf -d /usr/dt/bin/dtwm | grep -Eq '\(RPATH\)|\(RUNPATH\)'
+
+      - name: Prepare diagnostic artifact bundle
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bundle="$RUNNER_TEMP/ci-diagnostics/raw"
+          mkdir -p "$bundle"
+          for item in jon-motif-autogen.log jon-motif-configure.log jon-motif-make.log jon-motif-install.log cde-autogen.log cde-configure.log cde-make.log cde-install.log; do
+            if test -f "$RUNNER_TEMP/$item"; then
+              cp -a "$RUNNER_TEMP/$item" "$bundle/$item" || echo "warning: could not copy $item" >&2
+            fi
+          done
+          if test -n "${MOTIF_SOURCE_TREE-}" && test -f "$MOTIF_SOURCE_TREE/config.log"; then
+            cp -a "$MOTIF_SOURCE_TREE/config.log" "$bundle/jon-motif-config.log" ||
+              echo 'warning: could not copy Jon Motif config.log' >&2
+          fi
+          if test -n "${SOURCE_TREE-}" && test -f "$SOURCE_TREE/cde/config.log"; then
+            cp -a "$SOURCE_TREE/cde/config.log" "$bundle/cde-config.log" ||
+              echo 'warning: could not copy CDE config.log' >&2
+          fi
+          {
+            echo '=== CDE commit ==='
+            git -C "$GITHUB_WORKSPACE" show --no-patch --format='%H%n%aI%n%an <%ae>%n%s' HEAD ||
+              echo 'warning: CDE Git metadata unavailable' >&2
+            echo '=== Jon Motif main ==='
+            printf 'ref=%s\nsha=%s\n' "${MOTIF_REF-unknown}" "${MOTIF_SHA-unknown}"
+            if test -n "${MOTIF_SOURCE_TREE-}" && test -d "$MOTIF_SOURCE_TREE/.git"; then
+              git -C "$MOTIF_SOURCE_TREE" show --no-patch --format='%H%n%aI%n%an <%ae>%n%s' HEAD ||
+                echo 'warning: Jon Motif Git metadata unavailable' >&2
+            fi
+            echo '=== Fedora ==='
+            cat /etc/fedora-release || echo 'warning: Fedora release metadata unavailable' >&2
+            echo '=== compiler ==='
+            gcc --version || echo 'warning: compiler metadata unavailable' >&2
+            echo '=== environment ==='
+            env | LC_ALL=C sort || echo 'warning: environment snapshot unavailable' >&2
+          } > "$bundle/environment.txt"
+
+      - name: Upload diagnostic artifact bundle
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-fedora39-jon-motif-main-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/ci-diagnostics
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+
+      - name: Final diagnostic gate
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          stages=(
+            '${{ steps.motif_source.outcome }}'
+            '${{ steps.motif_bootstrap.outcome }}'
+            '${{ steps.motif_configure.outcome }}'
+            '${{ steps.motif_build.outcome }}'
+            '${{ steps.motif_install.outcome }}'
+            '${{ steps.motif_provenance.outcome }}'
+            '${{ steps.cde_source.outcome }}'
+            '${{ steps.cde_environment.outcome }}'
+            '${{ steps.motif_smoke.outcome }}'
+            '${{ steps.clean_prefix.outcome }}'
+            '${{ steps.cde_bootstrap.outcome }}'
+            '${{ steps.cde_configure.outcome }}'
+            '${{ steps.cde_build.outcome }}'
+          )
+          for outcome in "${stages[@]}"; do
+            test "$outcome" = success || exit 1
+          done
+          test '${{ steps.cde_install.outcome }}' = success || exit 1
+          test '${{ steps.cde_verify.outcome }}' = success || exit 1
+          test '${{ steps.motif_runtime.outcome }}' = success || exit 1
