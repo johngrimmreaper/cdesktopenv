@@ -1,4 +1,4 @@
-name: CDE package CI - /usr/dt manual installation
+name: CDE source CI - Ubuntu 24.04 /usr/dt installation
 
 on:
   push:
@@ -14,12 +14,13 @@ concurrency:
 
 jobs:
   source-install:
-    name: Build and install CDE from Git source on Ubuntu 24.04
+    name: Build, install, and diagnose CDE from Git source on Ubuntu 24.04
     runs-on: ubuntu-24.04
     timeout-minutes: 180
 
     env:
       DEBIAN_FRONTEND: noninteractive
+      IFFEFLAGS: -d1
 
     steps:
       - name: Define source clone path
@@ -194,6 +195,7 @@ jobs:
             ncompress \
             opensp \
             patch \
+            python3 \
             rpcbind \
             tcl-dev \
             x11-xserver-utils \
@@ -203,6 +205,56 @@ jobs:
             xfonts-100dpi-transcoded \
             xfonts-75dpi \
             xfonts-75dpi-transcoded
+
+
+      - name: Snapshot toolchain and Ubuntu Motif provenance
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          echo '=== compiler ==='
+          gcc --version
+          gcc -v 2>&1
+          g++ --version
+
+          echo
+          echo '=== linker ==='
+          ld --version | head -n 2
+
+          echo
+          echo '=== build tools ==='
+          make --version | head -n 2
+          autoconf --version | head -n 2
+          automake --version | head -n 2
+          libtoolize --version | head -n 2
+          bison --version | head -n 2
+          flex --version | head -n 2
+          python3 --version
+
+          echo
+          echo '=== Ubuntu Motif build dependency ==='
+          dpkg-query -W -f='${binary:Package}\t${Version}\n' libmotif-dev
+          test -f /usr/include/Xm/Xm.h
+          dpkg-query -S /usr/include/Xm/Xm.h
+
+          echo
+          echo '=== dynamic linker view of libXm ==='
+          ldconfig -p | grep -E 'libXm[.]so'
+          libxm="$(ldconfig -p | awk '/libXm[.]so/{print $NF; exit}')"
+          test -n "$libxm"
+          libxm="$(realpath "$libxm")"
+          printf 'libXm: %s\n' "$libxm"
+          dpkg-query -S "$libxm"
+
+          echo
+          echo '=== selected build variables ==='
+          printf 'CC=%s\n' "${CC-}"
+          printf 'CXX=%s\n' "${CXX-}"
+          printf 'CPPFLAGS=%s\n' "${CPPFLAGS-}"
+          printf 'CFLAGS=%s\n' "${CFLAGS-}"
+          printf 'CXXFLAGS=%s\n' "${CXXFLAGS-}"
+          printf 'LDFLAGS=%s\n' "${LDFLAGS-}"
+          printf 'IFFEFLAGS=%s\n' "$IFFEFLAGS"
 
       #
       # CDE 2.5.x requires en_US.UTF-8 to be available during the build.
@@ -249,51 +301,126 @@ jobs:
       # installation procedure.  No package build, DESTDIR, staging root,
       # or custom installation prefix is used.
       #
-      - name: Bootstrap source tree
+      - name: Bootstrap source tree with log capture
+        id: cde_bootstrap
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
 
           cd "$SOURCE_TREE/cde"
 
-          ./autogen.sh
+          set +e
+          ./autogen.sh 2>&1 | tee "$RUNNER_TEMP/cde-autogen.log"
+          status=${PIPESTATUS[0]}
+          set -e
 
-      - name: Configure CDE
+          exit "$status"
+      - name: Configure CDE with log capture
+        id: cde_configure
+        if: ${{ steps.cde_bootstrap.outcome == 'success' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
 
           cd "$SOURCE_TREE/cde"
 
-          ./configure
+          set +e
+          ./configure 2>&1 | tee "$RUNNER_TEMP/cde-configure.log"
+          status=${PIPESTATUS[0]}
+          set -e
 
-      - name: Build CDE
+          if test "$status" -ne 0; then
+              echo '=== configure error index ===' >&2
+              grep -nEi 'configure: error:|error:|failed|not found|cannot find|cannot compile'                 config.log | tail -n 200 >&2 || true
+              echo '=== config.log tail ===' >&2
+              tail -n 500 config.log >&2 || true
+              exit "$status"
+          fi
+
+          echo '=== configured CDE paths ==='
+          grep -E '^(prefix|exec_prefix|bindir|libdir|datadir|sysconfdir)[[:space:]]*='             Makefile || true
+      - name: Build CDE diagnostically from source
+        id: cde_build
+        if: ${{ steps.cde_configure.outcome == 'success' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
 
           cd "$SOURCE_TREE/cde"
 
-          make -j"$(nproc)"
+          set +e
+          make -k -j2 --output-sync=target V=1 2>&1 | tee "$RUNNER_TEMP/cde-make.log"
+          status=${PIPESTATUS[0]}
+          set -e
 
-      #
-      # This is the essential part of this workflow:
-      #
-      #     sudo make install
-      #
-      # It installs directly into the runner VM exactly as a local source
-      # installation would.  There is intentionally no DESTDIR.
-      #
-      - name: Install CDE directly from source
+          if test "$status" -ne 0; then
+              echo 'CDE build failed; structured root-cause extraction follows in the next step.' >&2
+          fi
+
+          exit "$status"
+
+      - name: Analyze CDE build log
+        id: cde_analyzer
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          python3 "$GITHUB_WORKSPACE/.github/scripts/analyze-build-log.py"             --log "$RUNNER_TEMP/cde-make.log"             --label 'CDE source build / Ubuntu 24.04 system Motif'             --output-dir "$RUNNER_TEMP/ci-diagnostics/cde"             --summary-file "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect CDE diagnostic summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          echo '=== stage outcomes ==='
+          printf 'bootstrap: %s\n' '${{ steps.cde_bootstrap.outcome }}'
+          printf 'configure: %s\n' '${{ steps.cde_configure.outcome }}'
+          printf 'build:     %s\n' '${{ steps.cde_build.outcome }}'
+          printf 'analyzer:  %s\n' '${{ steps.cde_analyzer.outcome }}'
+
+          if test -n "${SOURCE_TREE-}" && test -f "$SOURCE_TREE/cde/config.log"; then
+              echo '=== configure result markers ==='
+              grep -nE 'configure: (exit|error)|^configure:'                 "$SOURCE_TREE/cde/config.log" | tail -n 120 || true
+          fi
+
+          {
+              echo '## Ubuntu 24.04 /usr/dt source-build result'
+              echo
+              echo '| Stage | Outcome |'
+              echo '|---|---|'
+              printf '| CDE bootstrap | `%s` |\n' '${{ steps.cde_bootstrap.outcome }}'
+              printf '| CDE configure | `%s` |\n' '${{ steps.cde_configure.outcome }}'
+              printf '| CDE build | `%s` |\n' '${{ steps.cde_build.outcome }}'
+              printf '| canonical analyzer | `%s` |\n' '${{ steps.cde_analyzer.outcome }}'
+              echo
+              echo 'The source build uses `make -k -j2 --output-sync=target V=1`; structured diagnostics prefer compiler/linker errors over recursive Make cascades.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Install CDE directly from source with log capture
+        id: cde_install
+        if: ${{ steps.cde_build.outcome == 'success' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
 
           cd "$SOURCE_TREE/cde"
 
-          sudo make install
+          set +e
+          sudo make install 2>&1 | tee "$RUNNER_TEMP/cde-install.log"
+          status=${PIPESTATUS[0]}
+          set -e
 
+          exit "$status"
       - name: Verify source installation
+        id: cde_verify
+        if: ${{ steps.cde_install.outcome == 'success' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -546,3 +673,122 @@ jobs:
                 -print0 \
                 | LC_ALL=C sort -z
           )
+
+      - name: Verify installed Motif runtime provenance
+        id: motif_runtime
+        if: ${{ steps.cde_verify.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          for program in /usr/dt/bin/dtwm /usr/dt/bin/dtsession; do
+              dependencies="$(ldd "$program")"
+              printf '%s\n' "$dependencies"
+              libxm="$(awk '/libXm[.]so/ {print $3; exit}' <<<"$dependencies")"
+              test -n "$libxm"
+              test -e "$libxm"
+              libxm="$(realpath "$libxm")"
+              printf '%s -> %s\n' "$program" "$libxm"
+              dpkg-query -S "$libxm"
+          done
+
+      - name: Prepare source-install diagnostic bundle
+        id: diagnostics_prepare
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          bundle="$RUNNER_TEMP/ci-diagnostics/raw"
+          mkdir -p "$bundle"
+
+          for item in cde-autogen.log cde-configure.log cde-make.log cde-install.log; do
+              if test -f "$RUNNER_TEMP/$item"; then
+                  cp -a "$RUNNER_TEMP/$item" "$bundle/$item" ||                     echo "warning: could not copy $item" >&2
+              fi
+          done
+
+          if test -n "${SOURCE_TREE-}" && test -f "$SOURCE_TREE/cde/config.log"; then
+              cp -a "$SOURCE_TREE/cde/config.log" "$bundle/cde-config.log" ||                 echo 'warning: could not copy CDE config.log' >&2
+          fi
+
+          {
+              echo '=== exact CDE commit ==='
+              git -C "$GITHUB_WORKSPACE" show --no-patch                 --format='%H%n%aI%n%an <%ae>%n%s' HEAD ||                 echo 'warning: CDE Git metadata unavailable' >&2
+
+              echo '=== operating system ==='
+              cat /etc/os-release || true
+
+              echo '=== architecture ==='
+              dpkg --print-architecture || true
+
+              echo '=== toolchain ==='
+              gcc --version | head -n 1 || true
+              ld --version | head -n 1 || true
+              make --version | head -n 1 || true
+              python3 --version || true
+
+              echo '=== Motif packages ==='
+              dpkg-query -W -f='${binary:Package}\t${Version}\n' 'libmotif*' 2>/dev/null || true
+
+              echo '=== selected build variables ==='
+              printf 'CC=%s\n' "${CC-}"
+              printf 'CXX=%s\n' "${CXX-}"
+              printf 'CPPFLAGS=%s\n' "${CPPFLAGS-}"
+              printf 'CFLAGS=%s\n' "${CFLAGS-}"
+              printf 'CXXFLAGS=%s\n' "${CXXFLAGS-}"
+              printf 'LDFLAGS=%s\n' "${LDFLAGS-}"
+              printf 'IFFEFLAGS=%s\n' "${IFFEFLAGS-}"
+
+              echo '=== stage outcomes ==='
+              printf 'bootstrap=%s\n' '${{ steps.cde_bootstrap.outcome }}'
+              printf 'configure=%s\n' '${{ steps.cde_configure.outcome }}'
+              printf 'build=%s\n' '${{ steps.cde_build.outcome }}'
+              printf 'analyzer=%s\n' '${{ steps.cde_analyzer.outcome }}'
+              printf 'install=%s\n' '${{ steps.cde_install.outcome }}'
+              printf 'verify=%s\n' '${{ steps.cde_verify.outcome }}'
+              printf 'motif_runtime=%s\n' '${{ steps.motif_runtime.outcome }}'
+          } > "$bundle/environment.txt"
+
+      - name: Upload source-install diagnostic bundle
+        id: diagnostics_upload
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-ubuntu24-source-install-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/ci-diagnostics
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+
+      - name: Final source-install diagnostic gate
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          bootstrap='${{ steps.cde_bootstrap.outcome }}'
+          configure='${{ steps.cde_configure.outcome }}'
+          build='${{ steps.cde_build.outcome }}'
+          analyzer='${{ steps.cde_analyzer.outcome }}'
+          install='${{ steps.cde_install.outcome }}'
+          verify='${{ steps.cde_verify.outcome }}'
+          motif_runtime='${{ steps.motif_runtime.outcome }}'
+          diagnostics_prepare='${{ steps.diagnostics_prepare.outcome }}'
+          diagnostics_upload='${{ steps.diagnostics_upload.outcome }}'
+
+          printf 'bootstrap=%s configure=%s build=%s analyzer=%s install=%s verify=%s motif_runtime=%s diagnostics_prepare=%s diagnostics_upload=%s\n'             "$bootstrap" "$configure" "$build" "$analyzer" "$install" "$verify" "$motif_runtime" "$diagnostics_prepare" "$diagnostics_upload"
+
+          test "$bootstrap" = success || exit 1
+          test "$configure" = success || exit 1
+          test "$build" = success || exit 1
+          test "$analyzer" = success || exit 1
+          test "$install" = success || exit 1
+          test "$verify" = success || exit 1
+          test "$motif_runtime" = success || exit 1
+          test "$diagnostics_prepare" = success || exit 1
+          test "$diagnostics_upload" = success || exit 1
+
