@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build cde-desktop on Debian 13
+    name: Build and diagnose cde-desktop on Debian 13
     runs-on: ubuntu-24.04
     container:
       image: debian:13
@@ -25,15 +25,13 @@ jobs:
       IFFEFLAGS: -d1
 
     steps:
-      - name: Bootstrap Debian 13 container
+
+      - name: Bootstrap Debian 13 build environment
         shell: bash
         run: |
           set -Eeuo pipefail
-
-          apt-get update
-
-          apt-get install -y \
-            --no-install-recommends \
+          apt-get -o Acquire::Retries=3 update
+          apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
             ca-certificates \
             git
 
@@ -49,234 +47,481 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-
           test -n "${GITHUB_WORKSPACE:-}"
-
           echo "=== execution identity ==="
           id
-
           echo
           echo "=== workspace ownership ==="
           stat -c '%u:%g %U:%G %n' "$GITHUB_WORKSPACE"
-
-          git config \
-            --global \
-            --add safe.directory \
-            "$GITHUB_WORKSPACE"
-
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           echo
           echo "=== trusted Git workspace ==="
           git rev-parse HEAD
 
-      - name: Show build environment
+      - name: Show exact source and build environment
         shell: bash
         run: |
           set -Eeuo pipefail
-
           echo "=== operating system ==="
           cat /etc/os-release
-
           echo
           echo "=== architecture ==="
           dpkg --print-architecture
-
           echo
           echo "=== kernel ==="
           uname -a
-
           echo
           echo "=== CPUs ==="
           nproc
-
           echo
           echo "=== disk ==="
           df -h "$GITHUB_WORKSPACE"
-
           echo
-          echo "=== CDE commit ==="
-          git rev-parse HEAD
+          echo "=== exact CDE commit ==="
+          git show --no-patch \
+            --format='commit:    %H%nauthor:    %an <%ae>%nauthor date: %aI%ncommitter: %cn <%ce>%ncommit date: %cI%nsubject:   %s' \
+            HEAD
+          echo
+          echo "=== repository status ==="
+          git status --short --branch
+          test -z "$(git status --porcelain)"
 
       - name: Install Debian package build tooling
         shell: bash
         run: |
           set -Eeuo pipefail
-
-          apt-get \
-            -o Acquire::Retries=3 \
-            update
-
-          apt-get \
-            -o Acquire::Retries=3 \
-            install -y \
-            --no-install-recommends \
+          apt-get -o Acquire::Retries=3 update
+          apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
             build-essential \
             devscripts \
             equivs \
-            fakeroot
+            fakeroot \
+            file \
+            python3
 
-      - name: Install CDE build dependencies
+      - name: Install CDE package build dependencies
         shell: bash
         working-directory: cde
         run: |
           set -Eeuo pipefail
-
           mk-build-deps \
             --install \
             --remove \
             --tool 'apt-get -y -o Acquire::Retries=3 --no-install-recommends' \
             debian/control
-
           dpkg-checkbuilddeps
 
-      - name: Build cde-desktop binary package
+      - name: Snapshot toolchain and Motif provenance
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== compiler ==='
+          gcc --version
+          gcc -v 2>&1
+          g++ --version
+          echo '=== linker ==='
+          ld --version | head -n 2
+          echo '=== build tools ==='
+          make --version | head -n 2
+          autoconf --version | head -n 2
+          automake --version | head -n 2
+          libtoolize --version | head -n 2
+          bison --version | head -n 2
+          flex --version | head -n 2
+          python3 --version
+          dpkg-buildpackage --version | head -n 2
+          echo '=== Motif build dependency ==='
+          dpkg-query -W -f='${binary:Package}\t${Version}\n' libmotif-dev
+          test -f /usr/include/Xm/Xm.h
+          dpkg-query -S /usr/include/Xm/Xm.h
+          echo '=== dynamic linker view of libXm ==='
+          ldconfig -p | grep -E 'libXm[.]so'
+          libxm="$(ldconfig -p | awk '/libXm[.]so/{print $NF; exit}')"
+          test -n "$libxm"
+          libxm="$(realpath "$libxm")"
+          printf 'libXm: %s\n' "$libxm"
+          dpkg-query -S "$libxm"
+          echo '=== selected build variables ==='
+          printf 'CC=%s\n' "${CC-}"
+          printf 'CXX=%s\n' "${CXX-}"
+          printf 'CPPFLAGS=%s\n' "${CPPFLAGS-}"
+          printf 'CFLAGS=%s\n' "${CFLAGS-}"
+          printf 'CXXFLAGS=%s\n' "${CXXFLAGS-}"
+          printf 'LDFLAGS=%s\n' "${LDFLAGS-}"
+          printf 'IFFEFLAGS=%s\n' "$IFFEFLAGS"
+
+      - name: Build cde-desktop binary package with diagnostic log capture
+        id: package_build
+        continue-on-error: true
         shell: bash
         working-directory: cde
         run: |
           set -Eeuo pipefail
+          set +e
+          dpkg-buildpackage -b -us -uc 2>&1 | tee "$RUNNER_TEMP/package-build.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          if test "$status" -ne 0; then
+            echo 'Package build failed; structured root-cause extraction follows.' >&2
+          fi
+          exit "$status"
 
-          dpkg-buildpackage \
-            -b \
-            -us \
-            -uc
-
-      - name: Collect package artifacts
+      - name: Analyze package build log
+        id: package_analyzer
+        if: ${{ always() }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
+          python3 "$GITHUB_WORKSPACE/.github/scripts/analyze-build-log.py" \
+            --log "$RUNNER_TEMP/package-build.log" \
+            --label 'CDE package build / Debian 13' \
+            --output-dir "$RUNNER_TEMP/ci-diagnostics/build" \
+            --summary-file "$GITHUB_STEP_SUMMARY"
 
+      - name: Collect package build stage summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== stage outcomes ==='
+          printf 'package_build:    %s\n' '${{ steps.package_build.outcome }}'
+          printf 'package_analyzer: %s\n' '${{ steps.package_analyzer.outcome }}'
+          {
+            echo '## Debian 13 package-build stage result'
+            echo
+            echo '| Stage | Outcome |'
+            echo '|---|---|'
+            printf '| package build | `%s` |\n' '${{ steps.package_build.outcome }}'
+            printf '| canonical analyzer | `%s` |\n' '${{ steps.package_analyzer.outcome }}'
+            echo
+            echo 'The packaging contract intentionally uses `dpkg-buildpackage`; the canonical analyzer processes its complete captured build log.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect package artifacts
+        id: package_collect
+        if: ${{ steps.package_build.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
           mkdir -p out
-
           find "$GITHUB_WORKSPACE" \
             -maxdepth 1 \
             -type f \
-            \( \
-              -name '*.deb' \
-              -o -name '*.ddeb' \
-              -o -name '*.changes' \
-              -o -name '*.buildinfo' \
-            \) \
+            \( -name '*.deb' -o -name '*.ddeb' -o -name '*.changes' -o -name '*.buildinfo' \) \
             -exec cp -v '{}' out/ ';'
-
           shopt -s nullglob
           debs=(out/*.deb)
-
           if (( ${#debs[@]} == 0 )); then
-              echo "ERROR: build produced no .deb package" >&2
-              exit 1
+            echo 'ERROR: build produced no .deb package' >&2
+            exit 1
           fi
-
-          echo
-          echo "=== generated artifacts ==="
-          find out \
-            -maxdepth 1 \
-            -type f \
-            -printf '%f\n' \
-            | sort
-
-          echo
-          echo "=== package metadata ==="
-
+          echo '=== generated artifacts ==='
+          find out -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort
+          echo '=== package metadata ==='
           for package in "${debs[@]}"; do
-              echo
-              echo "--- $package ---"
-              dpkg-deb --info "$package"
+            echo
+            echo "--- $package ---"
+            dpkg-deb --info "$package"
           done
 
       - name: Upload package artifacts
+        id: package_upload
+        if: ${{ steps.package_collect.outcome == 'success' }}
+        continue-on-error: true
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: cde-desktop-debian-13-${{ github.event.pull_request.head.sha || github.sha }}
           path: out/
           if-no-files-found: error
           retention-days: 30
+          compression-level: 6
+
+      - name: Prepare package-build diagnostic bundle
+        id: diagnostics_prepare
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bundle="$RUNNER_TEMP/ci-diagnostics/raw"
+          mkdir -p "$bundle/config-logs"
+          if test -f "$RUNNER_TEMP/package-build.log"; then
+            cp -a "$RUNNER_TEMP/package-build.log" "$bundle/package-build.log" || \
+              echo 'warning: could not copy package-build.log' >&2
+          fi
+          if test -d "$GITHUB_WORKSPACE/cde"; then
+            while IFS= read -r -d '' config_log; do
+              rel="${config_log#$GITHUB_WORKSPACE/cde/}"
+              safe="${rel//\//_}"
+              cp -a "$config_log" "$bundle/config-logs/$safe" || \
+                echo "warning: could not copy $rel" >&2
+            done < <(find "$GITHUB_WORKSPACE/cde" -type f -name config.log -print0)
+          fi
+          {
+            echo '=== CDE commit ==='
+            git -C "$GITHUB_WORKSPACE" show --no-patch \
+              --format='%H%n%aI%n%an <%ae>%n%s' HEAD || \
+              echo 'warning: CDE Git metadata unavailable' >&2
+            echo '=== operating system ==='
+            cat /etc/os-release || echo 'warning: OS metadata unavailable' >&2
+            echo '=== architecture ==='
+            dpkg --print-architecture || true
+            echo '=== toolchain ==='
+            gcc --version | head -n 1 || true
+            ld --version | head -n 1 || true
+            make --version | head -n 1 || true
+            python3 --version || true
+            echo '=== Motif packages ==='
+            dpkg-query -W -f='${binary:Package}\t${Version}\n' 'libmotif*' 2>/dev/null || true
+            echo '=== installed package versions ==='
+            dpkg-query -W -f='${binary:Package}\t${Version}\n' | LC_ALL=C sort || true
+            echo '=== selected build variables ==='
+            printf 'CC=%s\n' "${CC-}"
+            printf 'CXX=%s\n' "${CXX-}"
+            printf 'CPPFLAGS=%s\n' "${CPPFLAGS-}"
+            printf 'CFLAGS=%s\n' "${CFLAGS-}"
+            printf 'CXXFLAGS=%s\n' "${CXXFLAGS-}"
+            printf 'LDFLAGS=%s\n' "${LDFLAGS-}"
+            printf 'IFFEFLAGS=%s\n' "${IFFEFLAGS-}"
+          } > "$bundle/environment.txt"
+
+      - name: Upload package-build diagnostic bundle
+        id: diagnostics_upload
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-package-debian-13-build-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/ci-diagnostics
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+
+      - name: Final package-build gate
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          package_build='${{ steps.package_build.outcome }}'
+          package_analyzer='${{ steps.package_analyzer.outcome }}'
+          package_collect='${{ steps.package_collect.outcome }}'
+          package_upload='${{ steps.package_upload.outcome }}'
+          diagnostics_prepare='${{ steps.diagnostics_prepare.outcome }}'
+          diagnostics_upload='${{ steps.diagnostics_upload.outcome }}'
+          printf 'package_build=%s package_analyzer=%s package_collect=%s package_upload=%s diagnostics_prepare=%s diagnostics_upload=%s\n' \
+            "$package_build" "$package_analyzer" "$package_collect" "$package_upload" "$diagnostics_prepare" "$diagnostics_upload"
+          test "$package_build" = success || exit 1
+          test "$package_analyzer" = success || exit 1
+          test "$package_collect" = success || exit 1
+          test "$package_upload" = success || exit 1
+          test "$diagnostics_prepare" = success || exit 1
+          test "$diagnostics_upload" = success || exit 1
 
   test-install:
-    name: Install-test cde-desktop on clean Debian 13
+    name: Install-test and diagnose cde-desktop on clean Debian 13
     needs: build
     runs-on: ubuntu-24.04
     container:
       image: debian:13
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     env:
       DEBIAN_FRONTEND: noninteractive
 
     steps:
-      - name: Bootstrap Debian 13 container
+
+      - name: Bootstrap Debian 13 install-test environment
         shell: bash
         run: |
           set -Eeuo pipefail
-
-          apt-get update
-
-          apt-get install -y \
-            --no-install-recommends \
-            ca-certificates
+          apt-get -o Acquire::Retries=3 update
+          apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
+            ca-certificates \
+            file
 
       - name: Download package artifact
+        id: package_download
+        continue-on-error: true
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: cde-desktop-debian-13-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifact
 
       - name: Inspect downloaded package
+        id: package_inspect
+        if: ${{ steps.package_download.outcome == 'success' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
-
-          echo "=== downloaded files ==="
-          find artifact \
-            -maxdepth 1 \
-            -type f \
-            -printf '%f\n' \
-            | sort
-
+          echo '=== downloaded files ==='
+          find artifact -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort
           shopt -s nullglob
           debs=(artifact/cde-desktop_*_amd64.deb)
-
           if (( ${#debs[@]} != 1 )); then
-              echo "ERROR: expected exactly one cde-desktop amd64 .deb" >&2
-              printf 'found: %s\n' "${debs[@]:-none}" >&2
-              exit 1
+            echo 'ERROR: expected exactly one cde-desktop amd64 .deb' >&2
+            printf 'found: %s\n' "${debs[@]:-none}" >&2
+            exit 1
           fi
-
-          echo
-          echo "=== package metadata ==="
+          echo '=== package metadata ==='
           dpkg-deb --info "${debs[0]}"
+          dpkg-deb --contents "${debs[0]}"
 
-      - name: Install package on clean Debian 13 container
+      - name: Install package on clean Debian 13
+        id: package_install
+        if: ${{ steps.package_inspect.outcome == 'success' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -Eeuo pipefail
-
           shopt -s nullglob
           debs=(artifact/cde-desktop_*_amd64.deb)
+          set +e
+          apt-get -o Acquire::Retries=3 update 2>&1 | tee "$RUNNER_TEMP/package-install.log"
+          update_status=${PIPESTATUS[0]}
+          if test "$update_status" -eq 0; then
+            apt-get -o Acquire::Retries=3 install -y --no-install-recommends "./${debs[0]}" 2>&1 | tee -a "$RUNNER_TEMP/package-install.log"
+            install_status=${PIPESTATUS[0]}
+          else
+            install_status="$update_status"
+          fi
+          set -e
+          exit "$install_status"
 
-          apt-get \
-            -o Acquire::Retries=3 \
-            update
-
-          apt-get \
-            -o Acquire::Retries=3 \
-            install -y \
-            --no-install-recommends \
-            "./${debs[0]}"
-
-          echo
-          echo "=== installed package ==="
-          dpkg-query \
-            -W \
-            -f='${binary:Package}\t${Version}\t${Architecture}\t${db:Status-Status}\n' \
-            cde-desktop
-
-          echo
-          echo "=== dependency consistency ==="
+      - name: Verify installed package and runtime dependencies
+        id: package_verify
+        if: ${{ steps.package_install.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '=== installed package ==='
+          dpkg-query -W -f='${binary:Package}\t${Version}\t${Architecture}\t${db:Status-Status}\n' cde-desktop
+          echo '=== dependency consistency ==='
           apt-get check
-
-          echo
-          echo "=== dpkg audit ==="
+          echo '=== dpkg audit ==='
           dpkg --audit
-
-          echo
-          echo "=== installed-file verification ==="
+          echo '=== installed-file verification ==='
           dpkg -V cde-desktop
+          echo '=== packaged file list ==='
+          dpkg -L cde-desktop
+          elf_count=0
+          broken_links=0
+          while IFS= read -r pathname; do
+            test -e "$pathname" || test -L "$pathname" || continue
+            if test -L "$pathname" && ! test -e "$pathname"; then
+              printf 'ERROR: broken packaged symbolic link: %s -> %s\n' "$pathname" "$(readlink "$pathname")" >&2
+              broken_links=1
+              continue
+            fi
+            test -f "$pathname" || continue
+            file -b "$pathname" | grep -q '^ELF ' || continue
+            ((elf_count += 1))
+            dependencies="$(ldd "$pathname" 2>&1 || true)"
+            if grep -q '=> not found' <<<"$dependencies"; then
+              echo "ERROR: unresolved runtime dependency: $pathname" >&2
+              printf '%s\n' "$dependencies" >&2
+              exit 1
+            fi
+          done < <(dpkg -L cde-desktop)
+          test "$elf_count" -gt 0
+          test "$broken_links" -eq 0
+          printf 'ELF files checked: %d\n' "$elf_count"
+
+      - name: Verify installed Motif runtime provenance
+        id: motif_runtime
+        if: ${{ steps.package_verify.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          dtwm="$(dpkg -L cde-desktop | awk '/\/dtwm$/{print; exit}')"
+          test -n "$dtwm"
+          test -x "$dtwm"
+          echo "dtwm: $dtwm"
+          dependencies="$(ldd "$dtwm")"
+          printf '%s\n' "$dependencies"
+          libxm="$(awk '/libXm[.]so/ {print $3; exit}' <<<"$dependencies")"
+          test -n "$libxm"
+          test -e "$libxm"
+          libxm="$(realpath "$libxm")"
+          printf 'resolved libXm: %s\n' "$libxm"
+          dpkg-query -S "$libxm"
+
+      - name: Prepare install-test diagnostic bundle
+        id: install_diagnostics_prepare
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bundle="$RUNNER_TEMP/ci-diagnostics/install-test"
+          mkdir -p "$bundle"
+          if test -f "$RUNNER_TEMP/package-install.log"; then
+            cp -a "$RUNNER_TEMP/package-install.log" "$bundle/package-install.log" || \
+              echo 'warning: could not copy package-install.log' >&2
+          fi
+          if test -d artifact; then
+            find artifact -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort > "$bundle/artifact-files.txt" || true
+          fi
+          {
+            echo '=== operating system ==='
+            cat /etc/os-release || true
+            echo '=== architecture ==='
+            dpkg --print-architecture || true
+            echo '=== stage outcomes ==='
+            printf 'download=%s\n' '${{ steps.package_download.outcome }}'
+            printf 'inspect=%s\n' '${{ steps.package_inspect.outcome }}'
+            printf 'install=%s\n' '${{ steps.package_install.outcome }}'
+            printf 'verify=%s\n' '${{ steps.package_verify.outcome }}'
+            printf 'motif_runtime=%s\n' '${{ steps.motif_runtime.outcome }}'
+            echo '=== installed package metadata ==='
+            dpkg-query -W -f='${binary:Package}\t${Version}\t${Architecture}\t${db:Status-Status}\n' cde-desktop 2>/dev/null || true
+          } > "$bundle/environment.txt"
+          {
+            echo '## Debian 13 package install-test result'
+            echo
+            echo '| Stage | Outcome |'
+            echo '|---|---|'
+            printf '| artifact download | `%s` |\n' '${{ steps.package_download.outcome }}'
+            printf '| package inspection | `%s` |\n' '${{ steps.package_inspect.outcome }}'
+            printf '| package installation | `%s` |\n' '${{ steps.package_install.outcome }}'
+            printf '| package/runtime verification | `%s` |\n' '${{ steps.package_verify.outcome }}'
+            printf '| Motif runtime provenance | `%s` |\n' '${{ steps.motif_runtime.outcome }}'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload install-test diagnostic bundle
+        id: install_diagnostics_upload
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-package-debian-13-install-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/ci-diagnostics
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+
+      - name: Final package install-test gate
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          package_download='${{ steps.package_download.outcome }}'
+          package_inspect='${{ steps.package_inspect.outcome }}'
+          package_install='${{ steps.package_install.outcome }}'
+          package_verify='${{ steps.package_verify.outcome }}'
+          motif_runtime='${{ steps.motif_runtime.outcome }}'
+          diagnostics_prepare='${{ steps.install_diagnostics_prepare.outcome }}'
+          diagnostics_upload='${{ steps.install_diagnostics_upload.outcome }}'
+          printf 'download=%s inspect=%s install=%s verify=%s motif_runtime=%s diagnostics_prepare=%s diagnostics_upload=%s\n' \
+            "$package_download" "$package_inspect" "$package_install" "$package_verify" "$motif_runtime" "$diagnostics_prepare" "$diagnostics_upload"
+          test "$package_download" = success || exit 1
+          test "$package_inspect" = success || exit 1
+          test "$package_install" = success || exit 1
+          test "$package_verify" = success || exit 1
+          test "$motif_runtime" = success || exit 1
+          test "$diagnostics_prepare" = success || exit 1
+          test "$diagnostics_upload" = success || exit 1
