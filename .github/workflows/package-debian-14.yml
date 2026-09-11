@@ -17,7 +17,7 @@ jobs:
     name: Build and diagnose cde-desktop on Debian 14
     runs-on: ubuntu-24.04
     container:
-      image: debian:14
+      image: debian:forky
     timeout-minutes: 180
 
     env:
@@ -324,7 +324,7 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04
     container:
-      image: debian:14
+      image: debian:forky
     timeout-minutes: 45
 
     env:
