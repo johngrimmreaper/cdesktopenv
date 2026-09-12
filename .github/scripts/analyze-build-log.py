@@ -17,11 +17,13 @@ COMPILER_WARNING_RE = re.compile(
     r"(?P<file>(?:[^:\s]|:(?!\d))+?):(?P<line>\d+)(?::(?P<col>\d+))?:\s*warning:",
     re.IGNORECASE,
 )
+COLLECT2_ERROR_RE = re.compile(r"collect2:\s*error:", re.IGNORECASE)
 LINKER_PATTERNS = (
     re.compile(r"undefined reference to", re.IGNORECASE),
-    re.compile(r"collect2:\s*error:", re.IGNORECASE),
+    COLLECT2_ERROR_RE,
     re.compile(
-        r"(?:^|\s)(?:ld|ld\.bfd|ld\.gold):.*(?:error:|cannot find|undefined)",
+        r"(?:^|\s)(?:\S*/)?ld(?:\.bfd|\.gold|\.lld)?:"
+        r".*(?:error:|cannot find|undefined)",
         re.IGNORECASE,
     ),
 )
@@ -31,6 +33,14 @@ GENERIC_ERROR_RE = re.compile(
 )
 SOURCE_SUFFIX_RE = re.compile(
     r"(?P<file>(?:[A-Za-z0-9_./+~-]+)\.(?:c|cc|cpp|cxx|h|hh|hpp|hxx))(?::\d+)?",
+    re.IGNORECASE,
+)
+IFFE_TEST_START_RE = re.compile(r"^\s*iffe:\s+test:", re.IGNORECASE)
+IFFE_TEST_END_RE = re.compile(
+    r"^\s*iffe:\s+\.\.\.\s+(?:yes|no)\b", re.IGNORECASE
+)
+IFFE_TEMP_SOURCE_RE = re.compile(
+    r"(?:^|/)\./[A-Za-z0-9_-]*\d[A-Za-z0-9_-]*\.c(?::|\b)",
     re.IGNORECASE,
 )
 
@@ -43,29 +53,70 @@ def matches_linker(line: str) -> bool:
     return any(pattern.search(line) for pattern in LINKER_PATTERNS)
 
 
-def classify(lines: list[str]) -> tuple[list[int], list[int], list[int], list[int]]:
+def classify(
+    lines: list[str],
+) -> tuple[list[int], list[int], list[int], list[int], list[int]]:
     compiler_errors: list[int] = []
     linker_errors: list[int] = []
     make_failures: list[int] = []
     warnings: list[int] = []
+    probe_diagnostics: list[int] = []
+
+    in_iffe_test = False
+    last_probe_linker_index = -1000
 
     for index, line in enumerate(lines):
-        if COMPILER_ERROR_RE.search(line):
-            compiler_errors.append(index)
-        elif matches_linker(line):
-            linker_errors.append(index)
-        elif MAKE_FAILURE_RE.search(line):
-            make_failures.append(index)
-        elif GENERIC_ERROR_RE.search(line):
-            linker_errors.append(index)
+        if IFFE_TEST_START_RE.search(line):
+            in_iffe_test = True
 
-        if COMPILER_WARNING_RE.search(line) or re.search(
-            r"\bwarning:", line, re.IGNORECASE
+        compiler_error = bool(COMPILER_ERROR_RE.search(line))
+        linker_error = matches_linker(line)
+        make_failure = bool(MAKE_FAILURE_RE.search(line))
+        generic_error = bool(GENERIC_ERROR_RE.search(line))
+        warning = bool(
+            COMPILER_WARNING_RE.search(line)
+            or re.search(r"\bwarning:", line, re.IGNORECASE)
+        )
+
+        is_diagnostic = compiler_error or linker_error or generic_error or warning
+        is_iffe_temp_source = bool(IFFE_TEMP_SOURCE_RE.search(line))
+        collect2_error = bool(COLLECT2_ERROR_RE.search(line))
+        follows_probe_linker = (
+            collect2_error and index - last_probe_linker_index <= 3
+        )
+
+        if is_diagnostic and (
+            is_iffe_temp_source or in_iffe_test or follows_probe_linker
         ):
-            warnings.append(index)
+            probe_diagnostics.append(index)
+            if linker_error:
+                last_probe_linker_index = index
+        else:
+            if linker_error:
+                last_probe_linker_index = -1000
 
-    return compiler_errors, linker_errors, make_failures, warnings
+            if compiler_error:
+                compiler_errors.append(index)
+            elif linker_error:
+                linker_errors.append(index)
+            elif make_failure:
+                make_failures.append(index)
+            elif generic_error:
+                linker_errors.append(index)
 
+            if warning:
+                warnings.append(index)
+
+        if IFFE_TEST_END_RE.search(line):
+            in_iffe_test = False
+
+    return (
+        compiler_errors,
+        linker_errors,
+        make_failures,
+        warnings,
+        probe_diagnostics,
+    )
 
 def extract_files(lines: list[str], indexes: list[int]) -> list[str]:
     files: set[str] = set()
@@ -116,6 +167,9 @@ def main() -> int:
         (args.output_dir / "warnings.txt").write_text(
             "(log unavailable)\n", encoding="utf-8"
         )
+        (args.output_dir / "probe-diagnostics.txt").write_text(
+            "(log unavailable)\n", encoding="utf-8"
+        )
         (args.output_dir / "implicated-files.txt").write_text(
             "(none)\n", encoding="utf-8"
         )
@@ -131,7 +185,13 @@ def main() -> int:
 
     raw_lines = raw_text.splitlines()
     lines = [clean(line) for line in raw_lines]
-    compiler_errors, linker_errors, make_failures, warnings = classify(lines)
+    (
+        compiler_errors,
+        linker_errors,
+        make_failures,
+        warnings,
+        probe_diagnostics,
+    ) = classify(lines)
     root_candidates = compiler_errors + linker_errors
     root_index = (
         min(root_candidates)
@@ -148,8 +208,12 @@ def main() -> int:
 
     errors_text = numbered(lines, all_error_indexes)
     warnings_text = numbered(lines, warnings)
+    probe_text = numbered(lines, probe_diagnostics)
     (args.output_dir / "errors.txt").write_text(errors_text, encoding="utf-8")
     (args.output_dir / "warnings.txt").write_text(warnings_text, encoding="utf-8")
+    (args.output_dir / "probe-diagnostics.txt").write_text(
+        probe_text, encoding="utf-8"
+    )
     (args.output_dir / "implicated-files.txt").write_text(
         ("\n".join(implicated_files) + "\n") if implicated_files else "(none)\n",
         encoding="utf-8",
@@ -157,7 +221,8 @@ def main() -> int:
 
     if root_index is None:
         first_failure = (
-            "No compiler, linker, generic error, or Make failure was detected.\n"
+            "No compiler, linker, generic error, or Make failure was detected "
+            "outside expected iffe feature-probe diagnostics.\n"
         )
     else:
         context_start = max(0, root_index - args.before)
@@ -187,10 +252,11 @@ def main() -> int:
     markdown_lines = [
         f"### {args.label}",
         "",
-        f"- Compiler errors: **{len(compiler_errors)}**",
-        f"- Linker/generic errors: **{len(linker_errors)}**",
+        f"- Compiler errors (excluding expected `iffe` probes): **{len(compiler_errors)}**",
+        f"- Linker/generic errors (excluding expected `iffe` probes): **{len(linker_errors)}**",
         f"- Recursive Make failures: **{len(make_failures)}**",
-        f"- Warnings: **{len(warnings)}**",
+        f"- Warnings (excluding expected `iffe` probes): **{len(warnings)}**",
+        f"- Expected `iffe` probe diagnostics excluded: **{len(probe_diagnostics)}**",
         f"- Implicated source/header files: **{len(implicated_files)}**",
         "",
     ]
@@ -203,7 +269,8 @@ def main() -> int:
 
     if root_index is None:
         markdown_lines.append(
-            "No root diagnostic pattern was detected in the captured log."
+            "No root diagnostic pattern was detected outside expected "
+            "`iffe` feature-probe diagnostics."
         )
     else:
         category = (
@@ -236,9 +303,11 @@ def main() -> int:
     print(f"linker/generic errors: {len(linker_errors)}")
     print(f"make failures: {len(make_failures)}")
     print(f"warnings: {len(warnings)}")
+    print(f"expected iffe probe diagnostics excluded: {len(probe_diagnostics)}")
     print(f"implicated files: {len(implicated_files)}")
     emit_group(f"{args.label} — extracted errors", errors_text)
     emit_group(f"{args.label} — extracted warnings", warnings_text)
+    emit_group(f"{args.label} — expected iffe probe diagnostics", probe_text)
     emit_group(f"{args.label} — first root failure and context", first_failure)
     return 0
 
