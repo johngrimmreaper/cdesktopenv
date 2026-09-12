@@ -45,9 +45,10 @@ IFFE_TEST_END_RE = re.compile(
     r"^\s*iffe:\s+\.\.\.\s+(?:yes|no)\b", re.IGNORECASE
 )
 IFFE_TEMP_SOURCE_RE = re.compile(
-    r"(?:^|/)\./[A-Za-z]{0,3}\d{5,}\.c(?::|\b)",
+    r"(?:^|/)\./(?:x?[0-9a-f]{5,})\.c(?::|\b)",
     re.IGNORECASE,
 )
+IFFE_ACTIVITY_WINDOW = 64
 
 
 def clean(line: str) -> str:
