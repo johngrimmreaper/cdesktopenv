@@ -75,8 +75,8 @@ iffe: ... no
     def test_generated_looking_source_outside_iffe_is_not_hidden(self):
         result = self.classify(
             r"""
-./foo12345.c:8:2: error: real source failure
-make[2]: *** [Makefile:66: foo12345.o] Error 1
+./x12345.c:8:2: error: real source failure
+make[2]: *** [Makefile:66: x12345.o] Error 1
 """
         )
         compiler, linker, make, warnings, probes = result
@@ -86,14 +86,32 @@ make[2]: *** [Makefile:66: foo12345.o] Error 1
         self.assertEqual(warnings, [])
         self.assertEqual(probes, [])
 
+    def test_implicit_iffe_activity_keeps_hex_temp_probe_excluded(self):
+        result = self.classify(
+            r"""
++ iffe -d1 -v run features/lib
++ echo generated configuration
++ echo more internal shell trace
+./2f8f69246.c:1:2: error: expected identifier before ';'
+iffe: test: is sys/types.h a header ...
+iffe: ... yes
+"""
+        )
+        compiler, linker, make, warnings, probes = result
+        self.assertEqual(compiler, [])
+        self.assertEqual(linker, [])
+        self.assertEqual(make, [])
+        self.assertEqual(warnings, [])
+        self.assertEqual(probes, [3])
+
     def test_next_shell_command_ends_iffe_invocation(self):
         result = self.classify(
             r"""
 + iffe -d1 -v run features/lib
 ./99999.c:7:2: error: #error expected probe miss
 iffe: ... no
-+ cc -c ./foo12345.c
-./foo12345.c:9:2: error: real source failure
++ cc -c ./x12345.c
+./x12345.c:9:2: error: real source failure
 """
         )
         compiler, linker, make, warnings, probes = result
