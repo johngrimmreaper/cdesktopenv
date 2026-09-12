@@ -20,6 +20,7 @@ class AnalyzerProbeTests(unittest.TestCase):
     def test_iffe_negative_probe_errors_are_excluded(self):
         result = self.classify(
             r"""
++ iffe -d1 -v run features/lib
 ./12345.c:1:2: error: expected identifier before ';'
 iffe: test: is -liconv a library ...
 /usr/bin/ld: cannot find -liconv: No such file or directory
@@ -35,8 +36,8 @@ real.c:9: warning: ordinary warning
         self.assertEqual(compiler, [])
         self.assertEqual(linker, [])
         self.assertEqual(make, [])
-        self.assertEqual(warnings, [8])
-        self.assertEqual(probes, [0, 2, 3, 5, 6, 7])
+        self.assertEqual(warnings, [9])
+        self.assertEqual(probes, [1, 3, 4, 6, 7, 8])
 
     def test_real_error_after_iffe_test_is_preserved(self):
         result = self.classify(
@@ -59,11 +60,44 @@ make[3]: *** [Makefile:99: real.o] Error 1
         result = self.classify(
             r"""
 real.c:5:3: error: use of undeclared identifier
++ iffe -d1 -v run features/lib
 ./88888.c:7:2: error: #error expected probe miss
+iffe: ... no
 """
         )
         compiler, linker, make, warnings, probes = result
         self.assertEqual(compiler, [0])
+        self.assertEqual(linker, [])
+        self.assertEqual(make, [])
+        self.assertEqual(warnings, [])
+        self.assertEqual(probes, [2])
+
+    def test_generated_looking_source_outside_iffe_is_not_hidden(self):
+        result = self.classify(
+            r"""
+./foo12345.c:8:2: error: real source failure
+make[2]: *** [Makefile:66: foo12345.o] Error 1
+"""
+        )
+        compiler, linker, make, warnings, probes = result
+        self.assertEqual(compiler, [0])
+        self.assertEqual(linker, [])
+        self.assertEqual(make, [1])
+        self.assertEqual(warnings, [])
+        self.assertEqual(probes, [])
+
+    def test_next_shell_command_ends_iffe_invocation(self):
+        result = self.classify(
+            r"""
++ iffe -d1 -v run features/lib
+./99999.c:7:2: error: #error expected probe miss
+iffe: ... no
++ cc -c ./foo12345.c
+./foo12345.c:9:2: error: real source failure
+"""
+        )
+        compiler, linker, make, warnings, probes = result
+        self.assertEqual(compiler, [4])
         self.assertEqual(linker, [])
         self.assertEqual(make, [])
         self.assertEqual(warnings, [])
@@ -91,14 +125,17 @@ make[2]: *** [Makefile:88: app] Error 1
     def test_iffe_own_error_is_not_hidden_without_probe_evidence(self):
         result = self.classify(
             r"""
++ iffe -d1 -v run features/lib
+iffe: test: malformed capability ...
 iffe: internal fatal error: malformed feature file
+iffe: ... no
 make[2]: *** [Makefile:77: FEATURE/foo] Error 1
 """
         )
         compiler, linker, make, warnings, probes = result
         self.assertEqual(compiler, [])
-        self.assertEqual(linker, [0])
-        self.assertEqual(make, [1])
+        self.assertEqual(linker, [2])
+        self.assertEqual(make, [4])
         self.assertEqual(warnings, [])
         self.assertEqual(probes, [])
 
