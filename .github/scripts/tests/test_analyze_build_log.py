@@ -104,7 +104,7 @@ iffe: ... yes
         self.assertEqual(warnings, [])
         self.assertEqual(probes, [3])
 
-    def test_next_shell_command_ends_iffe_invocation(self):
+    def test_next_shell_command_blocks_future_iffe_context(self):
         result = self.classify(
             r"""
 + iffe -d1 -v run features/lib
@@ -112,6 +112,9 @@ iffe: ... yes
 iffe: ... no
 + cc -c ./x12345.c
 ./x12345.c:9:2: error: real source failure
++ iffe -d1 -v run features/other
+iffe: test: some later capability ...
+iffe: ... yes
 """
         )
         compiler, linker, make, warnings, probes = result
