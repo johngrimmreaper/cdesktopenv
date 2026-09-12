@@ -35,12 +35,17 @@ SOURCE_SUFFIX_RE = re.compile(
     r"(?P<file>(?:[A-Za-z0-9_./+~-]+)\.(?:c|cc|cpp|cxx|h|hh|hpp|hxx))(?::\d+)?",
     re.IGNORECASE,
 )
+IFFE_COMMAND_RE = re.compile(
+    r"^\s*\+\s+(?:\S*/)?iffe(?:\s|$)", re.IGNORECASE
+)
+SHELL_TRACE_COMMAND_RE = re.compile(r"^\s*\+\s+\S+")
+IFFE_OUTPUT_RE = re.compile(r"^\s*iffe:", re.IGNORECASE)
 IFFE_TEST_START_RE = re.compile(r"^\s*iffe:\s+test:", re.IGNORECASE)
 IFFE_TEST_END_RE = re.compile(
     r"^\s*iffe:\s+\.\.\.\s+(?:yes|no)\b", re.IGNORECASE
 )
 IFFE_TEMP_SOURCE_RE = re.compile(
-    r"(?:^|/)\./[A-Za-z0-9_-]*\d[A-Za-z0-9_-]*\.c(?::|\b)",
+    r"(?:^|/)\./[A-Za-z]{0,3}\d{5,}\.c(?::|\b)",
     re.IGNORECASE,
 )
 
@@ -62,10 +67,17 @@ def classify(
     warnings: list[int] = []
     probe_diagnostics: list[int] = []
 
+    in_iffe_invocation = False
     in_iffe_test = False
     last_probe_linker_index = -1000
 
     for index, line in enumerate(lines):
+        if IFFE_COMMAND_RE.search(line):
+            in_iffe_invocation = True
+        elif in_iffe_invocation and SHELL_TRACE_COMMAND_RE.search(line):
+            in_iffe_invocation = False
+            in_iffe_test = False
+
         if IFFE_TEST_START_RE.search(line):
             in_iffe_test = True
 
@@ -80,14 +92,18 @@ def classify(
 
         is_diagnostic = compiler_error or linker_error or generic_error or warning
         is_iffe_temp_source = bool(IFFE_TEMP_SOURCE_RE.search(line))
+        is_iffe_output = bool(IFFE_OUTPUT_RE.search(line))
         collect2_error = bool(COLLECT2_ERROR_RE.search(line))
         follows_probe_linker = (
-            collect2_error and index - last_probe_linker_index <= 3
+            collect2_error and index - last_probe_linker_index <= 2
+        )
+        expected_probe_context = (
+            (in_iffe_invocation and is_iffe_temp_source)
+            or (in_iffe_test and not is_iffe_output)
+            or follows_probe_linker
         )
 
-        if is_diagnostic and (
-            is_iffe_temp_source or in_iffe_test or follows_probe_linker
-        ):
+        if is_diagnostic and expected_probe_context:
             probe_diagnostics.append(index)
             if linker_error:
                 last_probe_linker_index = index
