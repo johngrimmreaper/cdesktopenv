@@ -58,6 +58,12 @@ def matches_linker(line: str) -> bool:
     return any(pattern.search(line) for pattern in LINKER_PATTERNS)
 
 
+def has_nearby_iffe_activity(lines: list[str], index: int) -> bool:
+    start = max(0, index - IFFE_ACTIVITY_WINDOW)
+    end = min(len(lines), index + IFFE_ACTIVITY_WINDOW + 1)
+    return any(IFFE_OUTPUT_RE.search(lines[candidate]) for candidate in range(start, end))
+
+
 def classify(
     lines: list[str],
 ) -> tuple[list[int], list[int], list[int], list[int], list[int]]:
@@ -98,7 +104,13 @@ def classify(
             collect2_error and index - last_probe_linker_index <= 2
         )
         expected_probe_context = (
-            (in_iffe_invocation and is_iffe_temp_source)
+            (
+                is_iffe_temp_source
+                and (
+                    in_iffe_invocation
+                    or has_nearby_iffe_activity(lines, index)
+                )
+            )
             or (in_iffe_test and not is_iffe_output)
             or follows_probe_linker
         )
