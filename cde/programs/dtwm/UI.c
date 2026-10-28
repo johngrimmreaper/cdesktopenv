@@ -745,6 +745,14 @@ BoxCreate (void)
 
       XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg);	ac++;
       XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg);	ac++;
+      /* Match the relief colors to the primary background, not the
+       * inactive color set inherited from surrounding panel widgets. */
+      if (panel.color_use != XmCO_BLACK_WHITE)
+      {
+         XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+         XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+         XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
+      }
 
       /*  Create the outer form widget that will contain the entire panel  */
    
@@ -831,6 +839,12 @@ BoxCreate (void)
 
          XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg);	ac++;
          XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg);	ac++;
+         if (panel.color_use != XmCO_BLACK_WHITE)
+         {
+            XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+            XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+            XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
+         }
 
          box_data->switch_form =  
 	    XmCreateForm (box_data->form, "switch", al, ac);
@@ -1068,6 +1082,12 @@ BoxCreate (void)
 
             XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg); ac++;
             XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg); ac++;
+            if (panel.color_use != XmCO_BLACK_WHITE)
+            {
+               XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+               XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+               XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
+            }
 
             box_data->left_control_form = 
                XmCreateForm (box_data->form, "left_control_form", al, ac);
@@ -1112,6 +1132,12 @@ BoxCreate (void)
 
             XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg); ac++;
             XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg); ac++;
+            if (panel.color_use != XmCO_BLACK_WHITE)
+            {
+               XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+               XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+               XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
+            }
 
             box_data->left_control_form =
 	       XmCreateForm (box_data->form, "left_control_form", al, ac);
@@ -1164,6 +1190,12 @@ BoxCreate (void)
 
             XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg); ac++;
             XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg); ac++;
+            if (panel.color_use != XmCO_BLACK_WHITE)
+            {
+               XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+               XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+               XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
+            }
 
             box_data->right_control_form = 
                XmCreateForm (box_data->form, "right_control_form", al, ac);
@@ -1210,6 +1242,12 @@ BoxCreate (void)
 
          XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg);	ac++;
          XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg);	ac++;
+         if (panel.color_use != XmCO_BLACK_WHITE)
+         {
+            XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+            XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+            XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
+         }
 
          box_data->left_control_form = 
             XmCreateForm (box_data->form, "left_control_form", al, ac);
@@ -2091,6 +2129,9 @@ SwitchCreate (BoxData * box_data)
    {
       XtSetArg (al[ac], XmNbackground, panel.primary_pixel_set->bg);	ac++;
       XtSetArg (al[ac], XmNforeground, panel.primary_pixel_set->fg);	ac++;
+      XtSetArg (al[ac], XmNtopShadowColor, panel.primary_pixel_set->ts); ac++;
+      XtSetArg (al[ac], XmNbottomShadowColor, panel.primary_pixel_set->bs); ac++;
+      XtSetArg (al[ac], XmNselectColor, panel.primary_pixel_set->sc); ac++;
    }
 
    switch_data->rc = 
