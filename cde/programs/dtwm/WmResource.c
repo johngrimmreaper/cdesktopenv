@@ -3766,15 +3766,10 @@ WriteOutXrmColors (WmScreenData *pSD)
 		    ResCat (res_class, screen_name, XmNforeground, NULL),
 		    XtRPixel, &value);
 
-		value.addr = (XtPointer) &(fpixset->ts);
-		XrmPutResource (&db, 
-		    ResCat (res_class, screen_name, XmNtopShadowColor, NULL),
-		    XtRPixel, &value);
-
-		value.addr = (XtPointer) &(fpixset->bs);
-		XrmPutResource (&db, 
-		    ResCat (res_class, screen_name, XmNbottomShadowColor, NULL),
-		    XtRPixel, &value);
+		/* Keep shadows dynamic: an unqualified Dtwm shadow resource
+		 * also overrides front-panel widgets with primary backgrounds.
+		 * Motif derives the proper shadows from each widget's background.
+		 */
 
 		/*
 		 *
