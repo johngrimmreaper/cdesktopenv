@@ -14,11 +14,11 @@ CLEANFILES = $(BUILT_SOURCES)
 
 dtconfig: dtconfig.src
 	$(RM) $@
-	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
+	$(GENCPP) -P -DXCOMM=# $(SCRIPTFLAGS) $< > $@
 	chmod 755 $@
 
 dtlogin.rc: dtlogin.rc.src
 	$(RM) $@
-	$(GENCPP) -P -DXCOMM=# $(LOCAL_CPP_DEFINES) $< > $@
+	$(GENCPP) -P -DXCOMM=# $(SCRIPTFLAGS) $< > $@
 	chmod 755 $@
 
