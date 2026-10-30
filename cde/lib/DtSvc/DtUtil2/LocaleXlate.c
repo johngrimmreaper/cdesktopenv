@@ -266,6 +266,9 @@ main()
 #ifndef CDE_INSTALLATION_TOP
 #define CDE_INSTALLATION_TOP  "/usr/dt"
 #endif
+#ifndef CDE_DATA_TOP
+#define CDE_DATA_TOP CDE_INSTALLATION_TOP
+#endif
 
 #ifndef CDE_USER_TOP
 #define CDE_USER_TOP          ".dt"
@@ -274,7 +277,7 @@ main()
 #define DtLCX_USER_PATH     		s_LcxUserPath
 #define DtLCX_INSTALL_AND_CONFIG_PATHS	s_LcxInstallAndConfigPaths
 
-#define _DtLCX_INSTALL_DB_DIR     CDE_INSTALLATION_TOP "/config/svc/"
+#define _DtLCX_INSTALL_DB_DIR     CDE_DATA_TOP "/config/svc/"
 
 /* This is the file type of a _DtLcx file */
 #define _DtLCX_DATABASE_TYPE      ".lcx"
@@ -289,7 +292,7 @@ main()
 
 static char s_LcxUserPath[] = CDE_USER_TOP "/config/svc";
 static char s_LcxInstallAndConfigPaths[] = 
-                 CDE_INSTALLATION_TOP  "/config/svc:"
+                 CDE_DATA_TOP  "/config/svc:"
                  CDE_CONFIGURATION_TOP "/config/svc:";
 
 /*========================================================*/
@@ -369,7 +372,7 @@ on HP-UX platforms, the string is "HPUX", so the translation
 databases to be loaded must be named "HPUX.lcx".
 
 By default, the search paths are:
-DTLCXSEARCHPATH = CDE_INSTALLATION_TOP "/config/svc:" \
+DTLCXSEARCHPATH = CDE_DATA_TOP "/config/svc:" \
                   CDE_CONFIGURATION_TOP "/config/svc:" \
                   "$HOME/.dt/config/svc"
 

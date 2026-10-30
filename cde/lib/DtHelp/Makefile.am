@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = il
 
-cfgdir = $(CDE_INSTALLATION_TOP)/config/svc
+cfgdir = $(CDE_DATA_TOP)/config/svc
 dist_cfg_DATA = CDE.lcx
 
 
