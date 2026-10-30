@@ -3,7 +3,7 @@ XCOMM $XConsortium: Xsession.ow.src /main/3 1996/11/19 11:41:19 drk $
 XCOMM ####################################################################
 XCOMM ##  File:              Xsession.ow
 XCOMM ##
-XCOMM ##  Default Location:  CDE_INSTALLATION_TOP/config/Xsession.ow
+XCOMM ##  Default Location:  CDE_DATA_TOP/config/Xsession.ow
 XCOMM ##
 XCOMM ##  Purpose:           OpenWindows session start script
 XCOMM ##
@@ -30,7 +30,7 @@ fi
 
 if [ -z "$SDT_ALT_SESSION" ]
 then
-	export SDT_ALT_SESSION="CDE_INSTALLATION_TOP/config/Xsession.ow2"
+	export SDT_ALT_SESSION="CDE_DATA_TOP/config/Xsession.ow2"
 fi
 
 if [ -z "$SDT_ALT_HELLO" ]
