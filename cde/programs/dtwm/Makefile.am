@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 bin_PROGRAMS = dtwm dtfplist
 
-configdir = $(CDE_INSTALLATION_TOP)/config/C
+configdir = $(CDE_DATA_TOP)/config/C
 dist_config_DATA = sys.dtwmrc
 
 BUILT_SOURCES = sys.dtwmrc Dtwm.defs
