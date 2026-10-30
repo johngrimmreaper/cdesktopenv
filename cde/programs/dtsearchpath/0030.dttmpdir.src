@@ -2,7 +2,7 @@ XCOMM!KORNSHELL
 XCOMM ####################################################################
 XCOMM ##  File:              0030.dttmpdir
 XCOMM ##
-XCOMM ##  Default Location:  CDE_INSTALLATION_TOP/config/Xsession.d/
+XCOMM ##  Default Location:  CDE_DATA_TOP/config/Xsession.d/
 XCOMM ##
 XCOMM ##  Purpose:           Create the temporary directory on a per-user,
 XCOMM ##                     per-session basis, keying on the $DTUSERSESSION
