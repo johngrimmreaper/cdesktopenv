@@ -3,7 +3,7 @@
 !#
 !#   sys.font:  The default session font resource file
 !#
-!#   placed in:	CDE_INSTALLATION_TOP/config/C/sys.fonts
+!#   placed in:	CDE_DATA_TOP/config/C/sys.fonts
 !#
 !#   (c) Copyright 1993, 1994 Hewlett-Packard Company
 !#   (c) Copyright 1993, 1994 International Business Machines Corp.
