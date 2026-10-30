@@ -55,7 +55,7 @@
 #define DTUDCFONTS		"DTUDCFONTS"
 
 #ifndef DTUDCFONTSLISTDIR
-#define	DTUDCFONTSLISTDIR	CDE_INSTALLATION_TOP "/config"
+#define	DTUDCFONTSLISTDIR	CDE_DATA_TOP "/config"
 #endif
 
 /* default font path */
