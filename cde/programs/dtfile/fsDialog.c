@@ -95,9 +95,9 @@
  *-----------------------------------------------------*/
 
 #define SYSCONFIGFILEDIR  CDE_CONFIGURATION_TOP "/config"
-#define DEFCONFIGFILEDIR  CDE_INSTALLATION_TOP  "/config"
+#define DEFCONFIGFILEDIR  CDE_DATA_TOP  "/config"
 #define CONFIGFILENAME "dtfile.config"
-#define DEFCONFIGFILENAME  CDE_INSTALLATION_TOP  "/config/C/dtfile.config"
+#define DEFCONFIGFILENAME  CDE_DATA_TOP  "/config/C/dtfile.config"
 
 /*--------------------------------------------------------
      Platform-specific includes required for getFSType()

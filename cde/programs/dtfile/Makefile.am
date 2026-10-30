@@ -1,4 +1,4 @@
-configdir = $(CDE_INSTALLATION_TOP)/config/C
+configdir = $(CDE_DATA_TOP)/config/C
 
 SUBDIRS = dtcopy
 
