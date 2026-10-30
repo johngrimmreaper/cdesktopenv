@@ -60,6 +60,9 @@
 #ifndef CDE_INSTALLATION_TOP
 #define CDE_INSTALLATION_TOP 		"/usr/dt"
 #endif
+#ifndef CDE_DATA_TOP
+#define CDE_DATA_TOP CDE_INSTALLATION_TOP
+#endif
 
 #define Stdin(chn)	chn->file_descs[STDIN]
 #define Stdout(chn)	chn->file_descs[STDOUT]
@@ -241,7 +244,7 @@ extern XeString SPCD_Authentication_Dir;
 /*
  * Definitions for file locations
  */
-#define SPCD_ENV_INSTALL_DIRECTORY	CDE_INSTALLATION_TOP "/config"
+#define SPCD_ENV_INSTALL_DIRECTORY	CDE_DATA_TOP "/config"
 #define SPCD_ENV_CONFIG_DIRECTORY       CDE_CONFIGURATION_TOP "/config"
 #define SPCD_ENV_HOME_DIRECTORY		".dt"
 #define SPCD_ENV_FILE			"dtspcdenv"

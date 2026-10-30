@@ -13,7 +13,7 @@ if SOLARIS
 dtspcd_LDADD += -lgen
 endif
 
-cfgdir = $(CDE_INSTALLATION_TOP)/config
+cfgdir = $(CDE_DATA_TOP)/config
 dist_cfg_DATA = dtspcdenv
 
 # I really think we should get rid of dtspcd in general...
