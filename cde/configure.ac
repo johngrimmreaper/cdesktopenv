@@ -321,8 +321,8 @@ dnl ----------------------------------------------------------------------
 AC_ARG_WITH([cde-data-dir],
     AS_HELP_STRING([--with-cde-data-dir=DIR],
         [directory for CDE arch-independent data
-         (backdrops, palettes, types, app-defaults, appconfig, infolib,
-         lib/nls) @<:@default=PREFIX@:>@]),
+         (backdrops, palettes, types, app-defaults, appconfig,
+         factory config, infolib, lib/nls) @<:@default=PREFIX@:>@]),
     [CDE_DATA_TOP="$withval"],
     [CDE_DATA_TOP='${prefix}'])
 
