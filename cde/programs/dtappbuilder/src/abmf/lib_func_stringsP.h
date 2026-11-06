@@ -46,7 +46,7 @@
 #ifndef _ABMF_LIB_FUNC_STRINGSP_H_
 #define _ABMF_LIB_FUNC_STRINGSP_H_
 
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab/util_types.h>
 
 typedef struct

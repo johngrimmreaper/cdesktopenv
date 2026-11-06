@@ -49,7 +49,7 @@
 #define _POSIX_SOURCE 1		/* we want to be POSIX-compliant */
 #endif
 
-#include <ab_private/AB.h>	/* everybody must include this first! */
+#include <ab_private/abconf.h>	/* everybody must include this first! */
 
 
 #endif /* _ABUTIL_TEMPLATE_H_ */

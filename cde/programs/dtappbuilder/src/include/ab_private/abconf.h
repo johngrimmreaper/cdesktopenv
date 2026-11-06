@@ -22,9 +22,9 @@
  */
 
 /*
- *	$XConsortium: AB.h /main/4 1995/11/06 18:48:43 rswiston $
+ *	$XConsortium: abconf.h /main/4 1995/11/06 18:48:43 rswiston $
  *
- * @(#)AB.h	1.1 11 Feb 1994	cde_app_builder/src/libAButil
+ * @(#)abconf.h	1.1 11 Feb 1994	cde_app_builder/src/libAButil
  *
  * 	RESTRICTED CONFIDENTIAL INFORMATION:
  *	
@@ -43,7 +43,7 @@
 #ifndef _ABUTIL_AB_H_
 #define _ABUTIL_AB_H_
 /*
- * <ab_private/AB.h>
+ * <ab_private/abconf.h>
  *
  * This file should be included by ALL app builder source files!
  * And it should be included before any other ab include files 

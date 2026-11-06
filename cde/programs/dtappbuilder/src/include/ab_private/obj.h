@@ -55,7 +55,7 @@
 #ifndef _ABOBJ_OBJ_H_
 #define _ABOBJ_OBJ_H_
 
-#include <ab_private/AB.h>	/* always the first ab include file */
+#include <ab_private/abconf.h>	/* always the first ab include file */
 #include <ab_private/util.h>
 #include <ab/util_types.h>
 #include <ab_private/istr.h>

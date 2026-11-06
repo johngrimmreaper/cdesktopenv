@@ -54,7 +54,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab/util_types.h>
 #include <ab_private/util_err.h>
 

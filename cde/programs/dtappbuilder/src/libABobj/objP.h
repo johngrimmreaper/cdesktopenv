@@ -54,7 +54,7 @@
 #define _ABOBJ_ABOBJP_H_
 
 #include <stdio.h>
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 
 /*************************************************************************
 **									** 

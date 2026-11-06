@@ -54,7 +54,7 @@
 #define _POSIX_SOURCE 1		/* we want to be POSIX-compliant */
 #endif
 
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab/util_types.h>
 
 #define OK			(0)	/* smooth sailing */

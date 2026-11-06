@@ -49,7 +49,7 @@
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab_private/obj.h>
 #include <ab_private/obj_list.h>
 

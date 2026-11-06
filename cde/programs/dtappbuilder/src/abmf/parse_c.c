@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab_private/util_err.h>
 #include <ab/util_types.h>
 #include <ab_private/util.h>

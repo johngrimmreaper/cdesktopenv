@@ -47,7 +47,7 @@
 #ifndef _AB_TMODE_H
 #define _AB_TMODE_H
 
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab_private/obj.h>
 
 /*

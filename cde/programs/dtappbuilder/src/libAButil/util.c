@@ -51,7 +51,7 @@
 #include <limits.h>
 #include <sys/param.h>
 #include <sys/utsname.h>
-#include <ab_private/AB.h>		/* include first! */
+#include <ab_private/abconf.h>		/* include first! */
 #include <ab_private/util.h>
 #include <ab_private/istr.h>
 #include "utilP.h"

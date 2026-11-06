@@ -49,7 +49,7 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab/util_types.h>
 #include <ab_private/abio.h>
 #include <ab_private/objxm.h>

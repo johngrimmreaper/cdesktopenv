@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <Dt/MsgCatP.h>
-#include <ab_private/AB.h>
+#include <ab_private/abconf.h>
 #include <ab/util_types.h>
 #include <ab_private/util.h>
 #include <ab_private/abio.h>
