@@ -96,7 +96,9 @@ fetch_source() {
         motif.tar.gz
     cd motif-1979f2e28dedae721577c4c34f9ad4c73d932ffd
     ./autogen.sh
-    ./configure --prefix="$deps" --libdir="$deps/lib"
+    # Motif 2.3.9 passes a TabBox through the generic Xt Widget pointer type.
+    CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types" \
+        ./configure --prefix="$deps" --libdir="$deps/lib"
     gmake -j4
     gmake install
 ) 2>&1 | tee "$logs/motif.log"
