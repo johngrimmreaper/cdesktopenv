@@ -59,15 +59,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-/*
-** file included for INFTIM
-*/ 
-#if defined(SunOS)
-#include <stropts.h>
-#elif defined(_AIX) || defined(__linux__)
-#define INFTIM (-1)             /* Infinite timeout */
-#endif
-
 #include <sys/wait.h>
 
 #include <Dt/Dts.h>
@@ -775,7 +766,7 @@ SunV3::uncompress(char ** outputBp, int & outputLen, const char * inputBp, const
     unsigned char * currentInputBp = (unsigned char *)inputBp; // track -> input
     unsigned long currentInputCount = inputLen;	// input bytes left to process
 
-    while (poll(pollFDS, 2, INFTIM) > 0) {
+    while (poll(pollFDS, 2, -1) > 0) {
 	// process events on file descriptors
 	// in case two events happen at once, handle the reading from the
 	// process first, to make room for data that then may be written

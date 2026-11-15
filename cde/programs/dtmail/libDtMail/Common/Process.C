@@ -55,15 +55,6 @@
 #include <sys/poll.h>
 #endif
 
-/*
-** file included for INFTIM
-*/ 
-#if defined(SunOS)
-#include <stropts.h>
-#elif defined(_AIX) || defined(__linux__)
-#define INFTIM (-1)             /* Infinite timeout */
-#endif
-
 #include <sys/wait.h>
 
 #include "Process.hh"
@@ -222,7 +213,7 @@ RunProg(const char * program,
 
 	    // we probably don't want to wait forever, so we can try
 	    // and reap the child here, just in case it exits...
-	    result = poll(fds, nfds, INFTIM);
+	    result = poll(fds, nfds, -1);
 
 	    if (result < 0) {
 		// poll error -- what do we do?
