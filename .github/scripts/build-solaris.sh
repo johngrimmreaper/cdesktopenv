@@ -22,7 +22,7 @@ timeout 15m pkg install --no-backup-be --accept \
     developer/macro/gnu-m4 bison flex \
     image/library/libjpeg image/library/libpng16 \
     runtime/perl-538 runtime/tcl-8 shell/ksh93 \
-    system/extended-system-utilities system/header system/locale/en_us \
+    system/extended-system-utilities system/file-system/ufs system/header system/locale/en_us \
     text/gnu-sed text/locale web/curl \
     x11/data/xbitmaps x11/font-utilities x11/header/x11-protocols \
     x11/library/libx11 x11/library/libxau x11/library/libxdmcp \
