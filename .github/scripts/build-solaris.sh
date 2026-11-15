@@ -99,7 +99,7 @@ fetch_source() {
     # Motif 2.3.9 passes a TabBox through the generic Xt Widget pointer type.
     CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types" \
         ./configure --prefix="$deps" --libdir="$deps/lib"
-    for directory in bindings bitmaps config localized lib include; do
+    for directory in bindings bitmaps config localized lib include tools clients/uil; do
         gmake -C "$directory" -j4
         gmake -C "$directory" install
     done
