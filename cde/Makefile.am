@@ -1,6 +1,8 @@
 docsdir = $(CDE_INSTALLATION_TOP)
 docs_DATA = CONTRIBUTORS COPYING copyright HISTORY README.md
 
+EXTRA_DIST = tests/check-rpc-libexec.sh
+
 MAINTAINERCLEANFILES = Makefile.in \
 		configure libtool \
 		config.guess \
