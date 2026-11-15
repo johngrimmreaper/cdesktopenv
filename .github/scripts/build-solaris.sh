@@ -5,7 +5,7 @@ logs=$1
 export LC_ALL=C
 export PATH="/usr/gnu/bin:/usr/bin:/usr/sbin:$PATH"
 export CC=gcc CXX=g++
-export CFLAGS='-m64 -O2' CXXFLAGS='-m64 -O2'
+export CFLAGS='-m64 -O2 -std=gnu17' CXXFLAGS='-m64 -O2'
 
 {
     cat /etc/release
@@ -20,13 +20,13 @@ timeout 15m pkg install --no-backup-be --accept \
     developer/build/autoconf developer/build/automake \
     developer/build/gnu-make developer/build/libtool developer/build/pkg-config \
     developer/macro/gnu-m4 bison flex \
-    image/library/libjpeg library/motif \
+    image/library/libjpeg image/library/libpng16 \
     runtime/perl-538 runtime/tcl-8 shell/ksh93 \
     system/extended-system-utilities system/header system/locale/en_us \
     text/gnu-sed text/locale web/curl \
-    x11/font-utilities x11/header/x11-protocols \
+    x11/data/xbitmaps x11/font-utilities x11/header/x11-protocols \
     x11/library/libx11 x11/library/libxau x11/library/libxdmcp \
-    x11/library/libxext x11/library/libxinerama x11/library/libxmu \
+    x11/library/libxext x11/library/libxft x11/library/libxinerama x11/library/libxmu \
     x11/library/libxpm x11/library/libxrender x11/library/toolkit/libxt \
     x11/session/sessreg x11/x11-server-utilities \
     2>&1 | tee "$logs/ips.log" || pkg_status=$?
@@ -85,8 +85,26 @@ fetch_source() {
     cp liblmdb.a "$deps/lib/"
 ) 2>&1 | tee "$logs/lmdb.log"
 
+(
+    cd "$build_root"
+
+    # Use the same Motif 2.3.9 source as the CDE Motif release workflow.
+    # This provides the Xme APIs and xm_* bitmap headers used by CDE.
+    fetch_source \
+        https://codeload.github.com/jontrulson/motif/tar.gz/1979f2e28dedae721577c4c34f9ad4c73d932ffd \
+        4e23e0b3bbab2acb2a12470a4edd61bfe96479f62ea96b0f947d121855c8f0ae \
+        motif.tar.gz
+    cd motif-1979f2e28dedae721577c4c34f9ad4c73d932ffd
+    ./autogen.sh
+    ./configure --prefix="$deps" --libdir="$deps/lib"
+    gmake -j4
+    gmake install
+) 2>&1 | tee "$logs/motif.log"
+
 export PATH="$deps/bin:$PATH"
-export CPPFLAGS="-I$deps/include -I/usr/dt/share/include"
+export PKG_CONFIG_PATH="$deps/lib/pkgconfig"
+export LD_LIBRARY_PATH_64="$deps/lib"
+export CPPFLAGS="-I$deps/include"
 export LDFLAGS="-L$deps/lib"
 
 cd "$source_dir"
