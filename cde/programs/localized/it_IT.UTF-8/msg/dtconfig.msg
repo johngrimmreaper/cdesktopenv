@@ -89,9 +89,9 @@ $
 $	In above messages 25 and 26, only translate words between
 $	left "(" and right ").
 $ 
-27 Al prossimo avvio del sistema, le seguenti utilità verrano esegite da /usr/dt/bin
+27 Al prossimo avvio del sistema, inetd userà le seguenti voci.
 $ 
-28     rpc.ttdbserverd         (ToolTalk)
+28     rpc.ttdbserver          (ToolTalk)
 29     rpc.cmsd                (Gestione dell'Agenda)
 30     dtspcd                  (Controllo dei processi secondari)
 $ 

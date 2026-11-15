@@ -126,9 +126,9 @@ $
 $	In above messages 25 and 26, only translate words between
 $	left "(" and right ").
 $ 
-27 "Beim nächsten Systemstart werden die folgenden Dateien vom Verzeichnis /usr/dt/bin abgerufen."
+27 "Beim nächsten Systemstart verwendet inetd die folgenden Einträge."
 $ 
-28 "    rpc.ttdbserverd         (ToolTalk)"
+28 "    rpc.ttdbserver          (ToolTalk)"
 29 "    rpc.cmsd                (Kalender-Manager)"
 30 "    dtspcd                  (Unterprozeßsteuerung)"
 $ 

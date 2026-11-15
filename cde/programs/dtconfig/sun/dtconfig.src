@@ -227,19 +227,19 @@ XCOMM
 
 XCOMM Following inetdTT() procedure code from Sun CDE SI post_install
 XCOMM configTT file.  It updates the ToolTalk daemon inetd.conf
-XCOMM line so it points to CDE_INSTALLATION_TOP/bin/rpc.ttdbserverd.
+XCOMM line so it points to CDE_INSTALLATION_TOP/bin/rpc.ttdbserver.
 
 inetdTT()
 {
 FILE=/etc/inetd.conf
 TMPFILE=/tmp/inetd.conf
-TTDBSERVERD=CDE_INSTALLATION_TOP/bin/rpc.ttdbserverd
+TTDBSERVER=CDE_INSTALLATION_TOP/bin/rpc.ttdbserver
 
 XCOMM
-XCOMM  remove any non-dt ttdbserverd line
+XCOMM  remove any non-dt ttdbserver line
 XCOMM
 
-    $NAWK -v ttdb=$TTDBSERVERD \
+    $NAWK -v ttdb=$TTDBSERVER \
         '{if ($1 == "100083/1" && $6 != ttdb)
                 ;
           else
@@ -250,7 +250,7 @@ XCOMM
     rm $TMPFILE
 
 XCOMM
-XCOMM  add dt ttdbserverd line if its not already there
+XCOMM  add dt ttdbserver line if its not already there
 XCOMM
 
     $NAWK '{if ($1 == "100083/1")
@@ -259,7 +259,7 @@ XCOMM
 
     if [ ! -f /tmp/tt-already-there ]
     then
-        echo "100083/1 stream rpc/tcp wait root $TTDBSERVERD $TTDBSERVERD" \
+        echo "100083/1 stream rpc/tcp wait root $TTDBSERVER $TTDBSERVER" \
                  >>$FILE
     else
         rm /tmp/tt-already-there
@@ -497,10 +497,13 @@ case "$mode" in
 	inetdCM
 	inetdTT
 	Message 14 "done"
-	Message 27 "Next system boot, following will be run from CDE_INSTALLATION_TOP/bin"
-	Message 28 "    rpc.ttdbserverd         (ToolTalk)" 
+	Message 27 "On the next system boot, inetd will use the following entries."
+	Message 28 "    rpc.ttdbserver          (ToolTalk)"
+	printf '        %s\n' "$TTDBSERVER"
 	Message 29 "    rpc.cmsd                (Calendar Manager)"
+	printf '        %s\n' "$CMSD"
 	Message 30 "    dtspcd                  (Subprocess Control)"
+	printf '        %s\n' "$DTSPCD"
 	;;
 
 '-inetd.ow')

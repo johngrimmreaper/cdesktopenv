@@ -94,9 +94,9 @@ $
 $	In above messages 25 and 26, only translate words between
 $	left "(" and right ").
 $ 
-27 다음 시스템 부트시, 다음과 같은 것들이 /usr/dt/bin에서 실행될것임
+27 다음 시스템 시작 시 inetd는 다음 항목을 사용합니다.
 $ 
-28     rpc.ttdbserverd         (툴토크)
+28     rpc.ttdbserver          (툴토크)
 29     rpc.cmsd                (달력)
 30     dtspcd                  (부프로세스 조종)
 $ 

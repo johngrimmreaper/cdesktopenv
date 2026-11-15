@@ -130,9 +130,9 @@ $
 $	In above messages 25 and 26, only translate words between
 $	left "(" and right ").
 $ 
-27 "A la prochaine initialisation, les éléments suivants seront exécutés à partir de /usr/dt/bin"
+27 "Au prochain démarrage, inetd utilisera les entrées suivantes."
 $ 
-28 "    rpc.ttdbserverd         (ToolTalk)"
+28 "    rpc.ttdbserver          (ToolTalk)"
 29 "    rpc.cmsd                (Gestionnaire d'agenda)"
 30 "    dtspcd                  (Contrôle de sous procédure)"
 $ 

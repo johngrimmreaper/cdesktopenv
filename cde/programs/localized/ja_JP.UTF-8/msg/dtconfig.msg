@@ -98,9 +98,9 @@ $
 $       In above messages 25 and 26, only translate words between
 $       left "(" and right ").
 $ 
-27 次のシステム起動時に、次のものは /usr/dt/bin から実行されます。
+27 次のシステム起動時に、inetd は以下のエントリを使用します。
 $ 
-28     rpc.ttdbserverd         (ToolTalk)
+28     rpc.ttdbserver          (ToolTalk)
 29     rpc.cmsd                (カレンダ・マネージャ)
 30     dtspcd                  (サブプロセス・コントロール)
 $ 

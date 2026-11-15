@@ -94,9 +94,9 @@ $
 $	In above messages 25 and 26, only translate words between
 $	left "(" and right ").
 $ 
-27 Next system boot, following will be run from /usr/dt/bin
+27 On the next system boot, inetd will use the following entries.
 $ 
-28     rpc.ttdbserverd         (ToolTalk)
+28     rpc.ttdbserver          (ToolTalk)
 29     rpc.cmsd                (Calendar Manager)
 30     dtspcd                  (Subprocess Control)
 $ 
