@@ -95,6 +95,7 @@ extern const char * _DtHelpCeGetVolumeCharSet(VolumeHandle helpVolumeHandle);
 
 /*======== platform adjustments ==============*/
 #ifdef sun
+#include <widec.h>
 #define wcswidth(s,n) wscol(s)
 #define wcslen(s) wslen(s)
 #endif

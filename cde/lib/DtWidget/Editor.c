@@ -64,6 +64,7 @@
 #  include <wchar.h>
 # endif
 # include <libintl.h>
+# include <euc.h>
 #elif defined(__linux__) || defined(CSRG_BASED)
 # include <wctype.h>
 # include <wchar.h>
@@ -5217,7 +5218,7 @@ sun_wcwidth(
     status = wctomb(mbstr, wc);
 
     if (status > 0)
-       return(euccol(mbstr));
+       return(euccol((const unsigned char *)mbstr));
     else
        return(status);
 }

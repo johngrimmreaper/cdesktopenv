@@ -54,9 +54,7 @@
 #include <errno.h>
 #include <locale.h>  /* getlocale(), LOCALE_STATUS, LC_xxx */
 
-#if defined(_AIX) || defined(CSRG_BASED) || defined(__linux__)
 #include <ctype.h>
-#endif
 
 #include "CvStringI.h"        /* for string functions used by Canvas Engine */
 #include "StringFuncsI.h"     /* for _CEStrcollProc */

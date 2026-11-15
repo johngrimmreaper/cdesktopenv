@@ -35,6 +35,7 @@
 
 #include "TermPrim.h"
 #include "TermPrimOSDepI.h"
+#include "TermPrimUtil.h"
 #include "TermPrimDebug.h"
 #include "TermHeader.h"
 #if !defined(__linux__)
