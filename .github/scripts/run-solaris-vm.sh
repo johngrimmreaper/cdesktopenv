@@ -35,7 +35,7 @@ chmod 600 "$vm_dir/ssh_key"
         329f85200e187ae394469a2d9504ddc94b373d9359f41fd9814ca3eb852ce08a \
         "$vm_dir/image.part"
     cat "$vm_dir/image.part"
-) | zstd --decompress --sparse --output "$vm_dir/solaris.qcow2"
+) | zstd --decompress --sparse -o "$vm_dir/solaris.qcow2"
 rm "$vm_dir/image.part"
 
 acceleration=(-accel tcg -cpu max)

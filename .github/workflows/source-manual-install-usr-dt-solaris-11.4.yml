@@ -28,7 +28,7 @@ jobs:
       - name: Install QEMU and image tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends qemu-system-x86 rsync zstd
+          sudo apt-get install -y --no-install-recommends acl qemu-system-x86 rsync zstd
 
       - name: Build and stage CDE in Solaris
         run: bash .github/scripts/run-solaris-vm.sh
