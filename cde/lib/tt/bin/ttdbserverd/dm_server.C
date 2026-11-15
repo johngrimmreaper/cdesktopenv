@@ -79,6 +79,10 @@
 #include <isam.h>
 #include <time.h>
 
+#ifdef OPT_GARBAGE_THREADS
+#include <thread.h>
+#endif
+
 extern "C" { int isaddindex(int, struct keydesc*); }
 extern "C" { int isbuild(const char*, int, struct keydesc*, int); }
 extern "C" { int isclose(int); }

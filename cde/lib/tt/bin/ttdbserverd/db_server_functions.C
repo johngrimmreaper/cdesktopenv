@@ -65,6 +65,10 @@
 #include "dm_access_cache.h"
 #include "dm/dm_recfmts.h"
 
+#ifdef OPT_GARBAGE_THREADS
+#include <thread.h>
+#endif
+
 
 #if !defined(OPT_GARBAGE_THREADS)
 #include <db/tt_db_client.h>
