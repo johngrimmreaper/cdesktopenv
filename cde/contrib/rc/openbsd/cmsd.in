@@ -1,4 +1,4 @@
-daemon="@bindir@/rpc.cmsd &"
+daemon="@CDE_LIBEXEC_PATH@/rpc.cmsd &"
 
 . /etc/rc.d/rc.subr
 

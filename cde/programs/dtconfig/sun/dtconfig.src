@@ -310,13 +310,13 @@ XCOMM
 
 XCOMM Following inetdCM() procedure is from Sun CDE SI post_install
 XCOMM configRun file.  It updates the Calendar Manager daemon inetd.conf
-XCOMM line so it points to CDE_INSTALLATION_TOP/bin/rpc.cmsd.
+XCOMM line so it points to CDE_LIBEXEC_DIR/rpc.cmsd.
 
 inetdCM()
 {
 FILE=/etc/inetd.conf
 TMPFILE=/tmp/inetd.conf
-CMSD=CDE_INSTALLATION_TOP/bin/rpc.cmsd
+CMSD=CDE_LIBEXEC_DIR/rpc.cmsd
 
 XCOMM
 XCOMM remove any non-dt rpc.cmsd line

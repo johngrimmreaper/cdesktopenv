@@ -8,6 +8,6 @@ service cmsd
     protocol	= udp
     wait	= yes
     user	= root
-    server	= @bindir@/rpc.cmsd
+    server	= @CDE_LIBEXEC_PATH@/rpc.cmsd
     only_from 	= 127.0.0.1/0
 }

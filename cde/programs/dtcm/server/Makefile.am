@@ -1,6 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-bin_PROGRAMS = rpc.cmsd
+cdelibexecdir = $(CDE_LIBEXEC_DIR)
+cdelibexec_PROGRAMS = rpc.cmsd
 
 rpc_cmsd_CFLAGS = -I../../../lib/csa $(DT_INCDIR) $(CSA_INCDIR)
 
