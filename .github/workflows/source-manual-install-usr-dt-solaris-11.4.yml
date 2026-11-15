@@ -1,0 +1,75 @@
+name: CDE source CI - Oracle Solaris 11.4
+
+on:
+  push:
+    branches:
+      - ci/solaris-11.4
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cde-source-solaris-11.4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-install:
+    name: Build and stage CDE on Oracle Solaris 11.4 x86-64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out exact commit under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build and stage CDE in Solaris
+        id: solaris
+        uses: vmactions/solaris-vm@1c166978f5a2c1f87f1c9d4d8dd85ae3d1eff6f7 # v1.4.2
+        with:
+          release: '11.4-gcc'
+          cpu: 4
+          sync: rsync
+          prepare: |
+            timeout 10m pkg install --no-backup-be --accept shell/bash || [ "$?" -eq 4 ]
+          run: |
+            set -eu
+            mkdir -p solaris-ci-logs
+            # Keep the action running through rsync copyback even on build failure.
+            status=0
+            /usr/bin/bash .github/scripts/build-solaris.sh "$PWD/solaris-ci-logs" || status=$?
+            printf '%s\n' "$status" > solaris-ci-logs/exit-status
+
+      - name: Check Solaris build result
+        if: ${{ !cancelled() }}
+        env:
+          SOLARIS_VM_OUTCOME: ${{ steps.solaris.outcome }}
+        run: |
+          set -euo pipefail
+          if [[ "$SOLARIS_VM_OUTCOME" != success || ! -s solaris-ci-logs/exit-status ]]; then
+            echo '::error::The Solaris VM did not return a build result.'
+            exit 1
+          fi
+          status=$(<solaris-ci-logs/exit-status)
+          if [[ "$status" != 0 ]]; then
+            echo "::error::The Solaris build script exited with status $status."
+            exit 1
+          fi
+
+      - name: Analyze CDE build log
+        if: ${{ !cancelled() && hashFiles('solaris-ci-logs/cde-make.log') != '' }}
+        run: |
+          python3 .github/scripts/analyze-build-log.py \
+            --log solaris-ci-logs/cde-make.log \
+            --label 'CDE source build / Oracle Solaris 11.4 x86-64' \
+            --output-dir solaris-ci-logs/analyzer \
+            --summary-file "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Solaris diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-solaris-11.4-diagnostics
+          path: solaris-ci-logs/
