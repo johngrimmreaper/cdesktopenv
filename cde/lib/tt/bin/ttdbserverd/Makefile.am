@@ -3,7 +3,8 @@ MAINTAINERCLEANFILES = Makefile.in
 TT_VERSION = "CDE Version @CDE_VERSION_MAJOR@.@CDE_VERSION_MINOR@.@CDE_VERSION_MICRO@@CDE_VERSION_DEV@"
 TT_VERSION_DEFINE = -DTT_VERSION_STRING=\"$(TT_VERSION)\"
 
-bin_PROGRAMS = rpc.ttdbserver
+cdelibexecdir = $(CDE_LIBEXEC_DIR)
+cdelibexec_PROGRAMS = rpc.ttdbserver
 
 rpc_ttdbserver_CXXFLAGS = -I../../slib -I../../lib -I../../mini_isam \
 			$(TIRPC_DEFINES) $(TT_VERSION_DEFINE)

@@ -227,13 +227,13 @@ XCOMM
 
 XCOMM Following inetdTT() procedure code from Sun CDE SI post_install
 XCOMM configTT file.  It updates the ToolTalk daemon inetd.conf
-XCOMM line so it points to CDE_INSTALLATION_TOP/bin/rpc.ttdbserver.
+XCOMM line so it points to CDE_LIBEXEC_DIR/rpc.ttdbserver.
 
 inetdTT()
 {
 FILE=/etc/inetd.conf
 TMPFILE=/tmp/inetd.conf
-TTDBSERVER=CDE_INSTALLATION_TOP/bin/rpc.ttdbserver
+TTDBSERVER=CDE_LIBEXEC_DIR/rpc.ttdbserver
 
 XCOMM
 XCOMM  remove any non-dt ttdbserver line

@@ -8,6 +8,6 @@ service ttdbserver
     protocol	= tcp
     wait	= yes
     user	= root
-    server	= @bindir@/rpc.ttdbserver
+    server	= @CDE_LIBEXEC_PATH@/rpc.ttdbserver
     only_from 	= 127.0.0.1/0
 }
