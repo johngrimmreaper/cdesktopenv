@@ -123,9 +123,15 @@ _Tt_message()
   _otype(), _sender_ptype(), _handler_ptype(),
   _api_id(), _status_string()
 #else
-: _pattern_id(NULL), _object(NULL), _file(NULL), _op(NULL),
-  _otype(NULL), _sender_ptype(NULL), _handler_ptype(NULL),
-  _api_id(NULL), _status_string(NULL)
+: _pattern_id(static_cast<const char *>(0)),
+  _object(static_cast<const char *>(0)),
+  _file(static_cast<const char *>(0)),
+  _op(static_cast<const char *>(0)),
+  _otype(static_cast<const char *>(0)),
+  _sender_ptype(static_cast<const char *>(0)),
+  _handler_ptype(static_cast<const char *>(0)),
+  _api_id(static_cast<const char *>(0)),
+  _status_string(static_cast<const char *>(0))
 #endif
 {
 	base_constructor();
