@@ -23,7 +23,7 @@ timeout 15m pkg install --no-backup-be --accept \
     image/library/libjpeg library/motif \
     runtime/perl-538 runtime/tcl-8 shell/ksh93 \
     system/extended-system-utilities system/header system/locale/en_us \
-    text/gnu-sed web/curl \
+    text/gnu-sed text/locale web/curl \
     x11/font-utilities x11/header/x11-protocols \
     x11/library/libx11 x11/library/libxau x11/library/libxdmcp \
     x11/library/libxext x11/library/libxinerama x11/library/libxmu \
@@ -91,7 +91,7 @@ export LDFLAGS="-L$deps/lib"
 
 cd "$source_dir"
 ./autogen.sh 2>&1 | tee "$logs/cde-autogen.log"
-./configure --prefix=/usr/dt 2>&1 | tee "$logs/cde-configure.log"
+./configure --prefix=/usr/dt --with-tcl=/usr/lib/amd64 2>&1 | tee "$logs/cde-configure.log"
 gmake -j4 2>&1 | tee "$logs/cde-make.log"
 gmake install DESTDIR="$stage" 2>&1 | tee "$logs/cde-install.log"
 
