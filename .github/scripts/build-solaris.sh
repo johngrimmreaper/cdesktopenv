@@ -92,7 +92,7 @@ export LDFLAGS="-L$deps/lib"
 cd "$source_dir"
 ./autogen.sh 2>&1 | tee "$logs/cde-autogen.log"
 ./configure --prefix=/usr/dt --with-tcl=/usr/lib/amd64 2>&1 | tee "$logs/cde-configure.log"
-gmake -j4 2>&1 | tee "$logs/cde-make.log"
+gmake --keep-going -j4 2>&1 | tee "$logs/cde-make.log"
 gmake install DESTDIR="$stage" 2>&1 | tee "$logs/cde-install.log"
 
 for program in dtwm dtlogin; do
