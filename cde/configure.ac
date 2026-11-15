@@ -338,12 +338,12 @@ AC_ARG_WITH([cde-state-dir],
     [CDE_LOGFILES_TOP="$withval"],
     [CDE_LOGFILES_TOP="/var/dt"])
 
+CDE_LIBEXEC_DIR='${bindir}'
 AC_ARG_WITH([cde-libexec-dir],
     AS_HELP_STRING([--with-cde-libexec-dir=DIR],
-        [directory for CDE-internal helper binaries
-         (rpc.cmsd, ttsession, ...) @<:@default=BINDIR@:>@]),
-    [CDE_LIBEXEC_DIR="$withval"],
-    [CDE_LIBEXEC_DIR='${bindir}'])
+        [directory for CDE RPC daemons (rpc.cmsd and rpc.ttdbserver)
+         @<:@default=BINDIR@:>@]),
+    [AS_IF([test "x$withval" != xno], [CDE_LIBEXEC_DIR="$withval"])])
 
 dnl CDE_INSTALLATION_TOP follows --prefix. The previous code used
 dnl ${ac_default_prefix} which always resolves to AC_PREFIX_DEFAULT
@@ -369,8 +369,17 @@ test "x$prefix"      = xNONE && prefix="$ac_default_prefix"
 test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
 eval _cde_install_top="\"$CDE_INSTALLATION_TOP\""
 eval _cde_data_top="\"$CDE_DATA_TOP\""
+dnl Make expands CDE_LIBEXEC_DIR when installing the daemons. Service
+dnl templates and the C header need the resolved directory at configure time.
 eval _cde_libexec_dir="\"$CDE_LIBEXEC_DIR\""
 eval _cde_libexec_dir="\"$_cde_libexec_dir\""
+dnl exec_prefix can itself be expressed relative to prefix.
+eval _cde_libexec_dir="\"$_cde_libexec_dir\""
+AS_CASE([$_cde_libexec_dir],
+    [*'${'*], [AC_MSG_ERROR([cannot resolve the CDE RPC daemon directory: $_cde_libexec_dir])],
+    [/*], [],
+    [AC_MSG_ERROR([--with-cde-libexec-dir must resolve to an absolute directory])])
+AC_SUBST([CDE_LIBEXEC_PATH], [$_cde_libexec_dir])
 
 AC_DEFINE_UNQUOTED([CDE_INSTALLATION_TOP], ["$_cde_install_top"],
     [Top of the CDE installation tree (== --prefix)])
