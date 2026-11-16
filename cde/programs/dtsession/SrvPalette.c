@@ -69,10 +69,9 @@ static char rcsid[] =
 #include "SrvFile_io.h"
 #include "SrvPalette.h"
 
+#include <Dt/DtP.h>
 #ifdef sun
 #include "OWsync.h"
-#else
-#include <Dt/DtP.h>
 #endif
 
 #define DEFAULT   4

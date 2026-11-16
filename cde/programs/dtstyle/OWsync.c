@@ -35,14 +35,7 @@
 #include <X11/Xlib.h>
 #include <Dt/DtP.h>
 
-/*
- * Include the appropriate header for the ColorSet structure
- */
-#if defined(dtsession)
-#include "Srv.h"
-#elif defined(dtstyle)
 #include "ColorMain.h"
-#endif
 
 /*
  * Sync OW Color resources with CDE color object values
