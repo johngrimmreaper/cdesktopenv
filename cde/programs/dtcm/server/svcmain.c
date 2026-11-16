@@ -48,12 +48,12 @@
 #endif /* _NETINET_IN_H */
 #endif
 
-#if defined(SunOS)
+#if defined(__sun)
 #include <netconfig.h>
 #include <netdir.h>
 #include <sys/stropts.h>
 #include <tiuser.h>
-#endif /* SunOS */
+#endif /* __sun */
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -521,12 +521,12 @@ main(int argc, char **argv)
 	SVCXPRT *udp_transp = (SVCXPRT *)-1;
 	int	fd, error;
 
-#if defined(SunOS)
+#if defined(__sun)
 	struct netconfig *nconf_udp;
 	struct netconfig *nconf_tcp;
 	struct t_info info;
 	char mname[FMNAMESZ+1];
-#endif /* SunOS */
+#endif /* __sun */
 
 	pw = (struct passwd *)getpwnam("daemon");
 	gr = (struct group *)getgrnam("daemon");
@@ -546,7 +546,7 @@ main(int argc, char **argv)
 
 		standalone = 0;
 
-#if defined(SunOS)
+#if defined(__sun)
 		/* we need a TLI endpoint rather than a socket */
 		if (ioctl(0, I_LOOK, mname) != 0) {
 			perror("rpc.cmsd: ioctl failed to get module name");
@@ -566,7 +566,7 @@ main(int argc, char **argv)
 	} else if (t_getinfo(0, &info) == 0) {
 		standalone = 0;
 
-#endif /* SunOS */
+#endif /* __sun */
 
 	} else
 		standalone = 1;
@@ -612,7 +612,7 @@ main(int argc, char **argv)
 	signal(SIGHUP, sighup_handler);
 
 
-#if defined(SunOS)
+#if defined(__sun)
 	/* raise the soft limit of number of file descriptor */
 	/* this is to prevent the backend from running out of open file des */
 	getrlimit(RLIMIT_NOFILE, &rl);
@@ -620,7 +620,7 @@ main(int argc, char **argv)
 	setrlimit(RLIMIT_NOFILE, &rl);
 #endif
 
-#if defined(SunOS)
+#if defined(__sun)
 	nconf_udp = getnetconfigent("udp");
 	nconf_tcp = getnetconfigent("tcp");
 
@@ -732,7 +732,7 @@ main(int argc, char **argv)
 		}
 	}
 
-#endif /* SunOS */
+#endif /* __sun */
 
 #ifndef AIX
 	if(-1 == setegid (daemon_gid)) {

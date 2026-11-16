@@ -9,6 +9,10 @@ libcsa_la_CFLAGS = -DRFC_MIME -DLINE_COUNT -DV2 -DOW_I18N \
 
 libcsa_la_LIBADD = $(XTOOLLIB) $(TIRPCLIB)
 
+if SOLARIS
+libcsa_la_LIBADD += -lsocket -lnsl
+endif
+
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
 libcsa_la_LDFLAGS = -version-info 2:1:0
