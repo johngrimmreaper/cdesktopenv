@@ -87,6 +87,6 @@ dtlogin_CFLAGS += -DPAM
 dtlogin_LDADD += -lgen -lresolv -lbsm -lcmd -lpam
 dtgreet_LDADD += -lgen -lresolv -lbsm -lcmd
 dtchooser_LDADD += -lgen -lresolv -lbsm -lcmd
-dtlogin_SOURCES += solaris.c pam_svc.c
+dtlogin_SOURCES += solaris.c solaris.h pam_svc.c pam_svc.h
 endif
 

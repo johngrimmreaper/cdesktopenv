@@ -90,6 +90,7 @@
 # include "solaris.h"
 #endif
 #ifdef PAM
+# include <utmpx.h>
 # include "pam_svc.h"
 #endif
 
