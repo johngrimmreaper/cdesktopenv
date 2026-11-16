@@ -176,10 +176,6 @@ static int Text_VarAndWidget(
                         Boolean varIsString,
                         int argc,
                         char *argv[]) ;
-static int Text_WidgetAndBoolean( 
-                        void (*func)(Widget w, char b),
-                        int argc,
-                        char *argv[]) ;
 static int Text_WidgetAndOneParam( 
                         Boolean (*func)(Widget, intptr_t),
                         Boolean returnBoolean,
