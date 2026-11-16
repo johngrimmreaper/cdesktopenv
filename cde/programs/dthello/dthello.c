@@ -70,7 +70,7 @@
 #include <X11/StringDefs.h>
 #include <X11/Xutil.h>
 #include <Xm/MwmUtil.h>
-#include <sys/signal.h>
+#include <signal.h>
 #include <Xm/Xm.h>
 #include <Dt/GetDispRes.h>
 #include <Dt/HourGlass.h>

@@ -102,17 +102,10 @@ int Client_Send_EOF(protocol_request_ptr prot);
 int Client_Channel_Termios(protocol_request_ptr prot);
 int Client_Enhanced_Spawn(protocol_request_ptr prot);
 
-#if defined(_AIX) || defined(__linux__)
-# define SA_HANDLER_INT_ARG
-#endif /* _AIX */
 
 void conditional_putenv(XeString env_str);
 void SPCD_Reply(SPC_Connection_Ptr connection, protocol_request_ptr prot, int retval, int errval );
-#ifdef SA_HANDLER_INT_ARG
-void SPCD_Alarm_Handler (int);
-#else
-void SPCD_Alarm_Handler (void);
-#endif /* SA_HANDLER_INT_ARG */
+void SPCD_Alarm_Handler(int);
 
 /* Global data */
 
@@ -1241,11 +1234,7 @@ void SPCD_Reply(SPC_Connection_Ptr connection,
    * If sub-processes are running, return to select; 
    * otherwise exit.
    */
-#ifdef SA_HANDLER_INT_ARG
 void SPCD_Alarm_Handler(int not_used)
-#else
-void SPCD_Alarm_Handler()
-#endif /* SA_HANDLER_INT_ARG */
 /*----------------------------------------------------------------------+*/
 {
   int i;

@@ -59,7 +59,7 @@
 #include        <setjmp.h>
 #include	<stdlib.h>
 #include	<unistd.h>
-#include        <sys/signal.h>
+#include        <signal.h>
 #include        <sys/stat.h>
 #include        <sys/param.h>
 #include	<locale.h>

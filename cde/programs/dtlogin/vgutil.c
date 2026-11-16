@@ -57,7 +57,7 @@
 #include <stdio.h>
 #include <setjmp.h>
 #include <time.h>
-#include <sys/signal.h>
+#include <signal.h>
 #include <stdarg.h>
 #define Va_start(a,b) va_start(a,b)
 #include <unistd.h>
