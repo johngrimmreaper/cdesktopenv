@@ -19,6 +19,8 @@ AM_CFLAGS = -DCDE_CONFIGURATION_TOP=\"$(CDE_CONFIGURATION_TOP)\" \
 	    -DXDMDIR=\"$(XDMDIR)\" \
 	    -DKORNSHELL=$(KSH) -DUNIXCONN -DTCPCONN -DXDMCP
 
+dtlogin_CFLAGS = $(AM_CFLAGS)
+
 dtlogin_SOURCES = access.c auth.c genauth.c daemon.c dm.c \
                   dpylist.c error.c file.c mitauth.c protodpy.c policy.c \
                   reset.c server.c session.c socket.c util.c \
@@ -81,7 +83,7 @@ endif
 
 if SOLARIS
 XBINDIR = /usr/bin/X11
-dtlogin_CFLAGS = $(AM_CFLAGS) -DPAM
+dtlogin_CFLAGS += -DPAM
 dtlogin_LDADD += -lgen -lresolv -lbsm -lcmd -lpam
 dtgreet_LDADD += -lgen -lresolv -lbsm -lcmd
 dtchooser_LDADD += -lgen -lresolv -lbsm -lcmd
