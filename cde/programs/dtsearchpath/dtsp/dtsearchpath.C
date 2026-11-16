@@ -177,14 +177,14 @@ int main (int argc, char **argv)
   if (options->Verbose() || options->CheckingUser()) {
     CString mp(user->OS()->MountPoint());
 #ifdef IOSTREAMSWORKS
-    cout << "DTMOUNTPOINT: " << mp << "\n" << endl;
-    cout << app << endl;
-    cout << database << endl;
-    cout << icon << endl;
-    cout << iconbm << endl;
-    cout << help << endl;
-    cout << infolib << endl;
-    cout << DTINFOLIBDEFAULT_NAME << ": " << DTINFOLIBDEFAULT_VALUE << "\n" << endl;
+    std::cout << "DTMOUNTPOINT: " << mp << "\n" << std::endl;
+    std::cout << app << std::endl;
+    std::cout << database << std::endl;
+    std::cout << icon << std::endl;
+    std::cout << iconbm << std::endl;
+    std::cout << help << std::endl;
+    std::cout << infolib << std::endl;
+    std::cout << DTINFOLIBDEFAULT_NAME << ": " << DTINFOLIBDEFAULT_VALUE << "\n" << std::endl;
 #else
     printf("DTMOUNTPOINT: %s\n",mp.data());
     app.Print();
@@ -208,10 +208,10 @@ int main (int argc, char **argv)
 
 #ifdef IOSTREAMSWORKS
     if ( os->cshFormat ) {
-      cout << "setenv " << DTINFOLIBDEFAULT_NAME << " " << DTINFOLIBDEFAULT_VALUE << endl;
+      std::cout << "setenv " << DTINFOLIBDEFAULT_NAME << " " << DTINFOLIBDEFAULT_VALUE << std::endl;
     } else {
-      cout << DTINFOLIBDEFAULT_NAME << "=" << DTINFOLIBDEFAULT_VALUE << endl;
-      cout << "export " << DTINFOLIBDEFAULT_NAME << ";" << endl;
+      std::cout << DTINFOLIBDEFAULT_NAME << "=" << DTINFOLIBDEFAULT_VALUE << std::endl;
+      std::cout << "export " << DTINFOLIBDEFAULT_NAME << ";" << std::endl;
     }
 #else
     if ( os->cshFormat ) {

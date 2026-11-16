@@ -74,7 +74,7 @@ void TTFile::TT_Exception
 	)
 {
 #ifdef IOSTREAMSWORKS
-    cerr << tt_status_message(tt_pointer_error(str)) << endl;
+    std::cerr << tt_status_message(tt_pointer_error(str)) << std::endl;
 #else
     fprintf(stderr, "%s\n", tt_status_message(tt_pointer_error(str)));
 #endif
