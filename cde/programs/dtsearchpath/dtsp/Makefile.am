@@ -8,11 +8,12 @@ dtsearchpath_CPPFLAGS = -I../libCliSrv $(DT_INCDIR) \
     -DCDE_CONFIGURATION_TOP=\"$(CDE_CONFIGURATION_TOP)\" \
     -DCDE_LOGFILES_TOP=\"$(CDE_LOGFILES_TOP)\"
 
+dtsearchpath_LDADD = ../libCliSrv/libCliSrv.a $(DTCLIENTLIBS) $(XTOOLLIB)
+
 if SOLARIS
 dtsearchpath_CPPFLAGS += -DIOSTREAMSWORKS
+dtsearchpath_LDADD += -lintl -ladm
 endif
-
-dtsearchpath_LDADD = ../libCliSrv/libCliSrv.a $(DTCLIENTLIBS) $(XTOOLLIB)
 
 dtsearchpath_SOURCES = AppSearchPath.C DbSearchPath.C			\
 		       HelpSearchPath.C IconSearchPath.C		\
