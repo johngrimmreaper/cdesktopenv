@@ -49,6 +49,9 @@
 #include <dirent.h>
 #include <sys/param.h>
 #include <pwd.h>
+#include <grp.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <security/pam_appl.h>
 #include "pam_svc.h"
 #include "dm.h"

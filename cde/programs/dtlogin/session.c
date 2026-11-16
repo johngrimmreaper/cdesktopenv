@@ -89,6 +89,9 @@
 #ifdef sun
 # include "solaris.h"
 #endif
+#ifdef PAM
+# include "pam_svc.h"
+#endif
 
 #ifdef __KERBEROS
 # include <krb.h>
@@ -298,7 +301,7 @@ SessionPingFailed( struct display *d )
 
 #   ifdef PAM 
 	    PamAccounting( verify.argv[0], d->name, d->utmpId, user, 
-			   ttyLine, clientPid, ACCOUNTING, NULL);
+			   ttyLine, clientPid, ACCOUNTING, 0);
 #   else
 	    solaris_accounting( verify.argv[0], d->name, d->utmpId, user, 
 				ttyLine, clientPid, ACCOUNTING, NULL);
@@ -624,7 +627,7 @@ ManageSession( struct display *d )
 
 #   ifdef PAM
 	PamAccounting( verify.argv[0], d->name, d->utmpId, user, 
-		       ttyLine, clientPid, ACCOUNTING, NULL);
+		       ttyLine, clientPid, ACCOUNTING, 0);
 #   else
 	solaris_accounting( verify.argv[0], d->name, d->utmpId, user, 
 			    ttyLine, clientPid, ACCOUNTING, NULL);
@@ -1259,7 +1262,7 @@ StartClient( struct verify_info *verify, struct display *d, int *pidp )
 
 #   ifdef PAM
 	    PamAccounting(verify->argv[0], d->name, d->utmpId, user, 
-			  ttyLine, getpid(), USER_PROCESS, NULL);
+			  ttyLine, getpid(), USER_PROCESS, 0);
 #   else
 	    solaris_accounting(verify->argv[0], d->name, d->utmpId, user, 
 			       ttyLine, getpid(), USER_PROCESS, NULL);

@@ -81,9 +81,10 @@ endif
 
 if SOLARIS
 XBINDIR = /usr/bin/X11
-dtlogin_LDADD += -lgen -lresolv -lbsm -lcmd
+dtlogin_CFLAGS = $(AM_CFLAGS) -DPAM
+dtlogin_LDADD += -lgen -lresolv -lbsm -lcmd -lpam
 dtgreet_LDADD += -lgen -lresolv -lbsm -lcmd
 dtchooser_LDADD += -lgen -lresolv -lbsm -lcmd
-dtlogin_SOURCES += solaris.c
+dtlogin_SOURCES += solaris.c pam_svc.c
 endif
 
