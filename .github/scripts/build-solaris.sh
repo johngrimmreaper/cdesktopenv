@@ -111,7 +111,9 @@ fetch_source() {
 
 export PATH="$deps/bin:$PATH"
 export PKG_CONFIG_PATH="$deps/lib/pkgconfig"
-export LD_LIBRARY_PATH_64="$deps/lib"
+# Libtool wrappers prepend the uninstalled CDE libraries to LD_LIBRARY_PATH.
+unset LD_LIBRARY_PATH_64
+export LD_LIBRARY_PATH="$deps/lib"
 export CPPFLAGS="-I$deps/include"
 export LDFLAGS="-L$deps/lib"
 
