@@ -5,10 +5,6 @@ BUILT_SOURCES = sys.resources sys.session sys.font sys.dtwmrc	\
 	display.home.session display.current.session 0100.session \
 	0120.session 0140.session 0160.session
 
-if SOLARIS
-BUILT_SOURCES += Xresources.ow
-endif
-
 CLEANFILES = $(BUILT_SOURCES)
 
 cfgmaindir = $(CDE_DATA_TOP)/config/$(LANG)
@@ -56,11 +52,6 @@ sys.dtwmrc: $(TOP)/dtwm/sys.dtwmrc sys.dtwmrc.tmsg
 
 Xresources: $(TOP)/dtlogin/config/Xresources Xresources.tmsg
 	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@
-
-if SOLARIS
-Xresources.ow: $(TOP)/dtlogin/config/Xresources.ow Xresources.ow.tmsg
-	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@
-endif
 
 dtfile.config: $(TOP)/dtfile/dtfile.config dtfile.config.tmsg
 	$(MERGE) -lang $(LANG) $@.tmsg < $< > $@ || $(RM) $@
