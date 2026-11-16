@@ -4082,7 +4082,11 @@ do_XmTextGetString(
 
 static int
 Text_WidgetAndBoolean(
-        void (*func)(Widget w, char b),
+#if NeedWidePrototypes
+        void (*func)(Widget w, int b),
+#else
+        void (*func)(Widget w, Boolean b),
+#endif
         int argc,
         char *argv[] )
 {
