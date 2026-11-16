@@ -52,11 +52,7 @@ $COPYRIGHT$:
 #include <strings.h>
 #include <unistd.h>
 #include <sys/stat.h>    /* for stat() */
-#if defined(sun)
-#include <widec.h>
-#else
 #include <wchar.h>
-#endif
 #include <locale.h>
 #if !defined(sun)
 #include <langinfo.h>
@@ -92,13 +88,6 @@ int _DtHelpTermGetTopicData(_DtCvHandle canvasHandle,
 
 extern char * _DtHelpCeGetVolumeLocale(VolumeHandle helpVolumeHandle);
 extern const char * _DtHelpCeGetVolumeCharSet(VolumeHandle helpVolumeHandle);
-
-/*======== platform adjustments ==============*/
-#ifdef sun
-#include <widec.h>
-#define wcswidth(s,n) wscol(s)
-#define wcslen(s) wslen(s)
-#endif
 
 /*======== boundary values ==============*/
 #define MAXSECTS		50	   /* max number of section nesting */
