@@ -61,8 +61,8 @@ class KShell : public Shell {
 	toPut += value;
 
 #ifdef IOSTREAMSWORKS
-	cout << toPut << ";" << endl;
-	cout << "export " << envvar << ";" << endl;
+	std::cout << toPut << ";" << std::endl;
+	std::cout << "export " << envvar << ";" << std::endl;
 #else
 	printf("%s;\n", toPut.data());
 	printf("export %s;\n", envvar.data());
@@ -85,7 +85,7 @@ class CShell : public Shell {
 	toPut += value;
 
 #ifdef IOSTREAMSWORKS
-	cout << toPut << ";" << endl;
+	std::cout << toPut << ";" << std::endl;
 #else
 	printf("%s;\n", toPut.data());
 #endif
