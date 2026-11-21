@@ -55,6 +55,10 @@
 # include	"dm.h"
 # include	"vgmsg.h"
 
+#ifdef sun
+#include "solaris.h"
+#endif
+
 static int receivedUsr1;
 
 

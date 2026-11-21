@@ -60,6 +60,31 @@
 #ifdef PAM
 #include    <security/pam_appl.h>
 #define	SOLARIS_SUCCESS	PAM_SUCCESS
+
+/* utility function to do UTMP/WTMP management */
+int
+solaris_setutmp_mgmt(
+	char *user,	/* user */
+	char *ttyn,	/* ttyn */
+	char *rhost,	/* remote hostname */
+	int flags,	/* Flags - see below */
+	int type,	/* type of utmp/wtmp entry */
+	char id[]	/* 4 byte id field for utmp */
+);
+
+/*
+ * solaris_reset_utmp_mgmt
+ *		a utility function which terminates UTMP/WTMP mgmt
+ */
+int
+solaris_reset_utmp_mgmt(
+	char **user,	/* user */
+	char **ttyn,	/* tty name */
+	char **rhost,	/* remote host */
+	int flags,	/* flags - see below */
+	int status,	/* logout process status */
+	char id[]	/* logout ut_id (/etc/inittab id) */
+);
 #endif
 
 #ifdef SUNAUTH

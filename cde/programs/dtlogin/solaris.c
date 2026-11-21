@@ -65,6 +65,10 @@
 #include <dirent.h>
 #include <sys/param.h>
 #include <pwd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include "dm.h"
 #include "solaris.h"
 
 #ifdef SUNAUTH
@@ -658,31 +662,6 @@ end_conv()
 #define	INIT_PROC_PID	1
 #define	PAMTXD		"SUNW_OST_SYSOSPAM"
 #define	SCPYN(a, b)	(void) strncpy(a, b, sizeof (a))
-
-/* utility function to do UTMP/WTMP management */
-int
-solaris_setutmp_mgmt(
-	char *user,	/* user */
-	char *ttyn,	/* ttyn */
-	char *rhost,	/* remote hostname */
-	int flags,	/* Flags - see below */
-	int type,	/* type of utmp/wtmp entry */
-	char id[]	/* 4 byte id field for utmp */
-);
-
-/*
- * solaris_reset_utmp_mgmt 
- *		a utility function which terminates UTMP/WTMP mgmt
- */
-int
-solaris_reset_utmp_mgmt(
-	char **user,	/* user */
-	char **ttyn,	/* tty name */
-	char **rhost,	/* remote host */
-	int flags,	/* flags - see below */
-	int status,	/* logout process status */
-	char id[]	/* logout ut_id (/etc/inittab id) */
-);
 
 /* flags for the flags field */
 #define	__NOOP	8	/* No utmp action desired */

@@ -55,10 +55,12 @@
  */
 
 
-extern int _DtAuthentication(char*, char*, char*, char*, char*);
-extern int _DtAccounting(char*, char*, char[], char*, 
-			      char*, pid_t, int, int);
-extern int _DtSetCred(char*, char *, uid_t, gid_t);
+extern int PamAuthenticate(char *program, char *display, char *password,
+                           char *user, char *line);
+extern int PamAccounting(char *program, char *display, char *entry_id,
+                         char *user, char *line, pid_t pid, int entry_type,
+                         int exitcode);
+extern int PamSetCred(char *program, char *user, uid_t uid, gid_t gid);
 extern int _DtSetDevPerm(char *, uid_t, gid_t);
 extern int _DtResetDevPerm(char *);
 
