@@ -16,6 +16,10 @@ SUBDIRS = util lib programs include
 # directory so those generated files and helpers are available.
 dist: all
 
+.PHONY: install-terminfo
+install-terminfo:
+	$(MAKE) -C programs/dtterm install-terminfo
+
 if BUILD_DOCS
 SUBDIRS += doc
 endif

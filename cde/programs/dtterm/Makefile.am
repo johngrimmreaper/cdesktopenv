@@ -35,6 +35,7 @@ $(TRADCPP):
 
 cfgdir = $(CDE_DATA_TOP)/config
 dist_cfg_DATA = dtterm.ti
+EXTRA_DIST = terminfoChecklist terminfoCreate install-terminfo.sh
 
 Dtterm.ad: Dtterm.ad.src $(TRADCPP)
 	$(RM) $@
@@ -48,9 +49,13 @@ DtTermFallBackResources.c: DtTermFallBackResources.c.src
 	$(RM) $@
 	./mkfallbk < DtTermFallBackResources.c.src > $@
 
-dtterm.ti: terminfoChecklist $(TRADCPP)
+dtterm.ti: terminfoChecklist terminfoCreate $(TRADCPP)
 	$(RM) $@
-	CPP="$(GENCPP)" $(SHELL) terminfoCreate < terminfoChecklist > $@
+	CPP="$(GENCPP)" $(SHELL) "$(srcdir)/terminfoCreate" < "$<" > "$@"
+
+.PHONY: install-terminfo
+install-terminfo: dtterm.ti
+	$(SHELL) "$(srcdir)/install-terminfo.sh" "$(TIC)" "$(DESTDIR)" "$(TERMINFO)" "$<"
 
 install-exec-hook:
 if !HAS_UTEMPTER_LIBRARY

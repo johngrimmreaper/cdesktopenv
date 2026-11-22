@@ -72,6 +72,38 @@ $ sudo gmake install
 Of course change to location of your TCL directory as needed for your
 system.
 
+## Installing the dtterm terminfo entry
+
+Ordinary installation copies `dtterm.ti` to CDE's configuration directory
+(`/usr/dt/config` by default) without running `tic`. If your system already
+provides `dtterm`, you can use that entry. For an explicit installation, run
+`make install-terminfo` from the top-level build directory. This uses the
+compiler's normal destination and may replace an existing entry there.
+Installing to a system database requires write access to it. With ncurses,
+the compiler may fall back to a personal database if the default is
+unwritable.
+
+Set `TIC=/path/to/tic` on the make command line to select the compiler.
+For ncurses or the native Solaris or AIX compiler, set `TERMINFO` to
+select an alternate database. Use a compiler compatible with the system
+that will read the database.
+
+For package staging with ncurses, set both `DESTDIR` and `TERMINFO`. Use
+the database path as it will appear on the target system and create its
+parent directory below `DESTDIR`. The staged database path must be unused.
+
+```sh
+mkdir -p "$pkgdir/usr/share"
+make DESTDIR="$pkgdir" TERMINFO=/usr/share/terminfo install-terminfo
+```
+
+For other compilers and when updating a staged database that already
+exists, use the platform's packaging tools with the installed
+`dtterm.ti`. FreeBSD ports can use `USES=terminfo`. For native NetBSD,
+compile to a separate file with `tic -o /path/to/dtterm.cdb dtterm.ti`
+and consult `terminfo(5)` for how to make that database visible to
+applications. NetBSD's `-o` takes a database filename.
+
 # Support
 
 ## Mailing list
