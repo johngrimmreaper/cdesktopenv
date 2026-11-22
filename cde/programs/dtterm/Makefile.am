@@ -53,7 +53,13 @@ dtterm.ti: terminfoChecklist $(TRADCPP)
 	CPP="$(GENCPP)" $(SHELL) terminfoCreate < terminfoChecklist > $@
 
 install-exec-hook:
-if !HAS_UTEMPTER_LIBRARY
-	-chown root $(DESTDIR)$(bindir)/dtterm
-	-chmod 4755 $(DESTDIR)$(bindir)/dtterm
+if INSTALL_DTTERM_SETUID
+if REQUIRE_DTTERM_SETUID
+	chown root "$(DESTDIR)$(bindir)/dtterm"
+	chmod 4755 "$(DESTDIR)$(bindir)/dtterm"
+else
+	-chown root "$(DESTDIR)$(bindir)/dtterm" && chmod 4755 "$(DESTDIR)$(bindir)/dtterm"
+endif
+else
+	chmod 0755 "$(DESTDIR)$(bindir)/dtterm"
 endif

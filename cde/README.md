@@ -48,6 +48,21 @@ out on the wiki.
 There are also a lot of other documents and information there that you
 might find useful.
 
+By default (`--enable-dtterm-setuid=auto`), installation attempts to make
+`dtterm` setuid root when libutempter is unavailable. This attempt is best
+effort. The setuid bit is applied only after changing ownership to root
+succeeds. With libutempter, the default mode is `0755`.
+
+Configure with `--disable-dtterm-setuid` to always install `dtterm` with mode
+`0755`. On systems that need privileges for PTY setup or terminal login
+accounting, this can limit functionality.
+
+Configure with `--enable-dtterm-setuid` to require root ownership and mode
+`4755` at installation, including in a `DESTDIR` staging tree. The install
+fails if either operation fails. This explicitly grants `dtterm` elevated
+privileges even when libutempter handles login accounting, increasing the
+privileged code that must be trusted.
+
 Assuming you've met all of the requirements regarding packages needed
 for the build, you can follow the standard autoconf method:
 

@@ -262,6 +262,14 @@ AC_ARG_ENABLE([xrender],
         [disable_xrender="yes"], [disable_xrender=""]
 )
 
+dnl dtterm installation permissions
+AC_ARG_ENABLE([dtterm-setuid],
+        [AS_HELP_STRING([--enable-dtterm-setuid], [Require setuid-root dtterm (default: auto)])
+AS_HELP_STRING([--disable-dtterm-setuid], [Install dtterm without setuid root])],
+        [], [enable_dtterm_setuid=auto])
+AS_CASE([$enable_dtterm_setuid], [yes|no|auto], [],
+        [AC_MSG_ERROR([invalid value for --enable-dtterm-setuid: $enable_dtterm_setuid (use yes, no, or auto)])])
+
 dnl copied from xdm...
 
 AC_ARG_WITH(utmp_file,
@@ -677,6 +685,12 @@ AC_CHECK_LIB(utempter, utempter_add_record,
              [SOURCE_CPP_DEFINES="${SOURCE_CPP_DEFINES} -DHAS_UTEMPTER_LIBRARY"])
 
 AM_CONDITIONAL([HAS_UTEMPTER_LIBRARY], [test "x$ac_cv_lib_utempter_utempter_add_record" = "xyes"])
+
+AM_CONDITIONAL([INSTALL_DTTERM_SETUID],
+    [test "$enable_dtterm_setuid" = yes ||
+     { test "$enable_dtterm_setuid" = auto &&
+       test "$ac_cv_lib_utempter_utempter_add_record" != yes; }])
+AM_CONDITIONAL([REQUIRE_DTTERM_SETUID], [test "$enable_dtterm_setuid" = yes])
 
 dnl Figure out TCL
 
