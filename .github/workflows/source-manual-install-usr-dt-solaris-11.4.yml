@@ -1,0 +1,49 @@
+name: CDE source CI - Oracle Solaris 11.4
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cde-source-solaris-11.4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-install:
+    name: Build and stage CDE on Oracle Solaris 11.4 x86-64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out exact commit under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install QEMU and image tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends acl qemu-system-x86 rsync zstd
+
+      - name: Build and stage CDE in Solaris
+        run: bash .github/scripts/run-solaris-vm.sh
+
+      - name: Analyze CDE build log
+        if: ${{ !cancelled() && hashFiles('solaris-ci-logs/cde-make.log') != '' }}
+        run: |
+          python3 .github/scripts/analyze-build-log.py \
+            --log solaris-ci-logs/cde-make.log \
+            --label 'CDE source build / Oracle Solaris 11.4 x86-64 / Motif 2.3.8' \
+            --output-dir solaris-ci-logs/analyzer \
+            --summary-file "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Solaris diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-solaris-11.4-diagnostics
+          path: solaris-ci-logs/
