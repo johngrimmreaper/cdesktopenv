@@ -35,7 +35,7 @@
 
 #include <ccode.h>
 #include <ctype.h>
-#include <iconv.h>
+#include "std/iconv.h"
 
 #include "lclib.h"
 

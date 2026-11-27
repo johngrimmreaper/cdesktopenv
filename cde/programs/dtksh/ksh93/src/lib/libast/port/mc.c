@@ -28,7 +28,7 @@
 #include "sfhdr.h"
 #include "lclib.h"
 
-#include <iconv.h>
+#include "std/iconv.h"
 
 #define _MC_PRIVATE_ \
 	size_t		nstrs; \

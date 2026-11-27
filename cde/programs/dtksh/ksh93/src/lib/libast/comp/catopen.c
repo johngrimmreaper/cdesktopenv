@@ -32,7 +32,7 @@
 #include <ast.h>
 #include <mc.h>
 #include <nl_types.h>
-#include <iconv.h>
+#include "std/iconv.h"
 
 #ifndef DEBUG_trace
 #define DEBUG_trace		0
