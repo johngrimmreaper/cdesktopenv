@@ -1,0 +1,108 @@
+name: CDE package CI - OpenBSD -current
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cde-package-openbsd-current-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build the x11/cde port on OpenBSD -current amd64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: bash
+    env:
+      OPENBSD_SNAPSHOT_URL: https://cdn.openbsd.org/pub/OpenBSD/snapshots
+      CDE_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+      CDE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Check out the CDE commit under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ env.CDE_REPOSITORY }}
+          ref: ${{ env.CDE_SHA }}
+          persist-credentials: false
+
+      - name: Export CDE source and download the OpenBSD snapshot ports tree
+        run: |
+          job="$RUNNER_TEMP/openbsd-ci"
+          mkdir -p "$job/diagnostics"
+          test "$(git rev-parse HEAD)" = "$CDE_SHA"
+          git archive --format=tar.gz -o "$job/cde-source.tar.gz" "$CDE_SHA:cde"
+          cd "$job"
+          # OpenBSD publishes ports.tar.gz for snapshots over HTTPS.
+          curl --fail --silent --show-error --location --retry 3 \
+            --proto '=https' --proto-redir '=https' \
+            "$OPENBSD_SNAPSHOT_URL/ports.tar.gz" -o ports.tar.gz
+          sha256sum cde-source.tar.gz | cut -d' ' -f1 > source.sha256
+          {
+            printf 'Repository: %s\nCommit: %s\n' "$CDE_REPOSITORY" "$CDE_SHA"
+            printf 'CDE source tree: %s\n' "$(git -C "$GITHUB_WORKSPACE" rev-parse "$CDE_SHA:cde")"
+            printf 'Source archive SHA256: %s\n' "$(cat source.sha256)"
+            printf 'OpenBSD ports archive: %s/ports.tar.gz\n' "$OPENBSD_SNAPSHOT_URL"
+            printf 'OpenBSD ports archive SHA256: %s\n' "$(sha256sum ports.tar.gz | cut -d' ' -f1)"
+          } | tee diagnostics/source.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install QEMU and OpenBSD image verification tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            acl ipxe-qemu qemu-system-x86 qemu-utils seabios signify-openbsd
+
+      - name: Install and boot OpenBSD -current amd64
+        id: vm
+        run: bash .github/scripts/start-openbsd-vm.sh
+
+      - name: Build the stock OpenBSD CDE port with the selected source
+        id: build
+        run: |
+          job="$RUNNER_TEMP/openbsd-ci"
+          ssh -F "$job/ssh_config" openbsd 'mkdir -p /home/cde-ci/diagnostics'
+          scp -F "$job/ssh_config" "$job"/{cde-source.tar.gz,source.sha256,ports.tar.gz} \
+            .github/scripts/build-openbsd-port.sh openbsd:/home/cde-ci/
+          ssh -F "$job/ssh_config" openbsd 'sh /home/cde-ci/build-openbsd-port.sh' 2>&1 | tee "$job/diagnostics/port.log"
+
+      - name: Collect guest diagnostics
+        if: ${{ !cancelled() && steps.vm.outcome == 'success' }}
+        run: |
+          scp -F "$RUNNER_TEMP/openbsd-ci/ssh_config" -r openbsd:/home/cde-ci/diagnostics "$RUNNER_TEMP/openbsd-ci/diagnostics/guest"
+
+      - name: Analyze the ports build log
+        if: ${{ !cancelled() && steps.build.outcome != 'skipped' }}
+        run: |
+          logs="$RUNNER_TEMP/openbsd-ci/diagnostics"
+          if test -s "$logs/port.log"; then
+            python3 .github/scripts/analyze-build-log.py \
+              --log "$logs/port.log" --label 'OpenBSD -current amd64 / x11/cde' \
+              --output-dir "$logs/analyzer" --summary-file "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload build diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-openbsd-current-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/openbsd-ci/diagnostics
+          if-no-files-found: warn
+
+      - name: Retrieve CDE packages
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: scp -F "$RUNNER_TEMP/openbsd-ci/ssh_config" -r openbsd:/home/cde-ci/packages "$RUNNER_TEMP/openbsd-ci/packages"
+
+      - name: Upload CDE packages
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cde-openbsd-current-amd64-${{ env.CDE_SHA }}
+          path: ${{ runner.temp }}/openbsd-ci/packages/*.tgz
+          if-no-files-found: error
